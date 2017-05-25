@@ -20,19 +20,19 @@ The [BookInfo](https://istio.io/docs/samples/bookinfo.html) is a simple applicat
 
 ## 1.2 Grant Permissions  
   1. Run the following command to check if your cluster has RBAC  
-  ```bash
-  $ kubectl api-versions | grep rbac
-  ```  
+    ```bash
+    $ kubectl api-versions | grep rbac
+    ```  
   2. Grant permissions based on the version of your RBAC  
     * If you have an **alpha** version, run:  
-  ```bash
-  $ kubectl apply -f install/kubernetes/istio-rbac-alpha.yaml
-  ```
+    ```bash
+    $ kubectl apply -f install/kubernetes/istio-rbac-alpha.yaml
+    ```
 
     * If you have a **beta** version, run:
-  ```bash
-  $ kubectl apply -f install/kubernetes/istio-rbac-beta.yaml
-  ```
+    ```bash
+    $ kubectl apply -f install/kubernetes/istio-rbac-beta.yaml
+    ```
 
     * If **your cluster has no RBAC** enabled, proceed to installing the **Control Plane**.
 
