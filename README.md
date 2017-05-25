@@ -9,28 +9,32 @@ The [BookInfo](https://istio.io/docs/samples/bookinfo.html) is a simple applicat
 # Deploy to Bluemix
 
 # 1. Installing Istio in your Cluster
-* Download the source code  
+### 1.1 Download the Istio source
   1. Download the latest Istio release for your OS: [Istio releases](https://github.com/istio/istio/releases)  
   2. Extract and go to the root directory.
   3. Copy the `istioctl` bin to your local bin  
-  ```
+  ```bash
   $ cp bin/istioctl /usr/local/bin
   ## example for macOS
   ```
-* Grant Permissions  
+
+### 1.2 Grant Permissions  
   1. Run the following command to check if your cluster has RBAC  
-  ```
+  ```bash
   $ kubectl api-versions | grep rbac
   ```
-  2. Grant permissions  
-  ```
-  If you have an alpha version, run:
+  2. Grant permissions based on the version of your RBAC
+    * If you have an **alpha** version, run:  
+  ```bash
   $ kubectl apply -f install/kubernetes/istio-rbac-alpha.yaml
-  If you have a beta version, run:
-  $ kubectl apply -f install/kubernetes/istio-rbac-beta.yaml
-  If none, proceed to installing the Control Plane
   ```
-* Install the Istio Control Plane in your cluster  
+    * If you have a **beta** version, run:
+  ```bash
+  $ kubectl apply -f install/kubernetes/istio-rbac-beta.yaml
+  ```
+    * If **your cluster has no RBAC** enabled, proceed to installing the **Control Plane**.
+
+### 1.3 Install the [Istio Control Plane](https://istio.io/docs/concepts/what-is-istio/overview.html#architecture) in your cluster  
 ```bash
 kubectl apply -f install/kubernetes/istio.yaml
 ```
