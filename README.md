@@ -34,7 +34,7 @@ The [BookInfo](https://istio.io/docs/samples/bookinfo.html) is a simple applicat
 ```bash
 kubectl apply -f install/kubernetes/istio.yaml
 ```
-* _(Optional) For more options/addons such as installing Istio with [Auth](https://istio.io/docs/concepts/network-and-auth/auth.html) feature and [collecting telemetry data](https://istio.io/docs/tasks/metrics-logs.html), go [ here](https://istio.io/docs/tasks/installing-istio.html#prerequisites)._
+* _(Optional) For more options/addons such as installing Istio with [Auth feature](https://istio.io/docs/concepts/network-and-auth/auth.html) and [collecting telemetry data](https://istio.io/docs/tasks/metrics-logs.html), go [ here](https://istio.io/docs/tasks/installing-istio.html#prerequisites)._
 
 # 2. Inject Istio Envoys on BookInfo Application
 ```bash
