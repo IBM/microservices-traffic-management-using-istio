@@ -47,3 +47,6 @@ echo $(kubectl get po -l istio=ingress -o jsonpath={.items[0].status.hostIP}):$(
 ```
 `http://184.xxx.yyy.zzz:30XYZ/productpage`
 # 4. Modify Service Routes
+* Set Default Routes to `reviews-v1` for all microservices
+* Set Route to `reviews-v2` of **reviews microservice** for a specific user
+* Route 50% of traffic on **reviews microservice** to `reviews-v1` and 50% to `reviews-v3`
