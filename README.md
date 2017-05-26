@@ -58,21 +58,21 @@ echo $(kubectl get po -l istio=ingress -o jsonpath={.items[0].status.hostIP}):$(
 # 4. Modify Service Routes
 * Set Default Routes to `reviews-v1` for all microservices  
 This would set all incoming routes on the services (indicated in the line `destination: <service>`) to the deployment with a tag `version: v1`. To set the default routes, run:
-```bash
-$ istioctl create -f samples/apps/bookinfo/route-rule-all-v1.yaml
-```
+  ```bash
+  $ istioctl create -f samples/apps/bookinfo/route-rule-all-v1.yaml
+  ```
 * Set Route to `reviews-v2` of **reviews microservice** for a specific user  
 This would set the route for the user `jason` to see the `version: v2` of the reviews microservice. Run:
-```bash
-$ istioctl create -f samples/apps/bookinfo/route-rule-reviews-test-v2.yaml
-```
+  ```bash
+  $ istioctl create -f samples/apps/bookinfo/route-rule-reviews-test-v2.yaml
+  ```
 * Route 50% of traffic on **reviews microservice** to `reviews-v1` and 50% to `reviews-v3`.  
 This is indicated by the `weight: 50` in the yaml file.
-```bash
-$ istioctl replace -f samples/apps/bookinfo/route-rule-reviews-50-v3.yaml
-```
+  ```bash
+  $ istioctl replace -f samples/apps/bookinfo/route-rule-reviews-50-v3.yaml
+  ```
 * Route 100% of the traffic to the `version: v3` of the **reviews microservicese**  
 This would set every incoming traffic to the version v3 of the reviews microservice. Run:
-```bash
-$ istioctl replace -f samples/apps/bookinfo/route-rule-reviews-v3.yaml
-```
+  ```bash
+  $ istioctl replace -f samples/apps/bookinfo/route-rule-reviews-v3.yaml
+  ```
