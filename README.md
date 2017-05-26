@@ -74,12 +74,14 @@ reviews-v2-2593570575-92657       2/2       Running   0
 reviews-v3-3121725201-cn371       2/2       Running   0       
 ```
 # 3. Access your Application
-
+To access your application, you can check the public IP address of your cluster through `kubectl get nodes` and get the NodePort of the istio-ingress service for port 80 through `kubectl get svc | grep istio-ingress`. Or you can also run the following command to output the IP address and NodePort:
 ```bash
 echo $(kubectl get po -l istio=ingress -o jsonpath={.items[0].status.hostIP}):$(kubectl get svc istio-ingress -o jsonpath={.spec.ports[0].nodePort})
 184.xxx.yyy.zzz:30XYZ
 ```
-`http://184.xxx.yyy.zzz:30XYZ/productpage`
+
+Point your browser to:  
+`http://184.xxx.yyy.zzz:30XYZ/productpage` Replace with your own IP and NodePort.
 # 4. Modify Service Routes
 * Set Default Routes to `reviews-v1` for all microservices  
 This would set all incoming routes on the services (indicated in the line `destination: <service>`) to the deployment with a tag `version: v1`. To set the default routes, run:
