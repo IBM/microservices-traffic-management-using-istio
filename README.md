@@ -42,6 +42,15 @@ The [BookInfo](https://istio.io/docs/samples/bookinfo.html) is a simple applicat
 ```bash
 kubectl apply -f install/kubernetes/istio.yaml
 ```
+You should now have the Istio Control Plane running in Pods of your Cluster.
+```bash
+$ kubectl get pods
+NAME                              READY     STATUS    RESTARTS
+istio-egress-3850639395-30d1v     1/1       Running   0       
+istio-ingress-4068702052-2st6r    1/1       Running   0       
+istio-manager-251184572-x9dd4     2/2       Running   0       
+istio-mixer-2499357295-kn4vq      1/1       Running   0       
+```
 * _(Optional) For more options/addons such as installing Istio with [Auth feature](https://istio.io/docs/concepts/network-and-auth/auth.html) and [collecting telemetry data](https://istio.io/docs/tasks/metrics-logs.html), go [ here](https://istio.io/docs/tasks/installing-istio.html#prerequisites)._
 
 # 2. Inject Istio Envoys on BookInfo Application
@@ -49,7 +58,23 @@ Envoys are deployed as sidecars on each microservice. Injecting Envoy into your 
 ```bash
 $ kubectl apply -f <(istioctl kube-inject -f samples/apps/bookinfo/bookinfo.yaml)
 ```
+After a few minutes, you should now have your Kubernetes Pods running and have an Envoy sidecar in each of them alongside the microservice. The microservices are **productpage, details, ratings, and reviews**. Note that you'll have three versions of the reviews microservice.
+```
+$ kubectl get pods
+NAME                              READY     STATUS    RESTARTS
+details-v1-969129648-lwgr3        2/2       Running   0       
+istio-egress-3850639395-30d1v     1/1       Running   0       
+istio-ingress-4068702052-2st6r    1/1       Running   0       
+istio-manager-251184572-x9dd4     2/2       Running   0       
+istio-mixer-2499357295-kn4vq      1/1       Running   0       
+productpage-v1-1629799384-00f11   2/2       Running   0       
+ratings-v1-1194835686-dzf2f       2/2       Running   0       
+reviews-v1-2065415949-3gdz5       2/2       Running   0       
+reviews-v2-2593570575-92657       2/2       Running   0       
+reviews-v3-3121725201-cn371       2/2       Running   0       
+```
 # 3. Access your Application
+
 ```bash
 echo $(kubectl get po -l istio=ingress -o jsonpath={.items[0].status.hostIP}):$(kubectl get svc istio-ingress -o jsonpath={.spec.ports[0].nodePort})
 184.xxx.yyy.zzz:30XYZ
@@ -62,7 +87,7 @@ This would set all incoming routes on the services (indicated in the line `desti
   $ istioctl create -f samples/apps/bookinfo/route-rule-all-v1.yaml
   ```
 * Set Route to `reviews-v2` of **reviews microservice** for a specific user  
-This would set the route for the user `jason` to see the `version: v2` of the reviews microservice. Run:
+This would set the route for the user `jason` (You can login as _jason_ with any password in your deploy web application) to see the `version: v2` of the reviews microservice. Run:
   ```bash
   $ istioctl create -f samples/apps/bookinfo/route-rule-reviews-test-v2.yaml
   ```
