@@ -24,7 +24,7 @@ sudo mv ./kubectl /usr/local/bin/kubectl
 
 function cluster_setup() {
 bx cs workers anthony-cluster-travis
-$(bx cs cluster-config cluster-travis | grep export)
+$(bx cs cluster-config anthony-cluster-travis | grep export)
 
 curl -L https://git.io/getIstio | sh -
 cd $(ls | grep istio)
