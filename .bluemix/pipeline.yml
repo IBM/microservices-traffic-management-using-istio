@@ -3,7 +3,7 @@ stages:
 - name: BUILD
   inputs:
   - type: git
-    branch: deploy-to-bluemix-test
+    branch: master
     service: ${SAMPLE_REPO}
   triggers:
   - type: commit
