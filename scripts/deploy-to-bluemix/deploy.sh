@@ -67,7 +67,7 @@ then
     exit 1
 fi
 kubectl get pods,svc
-echo "You can now view your Sample BookInfo App http://$GATEWAY_URL"
+echo "You can now view your Sample BookInfo App http://$GATEWAY_URL/productpage"
 echo "To modify service routes. You will need to do it in your own environment"
 echo "Execute \"bx cs cluster-config $CLUSTER_NAME\" on your environment then export the resulting variable KUBECONFIG."
 echo "You can now do \"istioctl create -f <route-yaml-config>\""
