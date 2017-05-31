@@ -18,7 +18,7 @@ eval "$exp"
 
 curl -L https://git.io/getIstio | sh -
 cd $(ls | grep istio)
-sudo mv bin/istioctl /usr/local/bin/
+export PATH="$PATH:$(pwd)/bin"
 echo "default" | ./samples/apps/bookinfo/cleanup.sh
 
 kubectl apply -f install/kubernetes/istio-rbac-alpha.yaml
