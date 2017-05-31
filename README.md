@@ -8,6 +8,13 @@ The [BookInfo](https://istio.io/docs/samples/bookinfo.html) is a simple applicat
 # Prerequisite
 
 # Deploy to Bluemix
+If you want to deploy the BookInfo app directly to Bluemix, click on 'Deploy to Bluemix' button below to create a Bluemix DevOps service toolchain and pipeline for deploying the sample, else jump to [Steps](#steps)
+
+> You will need to create your Kubernetes cluster first and make sure it is fully deployed in your Bluemix account.
+
+[![Create Toolchain](https://github.com/IBM/container-journey-template/blob/master/images/button.png)](https://console.ng.bluemix.net/devops/setup/deploy/)
+
+Please follow the [Toolchain instructions](https://github.com/IBM/container-journey-template/blob/master/Toolchain_Instructions.md) to complete your toolchain and pipeline.
 
 # Steps
 

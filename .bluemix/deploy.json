@@ -1,0 +1,122 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "Sample Deploy Stage",
+    "description": "sample toolchain",
+    "longDescription": "The Delivery Pipeline automates continuous deployment.",
+    "type": "object",
+    "properties": {
+        "prod-region": {
+            "description": "The bluemix region",
+            "type": "string"
+        },
+        "prod-organization": {
+            "description": "The bluemix org",
+            "type": "string"
+        },
+       "prod-space": {
+            "description": "The bluemix space",
+            "type": "string"
+        },
+        "bluemix-user": {
+             "description": "Your Bluemix user ID",
+             "type": "string"
+         },
+        "bluemix-password": {
+             "description": "Your Bluemix Password",
+             "type": "string"
+         },
+        "bluemix-api-key": {
+             "description": "Required for **Federated ID** since Federated ID can't login with Bluemix user and password via Bluemix CLI. You can obtain your API_KEY via https://console.ng.bluemix.net/iam/#/apikeys by clicking **Create API key** (Each API key only can be viewed once).",
+             "type": "string"
+         },
+        "bluemix-cluster-account": {
+             "description": "The GUID of the Bluemix account where you created the cluster. Retrieve it with [bx iam accounts].",
+             "type": "string"
+         },
+        "bluemix-cluster-name": {
+             "description": "Your cluster name. Retrieve it with [bx cs clusters].",
+             "type": "string"
+         }
+    },
+    "required": ["prod-region", "prod-organization", "prod-space", "prod-app-name", "bluemix-cluster-name"],
+    "anyOf": [
+        {
+            "required": ["bluemix-user", "bluemix-password", "bluemix-cluster-account"]
+        },
+        {
+            "required": ["bluemix-api-key"]
+        }
+    ],
+    "form": [
+       {
+          "type": "validator",
+          "url": "/devops/setup/bm-helper/helper.html"
+       },
+        {
+          "type": "text",
+          "readonly": false,
+          "title": "Bluemix User ID",
+          "key": "bluemix-user"
+        },{
+          "type": "password",
+          "readonly": false,
+          "title": "Bluemix Password",
+          "key": "bluemix-password"
+        },{
+          "type": "password",
+          "readonly": false,
+          "title": "Bluemix API Key (Optional)",
+          "key": "bluemix-api-key"
+        },{
+          "type": "password",
+          "readonly": false,
+          "title": "Bluemix Cluster Account ID",
+          "key": "bluemix-cluster-account"
+        },{
+          "type": "text",
+          "readonly": false,
+          "title": "Bluemix Cluster Name",
+          "key": "bluemix-cluster-name"
+        },
+        {
+            "type": "table",
+            "columnCount": 4,
+            "widths": ["15%", "28%", "28%", "28%"],
+            "items": [
+                {
+                  "type": "label",
+                  "title": ""
+                },
+                {
+                  "type": "label",
+                  "title": "Region"
+                },
+                {
+                  "type": "label",
+                  "title": "Organization"
+                },
+                {
+                  "type": "label",
+                  "title": "Space"
+                },
+                {
+                  "type": "label",
+                  "title": "Deployment Configuration"
+                },
+                {
+                  "type": "select",
+                  "key": "prod-region"
+                },
+                {
+                  "type": "select",
+                  "key": "prod-organization"
+                },
+                {
+                  "type": "select",
+                  "key": "prod-space",
+                  "readonly": false
+                }
+            ]
+        }
+    ]
+}
