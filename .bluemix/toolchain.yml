@@ -13,7 +13,7 @@ sample-repo:
   service_id: githubpublic
   parameters:
     repo_name: "{{name}}"
-    repo_url: https://github.com/IBM/istio-phonebook.git
+    repo_url: https://github.com/IBM/ISTIO-Service-Mesh-on-Kubernetes.git
     type: clone
     has_issues: false
 
