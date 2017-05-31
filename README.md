@@ -9,6 +9,13 @@ The [BookInfo](https://istio.io/docs/samples/bookinfo.html) is a simple applicat
 
 # Deploy to Bluemix
 
+# Steps
+
+1. [Installing Istio](#1-installing-istio-in-your-cluster)
+2. [Inject Istio on BookInfo App](#2-inject-istio-envoys-on-bookInfo-application)
+3. [Access your Application](#3-access-your-application)
+4. [Modify Service Routes](#4-modify-service-routes)
+
 # 1. Installing Istio in your Cluster
 ## 1.1 Download the Istio source
   1. Download the latest Istio release for your OS: [Istio releases](https://github.com/istio/istio/releases)  
