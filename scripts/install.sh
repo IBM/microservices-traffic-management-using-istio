@@ -28,7 +28,7 @@ $(bx cs cluster-config anthony-cluster-travis | grep export)
 
 curl -L https://git.io/getIstio | sh -
 cd $(ls | grep istio)
-mv bin/istioctl /usr/local/bin/
+sudo mv bin/istioctl /usr/local/bin/
 echo "default" | ./samples/apps/bookinfo/cleanup.sh
 
 kubectl apply -f install/kubernetes/istio-rbac-alpha.yaml
