@@ -28,7 +28,7 @@ $(bx cs cluster-config anthony-cluster-travis | grep export)
 
 curl -L https://git.io/getIstio | sh -
 cd $(ls | grep istio)
-export PATH=$PWD/bin:$PATH
+mv bin/istioctl /usr/local/bin/
 echo "default" | ./samples/apps/bookinfo/cleanup.sh
 
 kubectl apply -f install/kubernetes/istio-rbac-alpha.yaml
@@ -53,6 +53,8 @@ done
 
 function initial_setup() {
 echo "Creating BookInfo with Injected Envoys..."
+kubectl apply -f <(istioctl kube-inject -f samples/apps/bookinfo/bookinfo.yaml)
+
 PODS=$(kubectl get pods | grep Init)
 while [ ${#PODS} -ne 0 ]
 do
@@ -72,8 +74,13 @@ HEALTH=$(curl -o /dev/null -s -w "%{http_code}\n" http://$GATEWAY_URL/productpag
 if [ $HEALTH -eq 200 ]
 then
   echo "Everything looks good."
+  echo "Cleaning up."
   echo "default" | ./samples/apps/bookinfo/cleanup.sh
+  kubectl delete -f install/kubernetes/istio.yaml
+  kubectl delete -f install/kubernetes/istio-rbac-alpha.yaml
+  echo "Deleted Istio in cluster"
 else
+  echo "Health check failed."
   exit 1
 fi
 }
@@ -84,5 +91,4 @@ install_bluemix_cli
 bluemix_auth
 cluster_setup
 initial_setup
-getting_ip_port
 health_check
