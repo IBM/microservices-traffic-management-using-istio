@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/IBM/istio-phonebook.svg?branch=master)](https://travis-ci.org/IBM/ISTIO-Service-Mesh-on-Kubernetes)
+[![Build Status](https://travis-ci.org/IBM/ISTIO-Service-Mesh-on-Kubernetes.svg?branch=master)](https://travis-ci.org/IBM/ISTIO-Service-Mesh-on-Kubernetes)
 
 # Istio BookInfo  
 [Istio](http://istio.io) is an open platform that provides a uniform way to connect, manage, and secure microservices. Istio supports managing traffic flows between microservices, enforcing access policies, and aggregating telemetry data, all without requiring changes to the code of your microservice. Istio provides an easy way to create this service mesh by deploying a [control plane](https://istio.io/docs/concepts/what-is-istio/overview.html#architecture) and injecting sidecars, an extended version of the  [Envoy](https://lyft.github.io/envoy/) proxy, in the same Pod as your microservice.
