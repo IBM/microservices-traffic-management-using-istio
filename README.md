@@ -22,8 +22,8 @@ Please follow the [Toolchain instructions](https://github.com/IBM/container-jour
 2. [Inject Istio on BookInfo App](#2-inject-istio-envoys-on-bookInfo-application)
 3. [Access your Application](#3-access-your-application)
 4. [Modify Service Routes](#4-modify-service-routes)
-5. [Collecting Metrics and Logs](#4-collecting-metrics-and-logs)
-6. [Request Tracing](#4-request-tracing)
+5. [Collecting Metrics and Logs](#5-collecting-metrics-and-logs)
+6. [Request Tracing](#6-request-tracing)
 
 # 1. Installing Istio in your Cluster
 ## 1.1 Download the Istio source
