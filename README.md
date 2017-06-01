@@ -25,6 +25,8 @@ Please follow the [Toolchain instructions](https://github.com/IBM/container-jour
 5. [Collecting Metrics and Logs](#5-collecting-metrics-and-logs)
 6. [Request Tracing](#6-request-tracing)
 
+#### [Troubleshooting](#troubleshooting-1)
+
 # 1. Installing Istio in your Cluster
 ## 1.1 Download the Istio source
   1. Download the latest Istio release for your OS: [Istio releases](https://github.com/istio/istio/releases)  
@@ -122,7 +124,7 @@ This would set every incoming traffic to the version v3 of the reviews microserv
   ```
 # 5. Collecting Metrics and Logs
 This step shows you how to configure [Istio Mixer](https://istio.io/docs/concepts/policy-and-control/mixer.html) to gather telemetry for services in your cluster.
-* The first thing you should do is install the required Istio Addons: [Prometheus](https://prometheus.io) and [Grafana](https://grafana.com)
+* Install the required Istio Addons on your cluster: [Prometheus](https://prometheus.io) and [Grafana](https://grafana.com)
   ```bash
   $ kubectl apply -f install/kubernetes/addons/prometheus.yaml
   $ kubectl apply -f install/kubernetes/addons/grafana.yaml
@@ -206,4 +208,40 @@ This step shows you how to configure [Istio Mixer](https://istio.io/docs/concept
   ...
   ```
 
+[Collecting Metrics and Logs on Istio](https://istio.io/docs/tasks/metrics-logs.html)
 # 6. Request Tracing
+This step shows you how to collect trace spans using [Zipkin](http://zipkin.io).
+* Install the required Istio Addon: [Zipkin](http://zipkin.io)
+  ```bash
+  $ kubectl apply -f install/kubernetes/addons/zipkin.yaml
+  ```
+* Access your **Zipkin Dashboard**. Get the IP of your cluster `kubectl get nodes` and then the NodePort of your Zipkin service `kubectl get svc | grep zipkin` or you can run the following command to output both:
+  ```bash
+  $ echo $(kubectl get po -l app=zipkin -o jsonpath={.items[0].status.hostIP}):$(kubectl get svc zipkin -o jsonpath={.spec.ports[0].nodePort})
+  184.xxx.yyy.zzz:30XYZ
+  ```  
+  Your dashboard should like this:
+  ![zipkin](images/zipkin.png)
+
+* Send traffic to that service by refreshing your browser to `http://184.xxx.yyy.zzz:30XYZ/productpage` multiple times. You can also do `curl` on your terminal to that URL in a while loop.
+
+* Go to your Zipkin Dashboard again and you will see a number of traces done.
+![zipkin](images/zipkin-traces.png)
+* Click on one those traces and you will see the details of the traffic you sent to your BookInfo App. It shows how much time it took for the request on `productpage`. It also shows how much time ot took for the requests on the `details`,`reviews`, and `ratings` services.
+![zipkin](images/zipkin-details.png)
+
+[Zipkin Tracing on Istio](https://istio.io/docs/tasks/zipkin-tracing.html)
+
+# Troubleshooting
+* To delete Istio from your cluster
+```bash
+$ kubectl delete -f install/kubernetes/istio-rbac-alpha.yaml # or istio-rbac-beta.yaml
+$ kubectl delete -f install/kubernetes/istio.yaml
+```
+* To delete all addons: `kubectl delete -f install/kubernetes/addons`
+* To delete the BookInfo app and its route-rules: `./samples/apps/bookinfo/cleanup.sh`
+
+# References
+[Istio.io](https://istio.io/docs/tasks/index.html)
+# License
+[Apache 2.0](http://www.apache.org/licenses/LICENSE-2.0)
