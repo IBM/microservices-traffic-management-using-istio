@@ -22,6 +22,10 @@ Please follow the [Toolchain instructions](https://github.com/IBM/container-jour
 2. [Inject Istio on BookInfo App](#2-inject-istio-envoys-on-bookInfo-application)
 3. [Access your Application](#3-access-your-application)
 4. [Modify Service Routes](#4-modify-service-routes)
+5. [Collecting Metrics and Logs](#5-collecting-metrics-and-logs)
+6. [Request Tracing](#6-request-tracing)
+
+#### [Troubleshooting](#troubleshooting-1)
 
 # 1. Installing Istio in your Cluster
 ## 1.1 Download the Istio source
@@ -118,3 +122,126 @@ This would set every incoming traffic to the version v3 of the reviews microserv
   ```bash
   $ istioctl replace -f samples/apps/bookinfo/route-rule-reviews-v3.yaml
   ```
+# 5. Collecting Metrics and Logs
+This step shows you how to configure [Istio Mixer](https://istio.io/docs/concepts/policy-and-control/mixer.html) to gather telemetry for services in your cluster.
+* Install the required Istio Addons on your cluster: [Prometheus](https://prometheus.io) and [Grafana](https://grafana.com)
+  ```bash
+  $ kubectl apply -f install/kubernetes/addons/prometheus.yaml
+  $ kubectl apply -f install/kubernetes/addons/grafana.yaml
+  ```
+* Verify that your **Grafana** dashboard is ready. Get the IP of your cluster `kubectl get nodes` and then the NodePort of your Grafana service `kubectl get svc | grep grafana` or you can run the following command to output both:
+  ```bash
+  $ echo $(kubectl get po -l app=grafana -o jsonpath={.items[0].status.hostIP}):$(kubectl get svc grafana -o jsonpath={.spec.ports[0].nodePort})
+  184.xxx.yyy.zzz:30XYZ
+  ```
+  Point your browser to `184.xxx.yyy.zzz:30XYZ/dashboard/db/istio-dashboard` to go directly to your dashboard.  
+  Your dashboard should look like this:  
+  ![Grafana-Dashboard](images/grafana.png)
+
+* To collect new telemetry data, you will use `istio mixer rule create`. For this sample, you will generate logs for Response Size for Reviews service. The configuration YAML file is provided within the BookInfo sample folder. Validate that your Reviews service has no service-specific rules already applied.
+  ```bash
+  $ istioctl mixer rule get reviews.default.svc.cluster.local reviews.default.svc.cluster.local
+  Error: the server could not find the requested resource
+  ```
+* Create a configuration YAML file and name it as `new_rule.yaml`:
+  ```yaml
+  revision: "1"
+  rules:
+  - aspects:
+    - adapter: prometheus
+      kind: metrics
+      params:
+        metrics:
+        - descriptor_name: response_size
+          value: response.size | 0
+          labels:
+            source: source.labels["app"] | "unknown"
+            target: target.service | "unknown"
+            service: target.labels["app"] | "unknown"
+            version: target.labels["version"] | "unknown"
+            method: request.path | "unknown"
+            response_code: response.code | 200
+    - adapter: default
+      kind: access-logs
+      params:
+        logName: combined_log
+        log:
+          descriptor_name: accesslog.combined
+          template_expressions:
+            originIp: origin.ip
+            sourceUser: origin.user
+            timestamp: request.time
+            method: request.method
+            url: request.path
+            protocol: request.scheme
+            responseCode: response.code
+            responseSize: response.size
+            referer: request.referer
+            userAgent: request.headers["user-agent"]
+          labels:
+            originIp: origin.ip
+            sourceUser: origin.user
+            timestamp: request.time
+            method: request.method
+            url: request.path
+            protocol: request.scheme
+            responseCode: response.code
+            responseSize: response.size
+            referer: request.referer
+            userAgent: request.headers["user-agent"]
+  ```
+* Create the configuration on Istio Mixer.
+  ```bash
+  istioctl mixer rule create reviews.default.svc.cluster.local reviews.default.svc.cluster.local -f new_rule.yaml
+  ```
+* Send traffic to that service by refreshing your browser to `http://184.xxx.yyy.zzz:30XYZ/productpage` multiple times. You can also do `curl` on your terminal to that URL in a while loop.
+
+* Verify that the new metric is being collected by going to your Grafana dashboard again. The graph on the rightmost should now be populated.
+![grafana-new-metric](images/grafana-new-metric.png)
+
+* Verify that the logs stream has been created and is being populated for requests
+  ```bash
+  $ kubectl logs $(kubectl get pods -l istio=mixer -o jsonpath='{.items[0].metadata.name}') | grep \"combined_log\"
+  {"logName":"combined_log","labels":{"referer":"","responseSize":871,"timestamp":"2017-04-29T02:11:54.989466058Z","url":"/reviews","userAgent":"python-requests/2.11.1"},"textPayload":"- - - [29/Apr/2017:02:11:54 +0000] \"- /reviews -\" - 871 - python-requests/2.11.1"}
+  ...
+  ...
+  ...
+  ```
+
+[Collecting Metrics and Logs on Istio](https://istio.io/docs/tasks/metrics-logs.html)
+# 6. Request Tracing
+This step shows you how to collect trace spans using [Zipkin](http://zipkin.io).
+* Install the required Istio Addon: [Zipkin](http://zipkin.io)
+  ```bash
+  $ kubectl apply -f install/kubernetes/addons/zipkin.yaml
+  ```
+* Access your **Zipkin Dashboard**. Get the IP of your cluster `kubectl get nodes` and then the NodePort of your Zipkin service `kubectl get svc | grep zipkin` or you can run the following command to output both:
+  ```bash
+  $ echo $(kubectl get po -l app=zipkin -o jsonpath={.items[0].status.hostIP}):$(kubectl get svc zipkin -o jsonpath={.spec.ports[0].nodePort})
+  184.xxx.yyy.zzz:30XYZ
+  ```  
+  Your dashboard should like this:
+  ![zipkin](images/zipkin.png)
+
+* Send traffic to that service by refreshing your browser to `http://184.xxx.yyy.zzz:30XYZ/productpage` multiple times. You can also do `curl` on your terminal to that URL in a while loop.
+
+* Go to your Zipkin Dashboard again and you will see a number of traces done.
+![zipkin](images/zipkin-traces.png)
+* Click on one those traces and you will see the details of the traffic you sent to your BookInfo App. It shows how much time it took for the request on `productpage`. It also shows how much time ot took for the requests on the `details`,`reviews`, and `ratings` services.
+![zipkin](images/zipkin-details.png)
+
+[Zipkin Tracing on Istio](https://istio.io/docs/tasks/zipkin-tracing.html)
+
+# Troubleshooting
+* To delete Istio from your cluster
+```bash
+$ kubectl delete -f install/kubernetes/istio-rbac-alpha.yaml # or istio-rbac-beta.yaml
+$ kubectl delete -f install/kubernetes/istio.yaml
+```
+* To delete all addons: `kubectl delete -f install/kubernetes/addons`
+* To delete the BookInfo app and its route-rules: `./samples/apps/bookinfo/cleanup.sh`
+
+# References
+[Istio.io](https://istio.io/docs/tasks/index.html)
+# License
+[Apache 2.0](http://www.apache.org/licenses/LICENSE-2.0)
