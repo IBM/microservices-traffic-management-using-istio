@@ -20,7 +20,7 @@ Please follow the [Toolchain instructions](https://github.com/IBM/container-jour
 
 # Steps
 
-## Part A: Deploy Istio Service Mesh on Kubernetes and sample application
+## Part A: Deploy Istio service mesh and sample application on Kubernetes
 1. [Install Istio on Kubernetes](#1-installing-istio-in-your-cluster)
 2. [Deploy sample BookInfo application on Kubernetes](#2-deploy-bookinfo-application-without-istio)
 3. [Inject Istio envoys on the application](#3-inject-istio-envoys-on-bookInfo-application)
@@ -34,8 +34,11 @@ Please follow the [Toolchain instructions](https://github.com/IBM/container-jour
 
 #### [Troubleshooting](#troubleshooting-1)
 
-# 1. Installing Istio in your Cluster
-## 1.1 Download the Istio source
+# Part A: Deploy Istio service mesh and sample application on Kubernetes
+
+## 1. Install Istio on Kubernetes
+
+### 1.1 Download the Istio source
   1. Download the latest Istio release for your OS: [Istio releases](https://github.com/istio/istio/releases)  
   2. Extract and go to the root directory.
   3. Copy the `istioctl` bin to your local bin  
@@ -44,7 +47,7 @@ Please follow the [Toolchain instructions](https://github.com/IBM/container-jour
   ## example for macOS
   ```
 
-## 1.2 Grant Permissions  
+### 1.2 Grant Permissions  
   1. Run the following command to check if your cluster has RBAC  
   ```bash
   $ kubectl api-versions | grep rbac
@@ -64,7 +67,7 @@ Please follow the [Toolchain instructions](https://github.com/IBM/container-jour
 
     * If **your cluster has no RBAC** enabled, proceed to installing the **Control Plane**.
 
-## 1.3 Install the [Istio Control Plane](https://istio.io/docs/concepts/what-is-istio/overview.html#architecture) in your cluster  
+### 1.3 Install the [Istio Control Plane](https://istio.io/docs/concepts/what-is-istio/overview.html#architecture) in your cluster  
   1. Run the following command to install Istio.
   ```bash
   $ kubectl apply -f install/kubernetes/istio.yaml
@@ -81,7 +84,8 @@ Please follow the [Toolchain instructions](https://github.com/IBM/container-jour
   istio-manager-251184572-x9dd4     2/2       Running   0       
   istio-mixer-2499357295-kn4vq      1/1       Running   0       
   ```
-# 2. Deploy BookInfo Application without Istio
+## 2. Deploy sample BookInfo application on Kubernetes
+
 In this step, it assumes that you already have your own application that is configured to run in a Kubernetes Cluster.  
 In this journey, you will be using the BookInfo Application that can already run on a Kubernetes Cluster. You can deploy the BookInfo Application without using Istio by not injecting the required Envoys.
 * Deploy the BookInfo Application in your Cluster
@@ -119,7 +123,8 @@ You should now delete the sample application to proceed to the next step.
 $ kubectl delete -f samples/apps/bookinfo/bookinfo.yaml
 ```
 
-# 3. Inject Istio Envoys on BookInfo Application
+## 3. Inject Istio envoys on the application
+
 Envoys are deployed as sidecars on each microservice. Injecting Envoy into your microservice means that the Envoy sidecar would manage the ingoing and outgoing calls for the service. To inject an Envoy sidecar to an existing microservice configuration, do:
 ```bash
 $ kubectl apply -f <(istioctl kube-inject -f samples/apps/bookinfo/bookinfo.yaml)
@@ -141,7 +146,8 @@ reviews-v1-2065415949-3gdz5       2/2       Running   0
 reviews-v2-2593570575-92657       2/2       Running   0       
 reviews-v3-3121725201-cn371       2/2       Running   0       
 ```
-# 4. Access your Application
+## 4. Access your application running on Istio
+
 To access your application, you can check the public IP address of your cluster through `kubectl get nodes` and get the NodePort of the istio-ingress service for port 80 through `kubectl get svc | grep istio-ingress`. Or you can also run the following command to output the IP address and NodePort:
 ```bash
 echo $(kubectl get po -l istio=ingress -o jsonpath={.items[0].status.hostIP}):$(kubectl get svc istio-ingress -o jsonpath={.spec.ports[0].nodePort})
@@ -156,6 +162,7 @@ If you refresh the page multiple times, you'll see that the _reviews_ section of
 ![productpage](images/black.png)
 ![productpage](images/red.png)
 
+# Part B: Deploy Istio service mesh and sample application on Kubernetes
 
 # 5. Modify Service Routes
 This step shows you how to configure where you want your service to go based on weights and HTTP Headers.
