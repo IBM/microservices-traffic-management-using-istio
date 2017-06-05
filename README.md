@@ -22,13 +22,13 @@ Please follow the [Toolchain instructions](https://github.com/IBM/container-jour
 
 ## Deploying Istio and Application
 1. [Installing Istio](#1-installing-istio-in-your-cluster)
-2.
+2. [Deploy BookInfo Application without Istio](#2-deploy-bookinfo-application-without-istio)
 3. [Inject Istio on BookInfo App](#3-inject-istio-envoys-on-bookInfo-application)
 4. [Access your Application](#4-access-your-application)
 
-## Use Istio
+## Configuring Istio's Features
 5. [Modify Service Routes](#5-modify-service-routes)
-6.
+6. [Simple Access Control](#6-simple-access-control)
 7. [Collecting Metrics and Logs](#7-collecting-metrics-and-logs)
 8. [Request Tracing](#8-request-tracing)
 
@@ -195,7 +195,7 @@ This step shows you how to control access to your services. If you have done the
     - kind: denials
     selector: source.labels["app"]=="reviews" && source.labels["version"] == "v3"
   ```
-* If you point your browser to your BookInfo Application, you wouldn't see star ratings anymore from the reviews section unless you are logged in as _jason_ which you will still see black stars (because you would be using the reviews-v2 as you have done in [Step 4](#4-modify-service-routes)).
+* To verify if your rule has been enforced, point your browser to your BookInfo Application, you wouldn't see star ratings anymore from the reviews section unless you are logged in as _jason_ which you will still see black stars (because you would be using the reviews-v2 as you have done in [Step 4](#4-modify-service-routes)).
 ![access-control](images/access.png)
 
 
