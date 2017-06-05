@@ -81,7 +81,38 @@ Please follow the [Toolchain instructions](https://github.com/IBM/container-jour
   istio-manager-251184572-x9dd4     2/2       Running   0       
   istio-mixer-2499357295-kn4vq      1/1       Running   0       
   ```
-# 2. 
+# 2. Deploy BookInfo Application without Istio
+In this step, it assumes that you already have your own application that is configured to run in a Kubernetes Cluster.  
+In this journey, you will be using the BookInfo Application that can already run on a Kubernetes Cluster. You can deploy the BookInfo Application without using Istio by not injecting the required Envoys.
+* Deploy the BookInfo Application in your Cluster
+```bash
+$ kubectl apply -f samples/apps/bookinfo/bookinfo.yaml
+```
+* If you don't have access to external load balancers, you need to use NodePort on the `productpage` service. Run the following command to use a NodePort:
+```yaml
+cat <<EOF | kubectl apply -f -
+apiVersion: v1
+kind: Service
+metadata:
+  name: productpage
+  labels:
+    app: productpage
+spec:
+  type: NodePort
+  ports:
+  - port: 9080
+    name: http
+  selector:
+    app: productpage
+EOF
+```
+* Output your the IP address and NodePort in your terminal: _(If you have a load balancer, you can access it through the IP found on `kubectl get ingress`)_
+```bash
+$ echo $(kubectl get po -l app=productpage -o jsonpath={.items[0].status.hostIP}):$(kubectl get svc productpage -o jsonpath={.spec.ports[0].nodePort})
+184.xxx.yyy.zzz:30XYZ
+```
+At this point, you can point your browser to http://184.xxx.yyy.zzz:30XYZ/productpage and see the BookInfo Application. The sample BookInfo Application is configured to run on a Kubernetes Cluster.  
+The next step would be deploying this sample application with Istio Envoys injected. By using Istio, you will have access to Istio's features such as _traffic flow management, access policy enforcement and telemetry data aggregation between microservices_. You will not have to modify the BookInfo's source code.
 
 # 3. Inject Istio Envoys on BookInfo Application
 Envoys are deployed as sidecars on each microservice. Injecting Envoy into your microservice means that the Envoy sidecar would manage the ingoing and outgoing calls for the service. To inject an Envoy sidecar to an existing microservice configuration, do:
