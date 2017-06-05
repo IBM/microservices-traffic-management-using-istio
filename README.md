@@ -3,10 +3,11 @@
 # Conenct, Manage and secure microservices leveraging ISTIO Service Mesh on Kubernetes
 
 [Istio](http://istio.io) is an open platform that provides a uniform way to connect, manage, and secure microservices. Istio is the result of a joint collaboration between IBM, Google and Lyft as a means to support traffic flow management, access policy enforcement and the telemetry data aggregation between microservices, all without requiring changes to the code of your microservice. Istio provides an easy way to create this service mesh by deploying a [control plane](https://istio.io/docs/concepts/what-is-istio/overview.html#architecture) and injecting sidecars, an extended version of the  [Envoy](https://lyft.github.io/envoy/) proxy, in the same Pod as your microservice.
- 
+
 The [BookInfo](https://istio.io/docs/samples/bookinfo.html) is a simple application that is composed of four microservices. The application is written in different languages for each of its microservices namely Python, Java, Ruby, and Node.js.
 
 # Prerequisite
+Create a Kubernetes cluster with either [Minikube](https://kubernetes.io/docs/getting-started-guides/minikube) for local testing, or with [IBM Bluemix Container Service](https://github.com/IBM/container-journey-template) to deploy in cloud. The code here is regularly tested against [Kubernetes Cluster from Bluemix Container Service](https://console.ng.bluemix.net/docs/containers/cs_ov.html#cs_ov) using Travis.
 
 # Deploy to Bluemix
 If you want to deploy the BookInfo app directly to Bluemix, click on 'Deploy to Bluemix' button below to create a Bluemix DevOps service toolchain and pipeline for deploying the sample, else jump to [Steps](#steps)
@@ -19,12 +20,17 @@ Please follow the [Toolchain instructions](https://github.com/IBM/container-jour
 
 # Steps
 
+## Deploying Istio and Application
 1. [Installing Istio](#1-installing-istio-in-your-cluster)
-2. [Inject Istio on BookInfo App](#2-inject-istio-envoys-on-bookInfo-application)
-3. [Access your Application](#3-access-your-application)
-4. [Modify Service Routes](#4-modify-service-routes)
-5. [Collecting Metrics and Logs](#5-collecting-metrics-and-logs)
-6. [Request Tracing](#6-request-tracing)
+2.
+3. [Inject Istio on BookInfo App](#3-inject-istio-envoys-on-bookInfo-application)
+4. [Access your Application](#4-access-your-application)
+
+## Use Istio
+5. [Modify Service Routes](#5-modify-service-routes)
+6.
+7. [Collecting Metrics and Logs](#7-collecting-metrics-and-logs)
+8. [Request Tracing](#8-request-tracing)
 
 #### [Troubleshooting](#troubleshooting-1)
 
@@ -59,21 +65,25 @@ Please follow the [Toolchain instructions](https://github.com/IBM/container-jour
     * If **your cluster has no RBAC** enabled, proceed to installing the **Control Plane**.
 
 ## 1.3 Install the [Istio Control Plane](https://istio.io/docs/concepts/what-is-istio/overview.html#architecture) in your cluster  
-```bash
-kubectl apply -f install/kubernetes/istio.yaml
-```
-You should now have the Istio Control Plane running in Pods of your Cluster.
-```bash
-$ kubectl get pods
-NAME                              READY     STATUS    RESTARTS
-istio-egress-3850639395-30d1v     1/1       Running   0       
-istio-ingress-4068702052-2st6r    1/1       Running   0       
-istio-manager-251184572-x9dd4     2/2       Running   0       
-istio-mixer-2499357295-kn4vq      1/1       Running   0       
-```
-* _(Optional) For more options/addons such as installing Istio with [Auth feature](https://istio.io/docs/concepts/network-and-auth/auth.html) and [collecting telemetry data](https://istio.io/docs/tasks/metrics-logs.html), go [ here](https://istio.io/docs/tasks/installing-istio.html#prerequisites)._
+  1. Run the following command to install Istio.
+  ```bash
+  $ kubectl apply -f install/kubernetes/istio.yaml
+  # or kubectl apply -f install/kubernetes/istio-auth.yaml
+  ```
+  > `istio-auth.yaml` enables Istio with its [Auth](https://istio.io/docs/concepts/network-and-auth/auth.html) feature. It enables [mTLS](https://en.wikipedia.org/wiki/Mutual_authentication) between the services
 
-# 2. Inject Istio Envoys on BookInfo Application
+  2. You should now have the Istio Control Plane running in Pods of your Cluster.
+  ```bash
+  $ kubectl get pods
+  NAME                              READY     STATUS    RESTARTS
+  istio-egress-3850639395-30d1v     1/1       Running   0       
+  istio-ingress-4068702052-2st6r    1/1       Running   0       
+  istio-manager-251184572-x9dd4     2/2       Running   0       
+  istio-mixer-2499357295-kn4vq      1/1       Running   0       
+  ```
+# 2. 
+
+# 3. Inject Istio Envoys on BookInfo Application
 Envoys are deployed as sidecars on each microservice. Injecting Envoy into your microservice means that the Envoy sidecar would manage the ingoing and outgoing calls for the service. To inject an Envoy sidecar to an existing microservice configuration, do:
 ```bash
 $ kubectl apply -f <(istioctl kube-inject -f samples/apps/bookinfo/bookinfo.yaml)
@@ -93,7 +103,7 @@ reviews-v1-2065415949-3gdz5       2/2       Running   0
 reviews-v2-2593570575-92657       2/2       Running   0       
 reviews-v3-3121725201-cn371       2/2       Running   0       
 ```
-# 3. Access your Application
+# 4. Access your Application
 To access your application, you can check the public IP address of your cluster through `kubectl get nodes` and get the NodePort of the istio-ingress service for port 80 through `kubectl get svc | grep istio-ingress`. Or you can also run the following command to output the IP address and NodePort:
 ```bash
 echo $(kubectl get po -l istio=ingress -o jsonpath={.items[0].status.hostIP}):$(kubectl get svc istio-ingress -o jsonpath={.spec.ports[0].nodePort})
@@ -102,7 +112,15 @@ echo $(kubectl get po -l istio=ingress -o jsonpath={.items[0].status.hostIP}):$(
 
 Point your browser to:  
 `http://184.xxx.yyy.zzz:30XYZ/productpage` Replace with your own IP and NodePort.
-# 4. Modify Service Routes
+
+If you refresh the page multiple times, you'll see that the _reviews_ section of the page changes. That's because there are 3 versions of **reviews**_(reviews-v1, reviews-v2, reviews-v3)_ deployment for our **reviews** service.
+![productpage](images/none.png)
+![productpage](images/black.png)
+![productpage](images/red.png)
+
+
+# 5. Modify Service Routes
+This step shows you how to configure where you want your service to go based on weights and HTTP Headers.
 * Set Default Routes to `reviews-v1` for all microservices  
 This would set all incoming routes on the services (indicated in the line `destination: <service>`) to the deployment with a tag `version: v1`. To set the default routes, run:
   ```bash
@@ -117,13 +135,35 @@ This would set the route for the user `jason` (You can login as _jason_ with any
 This is indicated by the `weight: 50` in the yaml file.
   ```bash
   $ istioctl replace -f samples/apps/bookinfo/route-rule-reviews-50-v3.yaml
+  # using `replace` should allow you to edit exisiting route-rules.
   ```
 * Route 100% of the traffic to the `version: v3` of the **reviews microservicese**  
 This would set every incoming traffic to the version v3 of the reviews microservice. Run:
   ```bash
   $ istioctl replace -f samples/apps/bookinfo/route-rule-reviews-v3.yaml
   ```
-# 5. Collecting Metrics and Logs
+
+# 6. Simple Access Control
+This step shows you how to control access to your services. If you have done the step above, you'll see that your `productpage` now just shows red stars on the reviews section and if you are logged in as _jason_, you'll see black stars. The `ratings` service is accessed from the `reviews-v2` if you're logged in as _jason_ or it is accessed from `reviews-v3` if you are not logged in as `jason`.
+
+* To deny access to the ratings service from the traffic coming from `reviews-v3`, you will use `istioctl mixer rule create`
+  ```bash
+  $ istioctl mixer rule create global ratings.default.svc.cluster.local -f samples/apps/bookinfo/mixer-rule-ratings-denial.yaml
+  ```
+  The `mixer-rule-ratings-denial.yaml` file creates a rule that denies `kind: denials` access from reviews service and has a label of v3 `selector: source.labels["app"]=="reviews" && source.labels["version"] == "v3"`  
+  You can verify using `istioctl mixer rule get global ratings.default.svc.cluster.local` if the mixer rule has been created that way:
+  ```yaml
+  $ istioctl mixer rule get global ratings.default.svc.cluster.local
+  rules:
+  - aspects:
+    - kind: denials
+    selector: source.labels["app"]=="reviews" && source.labels["version"] == "v3"
+  ```
+* If you point your browser to your BookInfo Application, you wouldn't see star ratings anymore from the reviews section unless you are logged in as _jason_ which you will still see black stars (because you would be using the reviews-v2 as you have done in [Step 4](#4-modify-service-routes)).
+![access-control](images/access.png)
+
+
+# 7. Collecting Metrics and Logs
 This step shows you how to configure [Istio Mixer](https://istio.io/docs/concepts/policy-and-control/mixer.html) to gather telemetry for services in your cluster.
 * Install the required Istio Addons on your cluster: [Prometheus](https://prometheus.io) and [Grafana](https://grafana.com)
   ```bash
@@ -210,7 +250,7 @@ This step shows you how to configure [Istio Mixer](https://istio.io/docs/concept
   ```
 
 [Collecting Metrics and Logs on Istio](https://istio.io/docs/tasks/metrics-logs.html)
-# 6. Request Tracing
+# 8. Request Tracing
 This step shows you how to collect trace spans using [Zipkin](http://zipkin.io).
 * Install the required Istio Addon: [Zipkin](http://zipkin.io)
   ```bash
@@ -238,6 +278,8 @@ This step shows you how to collect trace spans using [Zipkin](http://zipkin.io).
 ```bash
 $ kubectl delete -f install/kubernetes/istio-rbac-alpha.yaml # or istio-rbac-beta.yaml
 $ kubectl delete -f install/kubernetes/istio.yaml
+$ kubectl delete istioconfigs --all
+$ kubectl delete thirdpartyresource istio-config.istio.io
 ```
 * To delete all addons: `kubectl delete -f install/kubernetes/addons`
 * To delete the BookInfo app and its route-rules: `./samples/apps/bookinfo/cleanup.sh`
