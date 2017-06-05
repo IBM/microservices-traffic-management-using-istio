@@ -106,13 +106,18 @@ spec:
     app: productpage
 EOF
 ```
-* Output your the IP address and NodePort in your terminal: _(If you have a load balancer, you can access it through the IP found on `kubectl get ingress`)_
+* Output your cluster's IP address and NodePort of your `productpage` service in your terminal: _(If you have a load balancer, you can access it through the IP found on `kubectl get ingress`)_
 ```bash
 $ echo $(kubectl get po -l app=productpage -o jsonpath={.items[0].status.hostIP}):$(kubectl get svc productpage -o jsonpath={.spec.ports[0].nodePort})
 184.xxx.yyy.zzz:30XYZ
 ```
 At this point, you can point your browser to http://184.xxx.yyy.zzz:30XYZ/productpage and see the BookInfo Application. The sample BookInfo Application is configured to run on a Kubernetes Cluster.  
 The next step would be deploying this sample application with Istio Envoys injected. By using Istio, you will have access to Istio's features such as _traffic flow management, access policy enforcement and telemetry data aggregation between microservices_. You will not have to modify the BookInfo's source code.
+
+You should now delete the sample application to proceed to the next step.
+```bash
+$ kubectl delete -f samples/apps/bookinfo/bookinfo.yaml
+```
 
 # 3. Inject Istio Envoys on BookInfo Application
 Envoys are deployed as sidecars on each microservice. Injecting Envoy into your microservice means that the Envoy sidecar would manage the ingoing and outgoing calls for the service. To inject an Envoy sidecar to an existing microservice configuration, do:
