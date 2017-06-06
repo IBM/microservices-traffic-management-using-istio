@@ -29,7 +29,8 @@ Please follow the [Toolchain instructions](https://github.com/IBM/container-jour
 
 # Steps
 
-## Part A: Deploy Istio service mesh and sample application on Kubernetes
+[Part A: Deploy Istio service mesh and sample application on Kubernetes](#part-a-deploy-istio-service-mesh-and-sample-application-on-kubernetes-1)
+
 ![ISTIO-PART-A](images/ISTIO-PART-A.png)
 
 1. [Install Istio on Kubernetes](#1-install-istio-on-kubernetes)
@@ -37,7 +38,8 @@ Please follow the [Toolchain instructions](https://github.com/IBM/container-jour
 3. [Inject Istio envoys on the application](#3-inject-istio-envoys-on-the-application)
 4. [Access your application running on Istio](#4-access-your-application-running-on-istio)
 
-## Part B: Configure and use Istio's features for sample application
+[Part B: Configure and use Istio's features for sample application]()
+
 ![ISTIO-PART-B](images/ISTIO-PART-B.png)
 
 5. [Traffic flow management - Modify service routes](#5-traffic-flow-management---modify-service-routes)
@@ -177,7 +179,7 @@ If you refresh the page multiple times, you'll see that the _reviews_ section of
 ![productpage](images/black.png)
 ![productpage](images/red.png)
 
-# Part B: Deploy Istio service mesh and sample application on Kubernetes
+# Part B: Configure and use Istio's features for sample application
 
 ## 5. Traffic flow management - Modify service routes
 
