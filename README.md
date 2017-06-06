@@ -5,6 +5,14 @@
 [Istio](http://istio.io) is an open platform that provides a uniform way to connect, manage, and secure microservices. Istio is the result of a joint collaboration between IBM, Google and Lyft as a means to support traffic flow management, access policy enforcement and the telemetry data aggregation between microservices, all without requiring changes to the code of your microservice. Istio provides an easy way to create this service mesh by deploying a [control plane](https://istio.io/docs/concepts/what-is-istio/overview.html#architecture) and injecting sidecars, an extended version of the  [Envoy](https://lyft.github.io/envoy/) proxy, in the same Pod as your microservice.
 
 The [BookInfo](https://istio.io/docs/samples/bookinfo.html) is a simple application that is composed of four microservices. The application is written in different languages for each of its microservices namely Python, Java, Ruby, and Node.js.
+## Scenarios
+[Part A: Deploy Istio service mesh and sample application on Kubernetes](#part-a-deploy-istio-service-mesh-and-sample-application-on-kubernetes-1)
+
+![ISTIO-PART-A](images/ISTIO-PART-A.png)
+
+[Part B: Configure and use Istio's features for sample application]()
+
+![ISTIO-PART-B](images/ISTIO-PART-B.png)
 
 ## Included Components
 - [Istio](https://istio.io/)
@@ -29,18 +37,14 @@ Please follow the [Toolchain instructions](https://github.com/IBM/container-jour
 
 # Steps
 
-[Part A: Deploy Istio service mesh and sample application on Kubernetes](#part-a-deploy-istio-service-mesh-and-sample-application-on-kubernetes-1)
-
-![ISTIO-PART-A](images/ISTIO-PART-A.png)
+## Part A: Deploy Istio service mesh and sample application on Kubernetes
 
 1. [Install Istio on Kubernetes](#1-install-istio-on-kubernetes)
 2. [Deploy sample BookInfo application on Kubernetes](#2-deploy-sample-bookinfo-application-on-kubernetes)
 3. [Inject Istio envoys on the application](#3-inject-istio-envoys-on-the-application)
 4. [Access your application running on Istio](#4-access-your-application-running-on-istio)
 
-[Part B: Configure and use Istio's features for sample application]()
-
-![ISTIO-PART-B](images/ISTIO-PART-B.png)
+## Part B: Configure and use Istio's features for sample application
 
 5. [Traffic flow management - Modify service routes](#5-traffic-flow-management---modify-service-routes)
 6. [Access policy enforcement - Configure access control](#6-access-policy-enforcement---configure-access-control)
