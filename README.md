@@ -20,22 +20,26 @@ Please follow the [Toolchain instructions](https://github.com/IBM/container-jour
 
 # Steps
 
-## Part A: Deploy Istio Service Mesh on Kubernetes and sample application
-1. [Install Istio on Kubernetes](#1-installing-istio-in-your-cluster)
-2. [Deploy sample BookInfo application on Kubernetes](#2-deploy-bookinfo-application-without-istio)
-3. [Inject Istio envoys on the application](#3-inject-istio-envoys-on-bookInfo-application)
-4. [Access your application running on Istio](#4-access-your-application)
+## Part A: Deploy Istio service mesh and sample application on Kubernetes
+1. [Install Istio on Kubernetes](#1-install-istio-on-kubernetes)
+2. [Deploy sample BookInfo application on Kubernetes](#2-deploy-sample-bookinfo-application-on-kubernetes)
+3. [Inject Istio envoys on the application](#3-inject-istio-envoys-on-the-application)
+4. [Access your application running on Istio](#4-access-your-application-running-on-istio)
 
 ## Part B: Configure and use Istio's features for sample application 
-5. [Traffic flow management - Modify service routes](#5-modify-service-routes)
-6. [Access policy enforcement- Configure access control](#6-simple-access-control)
-7. [Telemetry data aggregation - Collect metrics and logs](#7-collecting-metrics-and-logs)
-8. [Request Tracing](#8-request-tracing)
+1. [Traffic flow management - Modify service routes](#1-traffic-flow-management---modify-service-routes)
+2. [Access policy enforcement - Configure access control](#2-access-policy-enforcement---configure-access-control)
+3. [Telemetry data aggregation - Collect metrics, logs and trace spans](#3-telemetry-data-aggregation---collect-metrics-logs-and-trace-spans)
+     - 3.1 [Collect metrics and logs using Prometheus and Grafana](#31-collect-metrics-and-logs-using-prometheus-and-grafana)
+     - 3.2 [Do request tracing using Zipkin](#32-do-request-tracing-using-zipkin)
 
 #### [Troubleshooting](#troubleshooting-1)
 
-# 1. Installing Istio in your Cluster
-## 1.1 Download the Istio source
+# Part A: Deploy Istio service mesh and sample application on Kubernetes
+
+## 1. Install Istio on Kubernetes
+
+### 1.1 Download the Istio source
   1. Download the latest Istio release for your OS: [Istio releases](https://github.com/istio/istio/releases)  
   2. Extract and go to the root directory.
   3. Copy the `istioctl` bin to your local bin  
@@ -44,7 +48,7 @@ Please follow the [Toolchain instructions](https://github.com/IBM/container-jour
   ## example for macOS
   ```
 
-## 1.2 Grant Permissions  
+### 1.2 Grant Permissions  
   1. Run the following command to check if your cluster has RBAC  
   ```bash
   $ kubectl api-versions | grep rbac
@@ -64,7 +68,7 @@ Please follow the [Toolchain instructions](https://github.com/IBM/container-jour
 
     * If **your cluster has no RBAC** enabled, proceed to installing the **Control Plane**.
 
-## 1.3 Install the [Istio Control Plane](https://istio.io/docs/concepts/what-is-istio/overview.html#architecture) in your cluster  
+### 1.3 Install the [Istio Control Plane](https://istio.io/docs/concepts/what-is-istio/overview.html#architecture) in your cluster  
   1. Run the following command to install Istio.
   ```bash
   $ kubectl apply -f install/kubernetes/istio.yaml
@@ -81,7 +85,8 @@ Please follow the [Toolchain instructions](https://github.com/IBM/container-jour
   istio-manager-251184572-x9dd4     2/2       Running   0       
   istio-mixer-2499357295-kn4vq      1/1       Running   0       
   ```
-# 2. Deploy BookInfo Application without Istio
+## 2. Deploy sample BookInfo application on Kubernetes
+
 In this step, it assumes that you already have your own application that is configured to run in a Kubernetes Cluster.  
 In this journey, you will be using the BookInfo Application that can already run on a Kubernetes Cluster. You can deploy the BookInfo Application without using Istio by not injecting the required Envoys.
 * Deploy the BookInfo Application in your Cluster
@@ -119,7 +124,8 @@ You should now delete the sample application to proceed to the next step.
 $ kubectl delete -f samples/apps/bookinfo/bookinfo.yaml
 ```
 
-# 3. Inject Istio Envoys on BookInfo Application
+## 3. Inject Istio envoys on the application
+
 Envoys are deployed as sidecars on each microservice. Injecting Envoy into your microservice means that the Envoy sidecar would manage the ingoing and outgoing calls for the service. To inject an Envoy sidecar to an existing microservice configuration, do:
 ```bash
 $ kubectl apply -f <(istioctl kube-inject -f samples/apps/bookinfo/bookinfo.yaml)
@@ -129,6 +135,7 @@ $ kubectl apply -f <(istioctl kube-inject -f samples/apps/bookinfo/bookinfo.yaml
 After a few minutes, you should now have your Kubernetes Pods running and have an Envoy sidecar in each of them alongside the microservice. The microservices are **productpage, details, ratings, and reviews**. Note that you'll have three versions of the reviews microservice.
 ```
 $ kubectl get pods
+
 NAME                              READY     STATUS    RESTARTS
 details-v1-969129648-lwgr3        2/2       Running   0       
 istio-egress-3850639395-30d1v     1/1       Running   0       
@@ -141,7 +148,8 @@ reviews-v1-2065415949-3gdz5       2/2       Running   0
 reviews-v2-2593570575-92657       2/2       Running   0       
 reviews-v3-3121725201-cn371       2/2       Running   0       
 ```
-# 4. Access your Application
+## 4. Access your application running on Istio
+
 To access your application, you can check the public IP address of your cluster through `kubectl get nodes` and get the NodePort of the istio-ingress service for port 80 through `kubectl get svc | grep istio-ingress`. Or you can also run the following command to output the IP address and NodePort:
 ```bash
 echo $(kubectl get po -l istio=ingress -o jsonpath={.items[0].status.hostIP}):$(kubectl get svc istio-ingress -o jsonpath={.spec.ports[0].nodePort})
@@ -156,8 +164,10 @@ If you refresh the page multiple times, you'll see that the _reviews_ section of
 ![productpage](images/black.png)
 ![productpage](images/red.png)
 
+# Part B: Deploy Istio service mesh and sample application on Kubernetes
 
-# 5. Modify Service Routes
+## 1. Traffic flow management - Modify service routes
+
 This step shows you how to configure where you want your service to go based on weights and HTTP Headers.
 * Set Default Routes to `reviews-v1` for all microservices  
 This would set all incoming routes on the services (indicated in the line `destination: <service>`) to the deployment with a tag `version: v1`. To set the default routes, run:
@@ -181,7 +191,8 @@ This would set every incoming traffic to the version v3 of the reviews microserv
   $ istioctl replace -f samples/apps/bookinfo/route-rule-reviews-v3.yaml
   ```
 
-# 6. Simple Access Control
+## 2. Access policy enforcement - Configure access control
+
 This step shows you how to control access to your services. If you have done the step above, you'll see that your `productpage` now just shows red stars on the reviews section and if you are logged in as _jason_, you'll see black stars. The `ratings` service is accessed from the `reviews-v2` if you're logged in as _jason_ or it is accessed from `reviews-v3` if you are not logged in as `jason`.
 
 * To deny access to the ratings service from the traffic coming from `reviews-v3`, you will use `istioctl mixer rule create`
@@ -201,8 +212,12 @@ This step shows you how to control access to your services. If you have done the
 ![access-control](images/access.png)
 
 
-# 7. Collecting Metrics and Logs
+## 3. Telemetry data aggregation - Collect metrics, logs and trace spans
+
+### 3.1 Collect metrics and logs using Prometheus and Grafana
+
 This step shows you how to configure [Istio Mixer](https://istio.io/docs/concepts/policy-and-control/mixer.html) to gather telemetry for services in your cluster.
+
 * Install the required Istio Addons on your cluster: [Prometheus](https://prometheus.io) and [Grafana](https://grafana.com)
   ```bash
   $ kubectl apply -f install/kubernetes/addons/prometheus.yaml
@@ -288,7 +303,9 @@ This step shows you how to configure [Istio Mixer](https://istio.io/docs/concept
   ```
 
 [Collecting Metrics and Logs on Istio](https://istio.io/docs/tasks/metrics-logs.html)
-# 8. Request Tracing
+
+### 3.2 Do request tracing using Zipkin
+
 This step shows you how to collect trace spans using [Zipkin](http://zipkin.io).
 * Install the required Istio Addon: [Zipkin](http://zipkin.io)
   ```bash
