@@ -21,12 +21,16 @@ Please follow the [Toolchain instructions](https://github.com/IBM/container-jour
 # Steps
 
 ## Part A: Deploy Istio service mesh and sample application on Kubernetes
+![ISTIO-PART-A](images/ISTIO-PART-A.png)
+
 1. [Install Istio on Kubernetes](#1-install-istio-on-kubernetes)
 2. [Deploy sample BookInfo application on Kubernetes](#2-deploy-sample-bookinfo-application-on-kubernetes)
 3. [Inject Istio envoys on the application](#3-inject-istio-envoys-on-the-application)
 4. [Access your application running on Istio](#4-access-your-application-running-on-istio)
 
 ## Part B: Configure and use Istio's features for sample application 
+![ISTIO-PART-B](images/ISTIO-PART-B.png)
+
 5. [Traffic flow management - Modify service routes](#5-traffic-flow-management---modify-service-routes)
 6. [Access policy enforcement - Configure access control](#6-access-policy-enforcement---configure-access-control)
 7. [Telemetry data aggregation - Collect metrics, logs and trace spans](#7-telemetry-data-aggregation---collect-metrics-logs-and-trace-spans)
