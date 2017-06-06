@@ -5,14 +5,6 @@
 [Istio](http://istio.io) is an open platform that provides a uniform way to connect, manage, and secure microservices. Istio is the result of a joint collaboration between IBM, Google and Lyft as a means to support traffic flow management, access policy enforcement and the telemetry data aggregation between microservices, all without requiring changes to the code of your microservice. Istio provides an easy way to create this service mesh by deploying a [control plane](https://istio.io/docs/concepts/what-is-istio/overview.html#architecture) and injecting sidecars, an extended version of the  [Envoy](https://lyft.github.io/envoy/) proxy, in the same Pod as your microservice.
 
 The [BookInfo](https://istio.io/docs/samples/bookinfo.html) is a simple application that is composed of four microservices. The application is written in different languages for each of its microservices namely Python, Java, Ruby, and Node.js.
-## Scenarios
-[Part A: Deploy Istio service mesh and sample application on Kubernetes](#part-a-deploy-istio-service-mesh-and-sample-application-on-kubernetes-1)
-
-![ISTIO-PART-A](images/ISTIO-PART-A.png)
-
-[Part B: Configure and use Istio's features for sample application]()
-
-![ISTIO-PART-B](images/ISTIO-PART-B.png)
 
 ## Included Components
 - [Istio](https://istio.io/)
@@ -22,6 +14,15 @@ The [BookInfo](https://istio.io/docs/samples/bookinfo.html) is a simple applicat
 - [Prometheus](https://prometheus.io/)
 - [Bluemix container service](https://console.ng.bluemix.net/catalog/?taxonomyNavigation=apps&category=containers)
 - [Bluemix DevOps Toolchain Service](https://console.ng.bluemix.net/catalog/services/continuous-delivery)
+
+## Scenarios
+[Part A: Deploy Istio service mesh and sample application on Kubernetes](#part-a-deploy-istio-service-mesh-and-sample-application-on-kubernetes-1)
+
+![ISTIO-PART-A](images/ISTIO-PART-A.png)
+
+[Part B: Configure and use Istio's features for sample application](#part-b-configure-and-use-istios-features-for-sample-application-1)
+
+![ISTIO-PART-B](images/ISTIO-PART-B.png)
 
 # Prerequisite
 Create a Kubernetes cluster with either [Minikube](https://kubernetes.io/docs/getting-started-guides/minikube) for local testing, or with [IBM Bluemix Container Service](https://github.com/IBM/container-journey-template) to deploy in cloud. The code here is regularly tested against [Kubernetes Cluster from Bluemix Container Service](https://console.ng.bluemix.net/docs/containers/cs_ov.html#cs_ov) using Travis.
