@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/IBM/ISTIO-Service-Mesh-on-Kubernetes.svg?branch=master)](https://travis-ci.org/IBM/ISTIO-Service-Mesh-on-Kubernetes)
 
-# Deploy microservices with load balancing, access policies, telemetry and reporting leveraging ISTIO Service Mesh on Kubernetes 
+# Deploy microservices with load balancing, access policies, telemetry and reporting leveraging Istio Service Mesh on Kubernetes 
 
 [Istio](http://istio.io) is an open platform that provides a uniform way to connect, manage, and secure microservices. Istio is the result of a joint collaboration between IBM, Google and Lyft as a means to support traffic flow management, access policy enforcement and the telemetry data aggregation between microservices, all without requiring changes to the code of your microservice. Istio provides an easy way to create this service mesh by deploying a [control plane](https://istio.io/docs/concepts/what-is-istio/overview.html#architecture) and injecting sidecars, an extended version of the  [Envoy](https://lyft.github.io/envoy/) proxy, in the same Pod as your microservice.
 
@@ -34,8 +34,8 @@ Please follow the [Toolchain instructions](https://github.com/IBM/container-jour
 5. [Traffic flow management - Modify service routes](#5-traffic-flow-management---modify-service-routes)
 6. [Access policy enforcement - Configure access control](#6-access-policy-enforcement---configure-access-control)
 7. [Telemetry data aggregation - Collect metrics, logs and trace spans](#7-telemetry-data-aggregation---collect-metrics-logs-and-trace-spans)
-     - 7.1 [Collect metrics and logs using Prometheus and Grafana](#31-collect-metrics-and-logs-using-prometheus-and-grafana)
-     - 7.2 [Do request tracing using Zipkin](#32-do-request-tracing-using-zipkin)
+     - 7.1 [Collect metrics and logs using Prometheus and Grafana](#71-collect-metrics-and-logs-using-prometheus-and-grafana)
+     - 7.2 [Collect request traces using Zipkin](#72-collect-request-traces-using-zipkin)
 
 #### [Troubleshooting](#troubleshooting-1)
 
@@ -308,7 +308,7 @@ This step shows you how to configure [Istio Mixer](https://istio.io/docs/concept
 
 [Collecting Metrics and Logs on Istio](https://istio.io/docs/tasks/metrics-logs.html)
 
-### 7.2 Do request tracing using Zipkin
+### 7.2 Collect request traces using Zipkin
 
 This step shows you how to collect trace spans using [Zipkin](http://zipkin.io).
 * Install the required Istio Addon: [Zipkin](http://zipkin.io)
