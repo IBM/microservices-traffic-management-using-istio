@@ -30,8 +30,8 @@ Please follow the [Toolchain instructions](https://github.com/IBM/container-jour
 1. [Traffic flow management - Modify service routes](##1-traffic-flow-management---modify-service-routes)
 2. [Access policy enforcement - Configure access control](#2-access-policy-enforcement---configure-access-control)
 3. [Telemetry data aggregation - Collect metrics, logs and trace spans](#3-telemetry-data-aggregation---collect-metrics-logs-and-trace-spans)
-     3.1 [Collect metrics and logs using Prometheus and Grafana](#31-collect-metrics-and-logs-using-prometheus-and-grafana)
-     3.2 [Do request tracing using Zipkin](#32-do-request-tracing-using-zipkin)
+     - 3.1 [Collect metrics and logs using Prometheus and Grafana](#31-collect-metrics-and-logs-using-prometheus-and-grafana)
+     - 3.2 [Do request tracing using Zipkin](#32-do-request-tracing-using-zipkin)
 
 #### [Troubleshooting](#troubleshooting-1)
 
