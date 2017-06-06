@@ -27,7 +27,7 @@ Please follow the [Toolchain instructions](https://github.com/IBM/container-jour
 4. [Access your application running on Istio](#4-access-your-application-running-on-istio)
 
 ## Part B: Configure and use Istio's features for sample application 
-1. [Traffic flow management - Modify service routes](##1-traffic-flow-management---modify-service-routes)
+1. [Traffic flow management - Modify service routes](#1-traffic-flow-management---modify-service-routes)
 2. [Access policy enforcement - Configure access control](#2-access-policy-enforcement---configure-access-control)
 3. [Telemetry data aggregation - Collect metrics, logs and trace spans](#3-telemetry-data-aggregation---collect-metrics-logs-and-trace-spans)
      - 3.1 [Collect metrics and logs using Prometheus and Grafana](#31-collect-metrics-and-logs-using-prometheus-and-grafana)
