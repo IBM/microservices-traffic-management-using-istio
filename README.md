@@ -135,6 +135,7 @@ $ kubectl apply -f <(istioctl kube-inject -f samples/apps/bookinfo/bookinfo.yaml
 After a few minutes, you should now have your Kubernetes Pods running and have an Envoy sidecar in each of them alongside the microservice. The microservices are **productpage, details, ratings, and reviews**. Note that you'll have three versions of the reviews microservice.
 ```
 $ kubectl get pods
+
 NAME                              READY     STATUS    RESTARTS
 details-v1-969129648-lwgr3        2/2       Running   0       
 istio-egress-3850639395-30d1v     1/1       Running   0       
@@ -303,7 +304,7 @@ This step shows you how to configure [Istio Mixer](https://istio.io/docs/concept
 
 [Collecting Metrics and Logs on Istio](https://istio.io/docs/tasks/metrics-logs.html)
 
-## 3.2 Do request tracing using Zipkin
+### 3.2 Do request tracing using Zipkin
 
 This step shows you how to collect trace spans using [Zipkin](http://zipkin.io).
 * Install the required Istio Addon: [Zipkin](http://zipkin.io)
