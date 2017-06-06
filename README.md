@@ -27,10 +27,11 @@ Please follow the [Toolchain instructions](https://github.com/IBM/container-jour
 4. [Access your application running on Istio](#4-access-your-application-running-on-istio)
 
 ## Part B: Configure and use Istio's features for sample application 
-1. [Traffic flow management - Modify service routes](#5-modify-service-routes)
-2. [Access policy enforcement- Configure access control](#6-simple-access-control)
-3. [Telemetry data aggregation - Collect metrics and logs](#7-collecting-metrics-and-logs)
-4. [Request Tracing](#8-request-tracing)
+1. [Traffic flow management - Modify service routes](#1-modify-service-routes)
+2. [Access policy enforcement - Configure access control](#2-simple-access-control)
+3. [Telemetry data aggregation - Collect metrics, logs and trace spans]()
+     3.1 [Collect metrics and logs using Prometheus and Grafana](#31-collect-metrics-and-logs-using-prometheus-and-grafana)
+     3.2 [Do request tracing using Zipkin](#32-do-request-tracing-using-zipkin)
 
 #### [Troubleshooting](#troubleshooting-1)
 
@@ -210,9 +211,12 @@ This step shows you how to control access to your services. If you have done the
 ![access-control](images/access.png)
 
 
-## 3. Telemetry data aggregation - Collect metrics and logs
+## 3. Telemetry data aggregation - Collect metrics, logs and trace spans
+
+### 3.1 Collect metrics and logs using Prometheus and Grafana
 
 This step shows you how to configure [Istio Mixer](https://istio.io/docs/concepts/policy-and-control/mixer.html) to gather telemetry for services in your cluster.
+
 * Install the required Istio Addons on your cluster: [Prometheus](https://prometheus.io) and [Grafana](https://grafana.com)
   ```bash
   $ kubectl apply -f install/kubernetes/addons/prometheus.yaml
@@ -299,7 +303,7 @@ This step shows you how to configure [Istio Mixer](https://istio.io/docs/concept
 
 [Collecting Metrics and Logs on Istio](https://istio.io/docs/tasks/metrics-logs.html)
 
-## 4. Request Tracing
+##3 3.2 Do request tracing using Zipkin
 
 This step shows you how to collect trace spans using [Zipkin](http://zipkin.io).
 * Install the required Istio Addon: [Zipkin](http://zipkin.io)
