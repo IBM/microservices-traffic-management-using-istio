@@ -27,9 +27,9 @@ Please follow the [Toolchain instructions](https://github.com/IBM/container-jour
 4. [Access your application running on Istio](#4-access-your-application-running-on-istio)
 
 ## Part B: Configure and use Istio's features for sample application 
-1. [Traffic flow management - Modify service routes](#1-modify-service-routes)
-2. [Access policy enforcement - Configure access control](#2-simple-access-control)
-3. [Telemetry data aggregation - Collect metrics, logs and trace spans]()
+1. [Traffic flow management - Modify service routes](##1-traffic-flow-management---modify-service-routes)
+2. [Access policy enforcement - Configure access control](#2-access-policy-enforcement---configure-access-control)
+3. [Telemetry data aggregation - Collect metrics, logs and trace spans](#3-telemetry-data-aggregation---collect-metrics-logs-and-trace-spans)
      3.1 [Collect metrics and logs using Prometheus and Grafana](#31-collect-metrics-and-logs-using-prometheus-and-grafana)
      3.2 [Do request tracing using Zipkin](#32-do-request-tracing-using-zipkin)
 
@@ -190,7 +190,7 @@ This would set every incoming traffic to the version v3 of the reviews microserv
   $ istioctl replace -f samples/apps/bookinfo/route-rule-reviews-v3.yaml
   ```
 
-## 2. Access policy enforcement- Configure access control
+## 2. Access policy enforcement - Configure access control
 
 This step shows you how to control access to your services. If you have done the step above, you'll see that your `productpage` now just shows red stars on the reviews section and if you are logged in as _jason_, you'll see black stars. The `ratings` service is accessed from the `reviews-v2` if you're logged in as _jason_ or it is accessed from `reviews-v3` if you are not logged in as `jason`.
 
