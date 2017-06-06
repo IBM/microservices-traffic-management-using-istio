@@ -9,9 +9,9 @@ The [BookInfo](https://istio.io/docs/samples/bookinfo.html) is a simple applicat
 ## Included Components
 - [Istio](https://istio.io/)
 - [Kubernetes Clusters](https://console.ng.bluemix.net/docs/containers/cs_ov.html#cs_ov)
-- [Grafana] (http://docs.grafana.org/guides/getting_started)
-- [Zipkin] (http://zipkin.io/)
-- [Prometheus] (https://prometheus.io/)
+- [Grafana](http://docs.grafana.org/guides/getting_started)
+- [Zipkin](http://zipkin.io/)
+- [Prometheus](https://prometheus.io/)
 - [Bluemix container service](https://console.ng.bluemix.net/catalog/?taxonomyNavigation=apps&category=containers)
 - [Bluemix DevOps Toolchain Service](https://console.ng.bluemix.net/catalog/services/continuous-delivery)
 
