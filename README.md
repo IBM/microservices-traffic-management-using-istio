@@ -27,11 +27,11 @@ Please follow the [Toolchain instructions](https://github.com/IBM/container-jour
 4. [Access your application running on Istio](#4-access-your-application-running-on-istio)
 
 ## Part B: Configure and use Istio's features for sample application 
-1. [Traffic flow management - Modify service routes](#1-traffic-flow-management---modify-service-routes)
-2. [Access policy enforcement - Configure access control](#2-access-policy-enforcement---configure-access-control)
-3. [Telemetry data aggregation - Collect metrics, logs and trace spans](#3-telemetry-data-aggregation---collect-metrics-logs-and-trace-spans)
-     - 3.1 [Collect metrics and logs using Prometheus and Grafana](#31-collect-metrics-and-logs-using-prometheus-and-grafana)
-     - 3.2 [Do request tracing using Zipkin](#32-do-request-tracing-using-zipkin)
+5. [Traffic flow management - Modify service routes](#5-traffic-flow-management---modify-service-routes)
+6. [Access policy enforcement - Configure access control](#6-access-policy-enforcement---configure-access-control)
+7. [Telemetry data aggregation - Collect metrics, logs and trace spans](#7-telemetry-data-aggregation---collect-metrics-logs-and-trace-spans)
+     - 7.1 [Collect metrics and logs using Prometheus and Grafana](#31-collect-metrics-and-logs-using-prometheus-and-grafana)
+     - 7.2 [Do request tracing using Zipkin](#32-do-request-tracing-using-zipkin)
 
 #### [Troubleshooting](#troubleshooting-1)
 
@@ -166,7 +166,7 @@ If you refresh the page multiple times, you'll see that the _reviews_ section of
 
 # Part B: Deploy Istio service mesh and sample application on Kubernetes
 
-## 1. Traffic flow management - Modify service routes
+## 5. Traffic flow management - Modify service routes
 
 This step shows you how to configure where you want your service to go based on weights and HTTP Headers.
 * Set Default Routes to `reviews-v1` for all microservices  
@@ -191,7 +191,7 @@ This would set every incoming traffic to the version v3 of the reviews microserv
   $ istioctl replace -f samples/apps/bookinfo/route-rule-reviews-v3.yaml
   ```
 
-## 2. Access policy enforcement - Configure access control
+## 6. Access policy enforcement - Configure access control
 
 This step shows you how to control access to your services. If you have done the step above, you'll see that your `productpage` now just shows red stars on the reviews section and if you are logged in as _jason_, you'll see black stars. The `ratings` service is accessed from the `reviews-v2` if you're logged in as _jason_ or it is accessed from `reviews-v3` if you are not logged in as `jason`.
 
@@ -212,9 +212,9 @@ This step shows you how to control access to your services. If you have done the
 ![access-control](images/access.png)
 
 
-## 3. Telemetry data aggregation - Collect metrics, logs and trace spans
+## 7. Telemetry data aggregation - Collect metrics, logs and trace spans
 
-### 3.1 Collect metrics and logs using Prometheus and Grafana
+### 7.1 Collect metrics and logs using Prometheus and Grafana
 
 This step shows you how to configure [Istio Mixer](https://istio.io/docs/concepts/policy-and-control/mixer.html) to gather telemetry for services in your cluster.
 
@@ -304,7 +304,7 @@ This step shows you how to configure [Istio Mixer](https://istio.io/docs/concept
 
 [Collecting Metrics and Logs on Istio](https://istio.io/docs/tasks/metrics-logs.html)
 
-### 3.2 Do request tracing using Zipkin
+### 7.2 Do request tracing using Zipkin
 
 This step shows you how to collect trace spans using [Zipkin](http://zipkin.io).
 * Install the required Istio Addon: [Zipkin](http://zipkin.io)
