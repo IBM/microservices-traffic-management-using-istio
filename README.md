@@ -53,10 +53,10 @@ Please follow the [Toolchain instructions](https://github.com/IBM/container-jour
      - 7.1 [Collect metrics and logs using Prometheus and Grafana](#71-collect-metrics-and-logs-using-prometheus-and-grafana)
      - 7.2 [Collect request traces using Zipkin](#72-collect-request-traces-using-zipkin)
 
-## Part C: Enabling Egress Traffic for sample application
+## Part C: Enable Egress Traffic for sample application
 
 8. [Create a MySQL Database](#8-create-a-mysql-database)
-9. [Configure your sample application](#9-configure-your-application)
+9. [Configure your sample application](#9-configure-your-sample-application)
 10. [Inject Istio envoys with Egress traffic enabled on the application](#10-inject-istio-envoys-with-egress-traffic-enabled-on-the-application)
 
 #### [Troubleshooting](#troubleshooting-1)
@@ -347,14 +347,14 @@ This step shows you how to collect trace spans using [Zipkin](http://zipkin.io).
 
 * Send traffic to that service by refreshing your browser to `http://184.xxx.yyy.zzz:30XYZ/productpage` multiple times. You can also do `curl` on your terminal to that URL in a while loop.
 
-* Go to your Zipkin Dashboard again and you will see a number of traces done.
+* Go to your Zipkin Dashboard again and you will see a number of traces done. _Click on Find Traces button with the appropriate Start and End Time_
 ![zipkin](images/zipkin-traces.png)
 * Click on one those traces and you will see the details of the traffic you sent to your BookInfo App. It shows how much time it took for the request on `productpage`. It also shows how much time ot took for the requests on the `details`,`reviews`, and `ratings` services.
 ![zipkin](images/zipkin-details.png)
 
 [Zipkin Tracing on Istio](https://istio.io/docs/tasks/zipkin-tracing.html)
 
-# Part C: Enabling Egress Traffic for sample application
+# Part C: Enable Egress Traffic for sample application
 
 #### For this part, you should clone this repository to use the YAML files and/or source code for the microservices.
 
@@ -363,10 +363,60 @@ Provision Compose for MySQL in Bluemix via https://console.ng.bluemix.net/catalo
 Go to Service credentials and view your credentials. Your MySQL hostname, port, user, and password are under your credential uri and it should look like this
 ![images](images/mysqlservice.png)
 ## 9. Configure your sample application
-In this step, you can choose to build your application from source in the [microservices folder](/microservices).
-
+In this step, you can choose to build your Docker images from source in the [microservices folder](/microservices) or use the given images.  
+The YAML files you need to modify are:  
+* `details-new.yaml`
+* `reviews-new.yaml`
+* `ratings-new.yaml`
+* `mysql-data.yaml`
+```yaml
+spec:
+  containers:
+  ...
+    image: ## <insert the corresponding image name you built>
+    imagePullPolicy: IfNotPresent
+    env: ## CHANGE THESE VALUES TO YOUR MYSQL DATABASE CREDENTIALS
+    - name: MYSQL_DB_USER
+      value: 'PLACEHOLDER_DB_USER'
+    - name: MYSQL_DB_PASSWORD
+      value: 'PLACEHOLDER_DB_PASSWORD'
+    - name: MYSQL_DB_HOST
+      value: 'PLACEHOLDER_DB_HOST'
+    - name: MYSQL_DB_PORT
+      value: 'PLACEHOLDER_DB_PORT'
+    ...
+```
 
 ## 10. Inject Istio envoys with Egress traffic enabled on the application
+* Insert data in your MySQL database  
+```bash
+$ kubectl create -f <(istioctl kube-inject -f mysql-data.yaml --includeIPRanges=172.30.0.0/16,172.20.0.0/16)
+```
+The `--includeIPRanges` option is to pass the IP range(s) used for internal cluster services, thereby excluding external IPs from being redirected to the sidecar proxy. The IP range above is for IBM Bluemix provisioned Kubernetes Clusters. For minikube, you will have to use `10.0.0.1/24`
+* Deploy `productpage` with Envoy injection and `gateway`.  
+```bash
+$ kubectl create -f <(istioctl kube-inject -f bookinfo.yaml)
+```
+The `productpage` is not expecting to have egress traffic so you would not need to configure the Envoy to intercept external requests.
+
+* Deploy `details` with Envoy injection and Egress traffic enabled.  
+```bash
+$ kubectl create -f <(istioctl kube-inject -f details-new.yaml --includeIPRanges=172.30.0.0/16,172.20.0.0/16)
+```
+* Deploy `reviews` with Envoy injection and Egress traffic enabled.  
+```bash
+$ kubectl create -f <(istioctl kube-inject -f reviews-new.yaml --includeIPRanges=172.30.0.0/16,172.20.0.0/16)
+```
+* Deploy `ratings` with Envoy injection and Egress traffic enabled.  
+```bash
+$ kubectl create -f <(istioctl kube-inject -f ratings-new.yaml --includeIPRanges=172.30.0.0/16,172.20.0.0/16)
+```
+
+The `details`, `reviews`, `ratings` will have external traffic since your MySQL database is outside of your cluster. That is why you would need to use `--includeIPRanges` option in `istioctl kube-inject`.
+
+
+
+[Enabling Egress Traffic on Istio](https://istio.io/docs/tasks/egress.html)
 
 # Troubleshooting
 * To delete Istio from your cluster
