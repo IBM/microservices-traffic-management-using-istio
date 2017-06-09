@@ -349,7 +349,7 @@ This step shows you how to collect trace spans using [Zipkin](http://zipkin.io).
 
 * Go to your Zipkin Dashboard again and you will see a number of traces done. _Click on Find Traces button with the appropriate Start and End Time_
 ![zipkin](images/zipkin-traces.png)
-* Click on one those traces and you will see the details of the traffic you sent to your BookInfo App. It shows how much time it took for the request on `productpage`. It also shows how much time ot took for the requests on the `details`,`reviews`, and `ratings` services.
+* Click on one of those traces and you will see the details of the traffic you sent to your BookInfo App. It shows how much time it took for the request on `productpage` to finish. It also shows how much time it took for the requests on the `details`,`reviews`, and `ratings` services.
 ![zipkin](images/zipkin-details.png)
 
 [Zipkin Tracing on Istio](https://istio.io/docs/tasks/zipkin-tracing.html)
