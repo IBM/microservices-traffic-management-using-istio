@@ -1,0 +1,9 @@
+{
+  "scripts": {
+    "start": "node ratings.js"
+  },
+  "dependencies": {
+    "httpdispatcher": "1.0.0",
+    "mysql": "2.13.0"
+  }
+}
