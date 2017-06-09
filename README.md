@@ -25,7 +25,7 @@ The [BookInfo](https://istio.io/docs/samples/bookinfo.html) is a simple applicat
 ![ISTIO-PART-B](images/ISTIO-PART-B.png)
 
 # Prerequisite
-Create a Kubernetes cluster with either [Minikube](https://kubernetes.io/docs/getting-started-guides/minikube) for local testing, or with [IBM Bluemix Container Service](https://github.com/IBM/container-journey-template) to deploy in cloud. The code here is regularly tested against [Kubernetes Cluster from Bluemix Container Service](https://console.ng.bluemix.net/docs/containers/cs_ov.html#cs_ov) using Travis.
+Create a Kubernetes cluster with either [Minikube](https://kubernetes.io/docs/getting-started-guides/minikube) for local testing, or with [IBM Bluemix Container Service](https://github.com/IBM/container-journey-template/blob/master/Toolchain_Instructions_new.md) to deploy in cloud. The code here is regularly tested against [Kubernetes Cluster from Bluemix Container Service](https://console.ng.bluemix.net/docs/containers/cs_ov.html#cs_ov) using Travis.
 
 # Deploy to Bluemix
 If you want to deploy the BookInfo app directly to Bluemix, click on 'Deploy to Bluemix' button below to create a Bluemix DevOps service toolchain and pipeline for deploying the sample, else jump to [Steps](#steps)
@@ -52,6 +52,12 @@ Please follow the [Toolchain instructions](https://github.com/IBM/container-jour
 7. [Telemetry data aggregation - Collect metrics, logs and trace spans](#7-telemetry-data-aggregation---collect-metrics-logs-and-trace-spans)
      - 7.1 [Collect metrics and logs using Prometheus and Grafana](#71-collect-metrics-and-logs-using-prometheus-and-grafana)
      - 7.2 [Collect request traces using Zipkin](#72-collect-request-traces-using-zipkin)
+
+## Part C: Enabling Egress Traffic for sample application
+
+8. [Create a MySQL Database](#8-create-a-mysql-database)
+9. [Configure your sample application](#9-configure-your-application)
+10. [Inject Istio envoys with Egress traffic enabled on the application](#10-inject-istio-envoys-with-egress-traffic-enabled-on-the-application)
 
 #### [Troubleshooting](#troubleshooting-1)
 
@@ -347,6 +353,20 @@ This step shows you how to collect trace spans using [Zipkin](http://zipkin.io).
 ![zipkin](images/zipkin-details.png)
 
 [Zipkin Tracing on Istio](https://istio.io/docs/tasks/zipkin-tracing.html)
+
+# Part C: Enabling Egress Traffic for sample application
+
+#### For this part, you should clone this repository to use the YAML files and/or source code for the microservices.
+
+## 8. Create a MySQL Database
+Provision Compose for MySQL in Bluemix via https://console.ng.bluemix.net/catalog/services/compose-for-mysql  
+Go to Service credentials and view your credentials. Your MySQL hostname, port, user, and password are under your credential uri and it should look like this
+![images](images/mysqlservice.png)
+## 9. Configure your sample application
+In this step, you can choose to build your application from source in the [microservices folder](/microservices).
+
+
+## 10. Inject Istio envoys with Egress traffic enabled on the application
 
 # Troubleshooting
 * To delete Istio from your cluster
