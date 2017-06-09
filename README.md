@@ -414,6 +414,15 @@ $ kubectl create -f <(istioctl kube-inject -f ratings-new.yaml --includeIPRanges
 
 The `details`, `reviews`, `ratings` will have external traffic since your MySQL database is outside of your cluster. That is why you would need to use `--includeIPRanges` option in `istioctl kube-inject`.
 
+You can now access your application to confirm that it is getting data from your MySQL database.
+```bash
+echo $(kubectl get po -l istio=ingress -o jsonpath={.items[0].status.hostIP}):$(kubectl get svc istio-ingress -o jsonpath={.spec.ports[0].nodePort})
+184.xxx.yyy.zzz:30XYZ
+```
+
+Point your browser to:  
+`http://184.xxx.yyy.zzz:30XYZ/productpage` Replace with your own IP and NodePort.
+
 
 
 [Enabling Egress Traffic on Istio](https://istio.io/docs/tasks/egress.html)
