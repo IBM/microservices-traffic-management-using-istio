@@ -356,7 +356,7 @@ This step shows you how to collect trace spans using [Zipkin](http://zipkin.io).
 
 # Part C: Enable Egress Traffic for sample application
 
-#### For this part, you should clone this repository to use the YAML files and/or source code for the microservices.
+#### For this part, you should clone this repository. This step requires you to use the YAML files and/or source code for the microservices.
 
 ## 8. Create a MySQL Database
 Provision Compose for MySQL in Bluemix via https://console.ng.bluemix.net/catalog/services/compose-for-mysql  
