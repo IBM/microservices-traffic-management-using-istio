@@ -29,6 +29,8 @@ $ docker build -t registry.ng.bluemix.net/<your-namespace>/ratings-v1
 
 1. Build the images using the Dockerfile in `reviews` folder. Follow the build arguments.
 ```bash
+$ gradle build
+$ cd reviews-wlpcfg
 $ docker build -t registry.ng.bluemix.net/<your-namespace>/reviews-v1 --build-arg service_version=v1 .
 $ docker build -t registry.ng.bluemix.net/<your-namespace>/reviews-v2 --build-arg service_version=v2 --build-arg enable_ratings=true .
 $ docker build -t registry.ng.bluemix.net/<your-namespace>/reviews-v3 --build-arg service_version=v3 --build-arg enable_ratings=true --build-arg star_color=red .
@@ -39,4 +41,16 @@ $ docker build -t registry.ng.bluemix.net/<your-namespace>/reviews-v3 --build-ar
 $ docker build -t registry.ng.bluemix.net/<your-namespace>/reviews-v1
 $ docker build -t registry.ng.bluemix.net/<your-namespace>/reviews-v2
 $ docker build -t registry.ng.bluemix.net/<your-namespace>/reviews-v3
+```
+
+## MySQL Data generator
+
+1. Build the images using the Dockerfile in `mysql_data` folder.
+```bash
+$ docker build -t registry.ng.bluemix.net/<your-namespace>/mysql-bookinfo .
+```
+
+2. Push the image.
+```bash
+$ docker push registry.ng.bluemix.net/<your-namespace>/mysql-bookinfo
 ```

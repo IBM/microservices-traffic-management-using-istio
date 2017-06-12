@@ -364,6 +364,8 @@ Go to Service credentials and view your credentials. Your MySQL hostname, port, 
 ![images](images/mysqlservice.png)
 ## 9. Configure your sample application
 In this step, you can choose to build your Docker images from source in the [microservices folder](/microservices) or use the given images.  
+> For building your own images, go to [microservices folder](/microservices)
+
 The YAML files you need to modify are:  
 * `details-new.yaml`
 * `reviews-new.yaml`
