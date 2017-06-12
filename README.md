@@ -108,7 +108,7 @@ Please follow the [Toolchain instructions](https://github.com/IBM/container-jour
   NAME                              READY     STATUS    RESTARTS
   istio-egress-3850639395-30d1v     1/1       Running   0       
   istio-ingress-4068702052-2st6r    1/1       Running   0       
-  istio-manager-251184572-x9dd4     2/2       Running   0       
+  istio-pilot-251184572-x9dd4       2/2       Running   0       
   istio-mixer-2499357295-kn4vq      1/1       Running   0       
   ```
 ## 2. Deploy sample BookInfo application on Kubernetes
@@ -166,7 +166,7 @@ NAME                              READY     STATUS    RESTARTS
 details-v1-969129648-lwgr3        2/2       Running   0       
 istio-egress-3850639395-30d1v     1/1       Running   0       
 istio-ingress-4068702052-2st6r    1/1       Running   0       
-istio-manager-251184572-x9dd4     2/2       Running   0       
+istio-pilot-251184572-x9dd4     2/2       Running   0       
 istio-mixer-2499357295-kn4vq      1/1       Running   0       
 productpage-v1-1629799384-00f11   2/2       Running   0       
 ratings-v1-1194835686-dzf2f       2/2       Running   0       
@@ -358,7 +358,7 @@ This step shows you how to collect trace spans using [Zipkin](http://zipkin.io).
 
 #### For this part, you should clone this repository. This step requires you to use the YAML files and/or source code for the microservices.
 
-## 8. Create a MySQL Database
+## 8. Create a Compose for MySQL Database on Bluemix
 Provision Compose for MySQL in Bluemix via https://console.ng.bluemix.net/catalog/services/compose-for-mysql  
 Go to Service credentials and view your credentials. Your MySQL hostname, port, user, and password are under your credential uri and it should look like this
 ![images](images/mysqlservice.png)
