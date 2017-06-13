@@ -18,15 +18,9 @@ The [BookInfo](https://istio.io/docs/samples/bookinfo.html) is a simple applicat
 ## Scenarios
 [Part A: Deploy Istio service mesh and sample application on Kubernetes](#part-a-deploy-istio-service-mesh-and-sample-application-on-kubernetes-1)
 
-![ISTIO-PART-A](images/ISTIO-PART-A.png)
-
 [Part B: Configure and use Istio's features for sample application](#part-b-configure-and-use-istios-features-for-sample-application-1)
 
-![ISTIO-PART-B](images/ISTIO-PART-B.png)
-
-[Part C: Configure and use Istio's features for sample application](#part-b-configure-and-use-istios-features-for-sample-application-1)
-
-![ISTIO-PART-C](images/ISTIO-PART-C.png)
+[Part C: Connect sample application to external service by enabling Egress traffic](#part-c-connect-sample-application-to-external-service-by-enabling-egress-traffic)
 
 # Prerequisite
 Create a Kubernetes cluster with either [Minikube](https://kubernetes.io/docs/getting-started-guides/minikube) for local testing, or with [IBM Bluemix Container Service](https://github.com/IBM/container-journey-template/blob/master/Toolchain_Instructions_new.md) to deploy in cloud. The code here is regularly tested against [Kubernetes Cluster from Bluemix Container Service](https://console.ng.bluemix.net/docs/containers/cs_ov.html#cs_ov) using Travis.
@@ -44,6 +38,8 @@ Please follow the [Toolchain instructions](https://github.com/IBM/container-jour
 
 ## Part A: Deploy Istio service mesh and sample application on Kubernetes
 
+![ISTIO-PART-A](images/ISTIO-PART-A.png)
+
 1. [Install Istio on Kubernetes](#1-install-istio-on-kubernetes)
 2. [Deploy sample BookInfo application on Kubernetes](#2-deploy-sample-bookinfo-application-on-kubernetes)
 3. [Inject Istio envoys on the application](#3-inject-istio-envoys-on-the-application)
@@ -51,13 +47,17 @@ Please follow the [Toolchain instructions](https://github.com/IBM/container-jour
 
 ## Part B: Configure and use Istio's features for sample application
 
+![ISTIO-PART-B](images/ISTIO-PART-B.png)
+
 5. [Traffic flow management - Modify service routes](#5-traffic-flow-management---modify-service-routes)
 6. [Access policy enforcement - Configure access control](#6-access-policy-enforcement---configure-access-control)
 7. [Telemetry data aggregation - Collect metrics, logs and trace spans](#7-telemetry-data-aggregation---collect-metrics-logs-and-trace-spans)
      - 7.1 [Collect metrics and logs using Prometheus and Grafana](#71-collect-metrics-and-logs-using-prometheus-and-grafana)
      - 7.2 [Collect request traces using Zipkin](#72-collect-request-traces-using-zipkin)
 
-## Part C: Enable Egress Traffic for sample application
+## Part C: Connect sample application to external service by enabling Egress traffic
+
+![ISTIO-PART-C](images/ISTIO-PART-C.png)
 
 8. [Create a Compose for MySQL database in Bluemix](#8-create-a-compose-for-mysql-database-in-bluemix)
 9. [Configure sample application to use the external database](#9-configure-sample-application-to-use-the-external-database)
