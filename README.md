@@ -36,7 +36,7 @@ Please follow the [Toolchain instructions](https://github.com/IBM/container-jour
 
 # Steps
 
-## Part A: Modify Istio application to external service by rebuilding microservices and enabling egress traffic
+## Part A: Modify Istio application to connect to external datasource by rebuilding microservices and enabling egress traffic
 
 ![ISTIO-PART-C](images/ISTIO-PART-C.png)
 
@@ -56,9 +56,10 @@ Please follow the [Toolchain instructions](https://github.com/IBM/container-jour
 
 
 #### [Troubleshooting](#troubleshooting-1)
-# Part C: Enable Egress Traffic for sample application
 
-#### For this part, you should clone this repository. This step requires you to use the YAML files and/or source code for the microservices.
+# Part A: Modify Istio application to connect to external datasource by rebuilding microservices and enabling egress traffic
+
+#### Clone this repository. This step requires you to use the YAML files and/or source code for the microservices.
 
 ## 1. Create a Compose for MySQL Database in Bluemix
 Provision Compose for MySQL in Bluemix via https://console.ng.bluemix.net/catalog/services/compose-for-mysql  
