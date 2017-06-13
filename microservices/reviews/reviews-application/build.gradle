@@ -16,6 +16,5 @@ dependencies {
     providedCompile 'javax.enterprise.concurrent:javax.enterprise.concurrent-api:1.0'
     providedCompile 'javax.enterprise:cdi-api:1.2'
     providedCompile 'io.swagger:swagger-annotations:1.5.0'
-    compile group: 'commons-collections', name: 'commons-collections', version: '3.2'
     compile group: 'mysql', name: 'mysql-connector-java', version: '5.1.6'
 }
