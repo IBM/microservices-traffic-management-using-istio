@@ -38,22 +38,19 @@ Please follow the [Toolchain instructions](https://github.com/IBM/container-jour
 
 ## Part A: Modify Istio application to connect to external datasource by rebuilding microservices and enabling egress traffic
 
-![ISTIO-PART-C](images/ISTIO-PART-C.png)
-
-1. [Create a Compose for MySQL database in Bluemix](#8-create-a-compose-for-mysql-database-in-bluemix)
+1. Create an external datasource
+     - 1.1 [Create MySQL database in a conntainer]()
+     - 1.2 [Create a Compose for MySQL database in Bluemix](#8-create-a-compose-for-mysql-database-in-bluemix)
 2. [Configure sample application to use the external database](#9-configure-sample-application-to-use-the-external-database)
 3. [Inject Istio envoys with Egress traffic enabled on the application](#10-inject-istio-envoys-with-egress-traffic-enabled-on-the-application)
 
 ## Part B: Configure traffic flow management, access policy and telemetry data aggregation for application
-
-![ISTIO-PART-B](images/ISTIO-PART-B.png)
 
 4. [Traffic flow management - Modify service routes](#5-traffic-flow-management---modify-service-routes)
 5. [Access policy enforcement - Configure access control](#6-access-policy-enforcement---configure-access-control)
 6. [Telemetry data aggregation - Collect metrics, logs and trace spans](#7-telemetry-data-aggregation---collect-metrics-logs-and-trace-spans)
      - 6.1 [Collect metrics and logs using Prometheus and Grafana](#71-collect-metrics-and-logs-using-prometheus-and-grafana)
      - 6.2 [Collect request traces using Zipkin](#72-collect-request-traces-using-zipkin)
-
 
 #### [Troubleshooting](#troubleshooting-1)
 
