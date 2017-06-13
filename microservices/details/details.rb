@@ -48,7 +48,7 @@ dbPort = Integer(ENV['MYSQL_DB_PORT'])
 dbUser = ENV['MYSQL_DB_USER']
 dbPass = ENV['MYSQL_DB_PASSWORD']
 
-con = Mysql.new(dbHost, dbUser, dbPass, 'bookinfo_db', dbPort)
+
 
 server.mount_proc '/health' do |req, res|
     res.status = 200
@@ -57,6 +57,7 @@ server.mount_proc '/health' do |req, res|
 end
 
 server.mount_proc '/details' do |req, res|
+    con = Mysql.new(dbHost, dbUser, dbPass, 'bookinfo_db', dbPort)
     rs = con.query('SELECt * FROM books WHERE BookID=1')
 
     paperback = "default"

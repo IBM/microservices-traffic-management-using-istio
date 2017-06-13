@@ -23,15 +23,7 @@ var portNumber = process.env.MYSQL_DB_PORT;
 var username = process.env.MYSQL_DB_USER;
 var password = process.env.MYSQL_DB_PASSWORD;
 
-var connection = mysql.createConnection({
-  host: hostName,
-  port: portNumber,
-  user: username,
-  password: password,
-  database : 'bookinfo_db'
-});
 
-connection.connect();
 
 var first_rating;
 var second_rating;
@@ -64,6 +56,15 @@ dispatcher.onGet("/", function(req, res) {
 })
 
 dispatcher.onGet("/ratings", function(req, res) {
+    var connection = mysql.createConnection({
+        host: hostName,
+        port: portNumber,
+        user: username,
+        password: password,
+        database : 'bookinfo_db'
+    });
+
+    connection.connect();
     connection.query('SELECT Rating FROM reviews WHERE BookID=1', function (error, results, fields) {
         if (error) throw error;
         console.log('Reviewer1: ', results[0].Rating);
@@ -78,6 +79,7 @@ dispatcher.onGet("/ratings", function(req, res) {
         res.writeHead(200, {"Content-type": "application/json"})
         res.end(json)
     });
+    connection.end();
 })
 
 dispatcher.onGet("/health", function(req, res) {
