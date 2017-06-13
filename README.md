@@ -38,19 +38,19 @@ Please follow the [Toolchain instructions](https://github.com/IBM/container-jour
 
 ## Part A: Modify Istio application to connect to external datasource by rebuilding microservices and enabling egress traffic
 
-1. Create an external datasource
-     - 1.1 [Create MySQL database in a conntainer]()
-     - 1.2 [Create a Compose for MySQL database in Bluemix](#8-create-a-compose-for-mysql-database-in-bluemix)
-2. [Configure sample application to use the external database](#9-configure-sample-application-to-use-the-external-database)
-3. [Inject Istio envoys with Egress traffic enabled on the application](#10-inject-istio-envoys-with-egress-traffic-enabled-on-the-application)
+1. [Create an external datasource for application](#1-create-an-external-datasource-for-application)
+     - 1.1 [Create MySQL database in a container](#11-create-mysql-database-in-a-container)
+     - 1.2 [Create Compose for MySQL database in Bluemix](#12-create-compose-for-mysql-database-in-bluemix)
+2. [Configure sample application to use the external database](#2-configure-sample-application-to-use-the-external-database)
+3. [Inject Istio envoys with Egress traffic enabled on the application](#3-inject-istio-envoys-with-egress-traffic-enabled-on-the-application)
 
 ## Part B: Configure traffic flow management, access policy and telemetry data aggregation for application
 
-4. [Traffic flow management - Modify service routes](#5-traffic-flow-management---modify-service-routes)
-5. [Access policy enforcement - Configure access control](#6-access-policy-enforcement---configure-access-control)
-6. [Telemetry data aggregation - Collect metrics, logs and trace spans](#7-telemetry-data-aggregation---collect-metrics-logs-and-trace-spans)
-     - 6.1 [Collect metrics and logs using Prometheus and Grafana](#71-collect-metrics-and-logs-using-prometheus-and-grafana)
-     - 6.2 [Collect request traces using Zipkin](#72-collect-request-traces-using-zipkin)
+4. [Traffic flow management - Modify service routes](#4-traffic-flow-management---modify-service-routes)
+5. [Access policy enforcement - Configure access control](#5-access-policy-enforcement---configure-access-control)
+6. [Telemetry data aggregation - Collect metrics, logs and trace spans](#6-telemetry-data-aggregation---collect-metrics-logs-and-trace-spans)
+     - 6.1 [Collect metrics and logs using Prometheus and Grafana](#61-collect-metrics-and-logs-using-prometheus-and-grafana)
+     - 6.2 [Collect request traces using Zipkin](#62-collect-request-traces-using-zipkin)
 
 #### [Troubleshooting](#troubleshooting-1)
 
@@ -58,7 +58,11 @@ Please follow the [Toolchain instructions](https://github.com/IBM/container-jour
 
 #### Clone this repository. This step requires you to use the YAML files and/or source code for the microservices.
 
-## 1. Create a Compose for MySQL Database in Bluemix
+# 1. Create an external datasource for application
+
+### 1.1 Create MySQL Database in a container
+
+### 1.2 Create Compose for MySQL Database in Bluemix
 Provision Compose for MySQL in Bluemix via https://console.ng.bluemix.net/catalog/services/compose-for-mysql  
 Go to Service credentials and view your credentials. Your MySQL hostname, port, user, and password are under your credential uri and it should look like this
 ![images](images/mysqlservice.png)
