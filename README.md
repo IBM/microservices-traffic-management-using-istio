@@ -1,10 +1,12 @@
 [![Build Status](https://travis-ci.org/IBM/Microservices-with-Istio-Service-Mesh-on-Kubernetes.svg?branch=master)](https://travis-ci.org/IBM/Microservices-with-Istio-Service-Mesh-on-Kubernetes)
 
-# Deploy microservices with load balancing, access policies, telemetry and reporting leveraging Istio Service Mesh on Kubernetes
+# Extend Istio microservices to connect to an external datasource by configuring egress policies on Envoy and test canary deplyoments
 
 [Istio](http://istio.io) is an open platform that provides a uniform way to connect, manage, and secure microservices. Istio is the result of a joint collaboration between IBM, Google and Lyft as a means to support traffic flow management, access policy enforcement and the telemetry data aggregation between microservices, all without requiring changes to the code of your microservice. Istio provides an easy way to create this service mesh by deploying a [control plane](https://istio.io/docs/concepts/what-is-istio/overview.html#architecture) and injecting sidecars, an extended version of the  [Envoy](https://lyft.github.io/envoy/) proxy, in the same Pod as your microservice.
 
 The [BookInfo](https://istio.io/docs/samples/bookinfo.html) is a simple application that is composed of four microservices. The application is written in different languages for each of its microservices namely Python, Java, Ruby, and Node.js.
+
+In this code we show how we can build microservices to connect to external datasource, and configure Itsio  envoy to allow egress traffic.
 
 ## Included Components
 - [Istio](https://istio.io/)
@@ -16,15 +18,13 @@ The [BookInfo](https://istio.io/docs/samples/bookinfo.html) is a simple applicat
 - [Bluemix DevOps Toolchain Service](https://console.ng.bluemix.net/catalog/services/continuous-delivery)
 
 ## Scenarios
-[Part A: Deploy Istio service mesh and application on Kubernetes cluster](#part-a-deploy-istio-service-mesh-and-application-on-kubernetes-cluster)
+[Part A: Modify Istio application to external service by rebuilding microservices and enabling egress traffic](#part-a-modify-istio-application-to-connect-to-external-datasource-by-rebuilding-microservices-and-enabling-egress-traffic)
 
 [Part B:  Configure traffic flow management, access policy and telemetry data aggregation for application](#part-b-configure-traffic-flow-management-access-policy-and-telemetry-data-aggregation-for-application)
 
-[Part C: Connect application to external service by rebuilding microservices and enabling egress traffic](#part-c-connect-application-to-external-service-by-rebuilding-microservices-and-enabling-egress-traffic)
-
 # Prerequisite
 Create a Kubernetes cluster with either [Minikube](https://kubernetes.io/docs/getting-started-guides/minikube) for local testing, or with [IBM Bluemix Container Service](https://github.com/IBM/container-journey-template/blob/master/Toolchain_Instructions_new.md) to deploy in cloud. The code here is regularly tested against [Kubernetes Cluster from Bluemix Container Service](https://console.ng.bluemix.net/docs/containers/cs_ov.html#cs_ov) using Travis.
-
+ 
 # Deploy to Bluemix
 If you want to deploy the BookInfo app directly to Bluemix, click on 'Deploy to Bluemix' button below to create a Bluemix DevOps service toolchain and pipeline for deploying the sample, else jump to [Steps](#steps)
 
@@ -36,151 +36,94 @@ Please follow the [Toolchain instructions](https://github.com/IBM/container-jour
 
 # Steps
 
-## Part A: Deploy Istio service mesh and application on Kubernetes Cluster
+## Part A: Modify Istio application to connect to external datasource by rebuilding microservices and enabling egress traffic
 
-![ISTIO-PART-A](images/ISTIO-PART-A.png)
-
-1. [Install Istio on Kubernetes](#1-install-istio-on-kubernetes)
-2. [Deploy sample BookInfo application on Kubernetes](#2-deploy-sample-bookinfo-application-on-kubernetes)
-3. [Inject Istio envoys on the application](#3-inject-istio-envoys-on-the-application)
-4. [Access your application running on Istio](#4-access-your-application-running-on-istio)
+1. [Create an external datasource for application](#1-create-an-external-datasource-for-application)
+     - 1.1 [Create MySQL database in a container](#11-create-mysql-database-in-a-container)
+     - 1.2 [Create Compose for MySQL database in Bluemix](#12-create-compose-for-mysql-database-in-bluemix)
+2. [Configure sample application to use the external database](#2-configure-sample-application-to-use-the-external-database)
+3. [Inject Istio envoys with Egress traffic enabled on the application](#3-inject-istio-envoys-with-egress-traffic-enabled-on-the-application)
 
 ## Part B: Configure traffic flow management, access policy and telemetry data aggregation for application
 
-![ISTIO-PART-B](images/ISTIO-PART-B.png)
-
-5. [Traffic flow management - Modify service routes](#5-traffic-flow-management---modify-service-routes)
-6. [Access policy enforcement - Configure access control](#6-access-policy-enforcement---configure-access-control)
-7. [Telemetry data aggregation - Collect metrics, logs and trace spans](#7-telemetry-data-aggregation---collect-metrics-logs-and-trace-spans)
-     - 7.1 [Collect metrics and logs using Prometheus and Grafana](#71-collect-metrics-and-logs-using-prometheus-and-grafana)
-     - 7.2 [Collect request traces using Zipkin](#72-collect-request-traces-using-zipkin)
-
-## Part C: Connect application to external service by rebuilding microservices and enabling egress traffic
-
-![ISTIO-PART-C](images/ISTIO-PART-C.png)
-
-8. [Create a Compose for MySQL database in Bluemix](#8-create-a-compose-for-mysql-database-in-bluemix)
-9. [Configure sample application to use the external database](#9-configure-sample-application-to-use-the-external-database)
-10. [Inject Istio envoys with Egress traffic enabled on the application](#10-inject-istio-envoys-with-egress-traffic-enabled-on-the-application)
+4. [Traffic flow management - Modify service routes](#4-traffic-flow-management---modify-service-routes)
+5. [Access policy enforcement - Configure access control](#5-access-policy-enforcement---configure-access-control)
+6. [Telemetry data aggregation - Collect metrics, logs and trace spans](#6-telemetry-data-aggregation---collect-metrics-logs-and-trace-spans)
+     - 6.1 [Collect metrics and logs using Prometheus and Grafana](#61-collect-metrics-and-logs-using-prometheus-and-grafana)
+     - 6.2 [Collect request traces using Zipkin](#62-collect-request-traces-using-zipkin)
 
 #### [Troubleshooting](#troubleshooting-1)
 
-# Part A: Deploy Istio service mesh and application on Kubernetes cluster
+# Part A: Modify Istio application to connect to external datasource by rebuilding microservices and enabling egress traffic
 
-## 1. Install Istio on Kubernetes
+#### Clone this repository. This step requires you to use the YAML files and/or source code for the microservices.
 
-### 1.1 Download the Istio source
-  1. Download the latest Istio release for your OS: [Istio releases](https://github.com/istio/istio/releases)  
-  2. Extract and go to the root directory.
-  3. Copy the `istioctl` bin to your local bin  
-  ```bash
-  $ cp bin/istioctl /usr/local/bin
-  ## example for macOS
-  ```
+# 1. Create an external datasource for application
 
-### 1.2 Grant Permissions  
-  1. Run the following command to check if your cluster has RBAC  
-  ```bash
-  $ kubectl api-versions | grep rbac
-  ```  
-  2. Grant permissions based on the version of your RBAC  
-    * If you have an **alpha** version, run:
+### 1.1 Create MySQL Database in a container
 
-      ```bash
-      $ kubectl apply -f install/kubernetes/istio-rbac-alpha.yaml
-      ```
+### 1.2 Create Compose for MySQL Database in Bluemix
+Provision Compose for MySQL in Bluemix via https://console.ng.bluemix.net/catalog/services/compose-for-mysql  
+Go to Service credentials and view your credentials. Your MySQL hostname, port, user, and password are under your credential uri and it should look like this
+![images](images/mysqlservice.png)
 
-    * If you have a **beta** version, run:
+## 2. Configure sample application to use the external database
 
-      ```bash
-      $ kubectl apply -f install/kubernetes/istio-rbac-beta.yaml
-      ```
+In this step, you can choose to build your Docker images from source in the [microservices folder](/microservices) or use the given images.  
+> For building your own images, go to [microservices folder](/microservices)
 
-    * If **your cluster has no RBAC** enabled, proceed to installing the **Control Plane**.
-
-### 1.3 Install the [Istio Control Plane](https://istio.io/docs/concepts/what-is-istio/overview.html#architecture) in your cluster  
-  1. Run the following command to install Istio.
-  ```bash
-  $ kubectl apply -f install/kubernetes/istio.yaml
-  # or kubectl apply -f install/kubernetes/istio-auth.yaml
-  ```
-  > `istio-auth.yaml` enables Istio with its [Auth](https://istio.io/docs/concepts/network-and-auth/auth.html) feature. It enables [mTLS](https://en.wikipedia.org/wiki/Mutual_authentication) between the services
-
-  2. You should now have the Istio Control Plane running in Pods of your Cluster.
-  ```bash
-  $ kubectl get pods
-  NAME                              READY     STATUS    RESTARTS
-  istio-egress-3850639395-30d1v     1/1       Running   0       
-  istio-ingress-4068702052-2st6r    1/1       Running   0       
-  istio-pilot-251184572-x9dd4       2/2       Running   0       
-  istio-mixer-2499357295-kn4vq      1/1       Running   0       
-  ```
-## 2. Deploy sample BookInfo application on Kubernetes
-
-In this step, it assumes that you already have your own application that is configured to run in a Kubernetes Cluster.  
-In this journey, you will be using the BookInfo Application that can already run on a Kubernetes Cluster. You can deploy the BookInfo Application without using Istio by not injecting the required Envoys.
-* Deploy the BookInfo Application in your Cluster
-```bash
-$ kubectl apply -f samples/apps/bookinfo/bookinfo.yaml
-```
-* If you don't have access to external load balancers, you need to use NodePort on the `productpage` service. Run the following command to use a NodePort:
+The YAML files you need to modify are:  
+* `details-new.yaml`
+* `reviews-new.yaml`
+* `ratings-new.yaml`
+* `mysql-data.yaml`
 ```yaml
-cat <<EOF | kubectl apply -f -
-apiVersion: v1
-kind: Service
-metadata:
-  name: productpage
-  labels:
-    app: productpage
 spec:
-  type: NodePort
-  ports:
-  - port: 9080
-    name: http
-  selector:
-    app: productpage
-EOF
+  containers:
+  ...
+    image: ## <insert the corresponding image name you built>
+    imagePullPolicy: IfNotPresent
+    env: ## CHANGE THESE VALUES TO YOUR MYSQL DATABASE CREDENTIALS
+    - name: MYSQL_DB_USER
+      value: 'PLACEHOLDER_DB_USER'
+    - name: MYSQL_DB_PASSWORD
+      value: 'PLACEHOLDER_DB_PASSWORD'
+    - name: MYSQL_DB_HOST
+      value: 'PLACEHOLDER_DB_HOST'
+    - name: MYSQL_DB_PORT
+      value: 'PLACEHOLDER_DB_PORT'
+    ...
 ```
-* Output your cluster's IP address and NodePort of your `productpage` service in your terminal: _(If you have a load balancer, you can access it through the IP found on `kubectl get ingress`)_
+
+## 3. Inject Istio envoys with Egress traffic enabled on the application
+
+* Insert data in your MySQL database  
 ```bash
-$ echo $(kubectl get po -l app=productpage -o jsonpath={.items[0].status.hostIP}):$(kubectl get svc productpage -o jsonpath={.spec.ports[0].nodePort})
-184.xxx.yyy.zzz:30XYZ
+$ kubectl create -f <(istioctl kube-inject -f mysql-data.yaml --includeIPRanges=172.30.0.0/16,172.20.0.0/16)
 ```
-At this point, you can point your browser to http://184.xxx.yyy.zzz:30XYZ/productpage and see the BookInfo Application. The sample BookInfo Application is configured to run on a Kubernetes Cluster.  
-The next step would be deploying this sample application with Istio Envoys injected. By using Istio, you will have access to Istio's features such as _traffic flow management, access policy enforcement and telemetry data aggregation between microservices_. You will not have to modify the BookInfo's source code.
-
-You should now delete the sample application to proceed to the next step.
+The `--includeIPRanges` option is to pass the IP range(s) used for internal cluster services, thereby excluding external IPs from being redirected to the sidecar proxy. The IP range above is for IBM Bluemix provisioned Kubernetes Clusters. For minikube, you will have to use `10.0.0.1/24`
+* Deploy `productpage` with Envoy injection and `gateway`.  
 ```bash
-$ kubectl delete -f samples/apps/bookinfo/bookinfo.yaml
+$ kubectl create -f <(istioctl kube-inject -f bookinfo.yaml)
 ```
+The `productpage` is not expecting to have egress traffic so you would not need to configure the Envoy to intercept external requests.
 
-## 3. Inject Istio envoys on the application
-
-Envoys are deployed as sidecars on each microservice. Injecting Envoy into your microservice means that the Envoy sidecar would manage the ingoing and outgoing calls for the service. To inject an Envoy sidecar to an existing microservice configuration, do:
+* Deploy `details` with Envoy injection and Egress traffic enabled.  
 ```bash
-$ kubectl apply -f <(istioctl kube-inject -f samples/apps/bookinfo/bookinfo.yaml)
+$ kubectl create -f <(istioctl kube-inject -f details-new.yaml --includeIPRanges=172.30.0.0/16,172.20.0.0/16)
 ```
-> `istioctl kube-inject` modifies the yaml file passed in _-f_. This injects Envoy sidecar into your Kubernetes resource configuration. The only resources updated are Job, DaemonSet, ReplicaSet, and Deployment. Other resources in the YAML file configuration will be left unmodified.
-
-After a few minutes, you should now have your Kubernetes Pods running and have an Envoy sidecar in each of them alongside the microservice. The microservices are **productpage, details, ratings, and reviews**. Note that you'll have three versions of the reviews microservice.
+* Deploy `reviews` with Envoy injection and Egress traffic enabled.  
+```bash
+$ kubectl create -f <(istioctl kube-inject -f reviews-new.yaml --includeIPRanges=172.30.0.0/16,172.20.0.0/16)
 ```
-$ kubectl get pods
-
-NAME                              READY     STATUS    RESTARTS
-details-v1-969129648-lwgr3        2/2       Running   0       
-istio-egress-3850639395-30d1v     1/1       Running   0       
-istio-ingress-4068702052-2st6r    1/1       Running   0       
-istio-pilot-251184572-x9dd4     2/2       Running   0       
-istio-mixer-2499357295-kn4vq      1/1       Running   0       
-productpage-v1-1629799384-00f11   2/2       Running   0       
-ratings-v1-1194835686-dzf2f       2/2       Running   0       
-reviews-v1-2065415949-3gdz5       2/2       Running   0       
-reviews-v2-2593570575-92657       2/2       Running   0       
-reviews-v3-3121725201-cn371       2/2       Running   0       
+* Deploy `ratings` with Envoy injection and Egress traffic enabled.  
+```bash
+$ kubectl create -f <(istioctl kube-inject -f ratings-new.yaml --includeIPRanges=172.30.0.0/16,172.20.0.0/16)
 ```
-## 4. Access your application running on Istio
 
-To access your application, you can check the public IP address of your cluster through `kubectl get nodes` and get the NodePort of the istio-ingress service for port 80 through `kubectl get svc | grep istio-ingress`. Or you can also run the following command to output the IP address and NodePort:
+The `details`, `reviews`, `ratings` will have external traffic since your MySQL database is outside of your cluster. That is why you would need to use `--includeIPRanges` option in `istioctl kube-inject`.
+
+You can now access your application to confirm that it is getting data from your MySQL database.
 ```bash
 echo $(kubectl get po -l istio=ingress -o jsonpath={.items[0].status.hostIP}):$(kubectl get svc istio-ingress -o jsonpath={.spec.ports[0].nodePort})
 184.xxx.yyy.zzz:30XYZ
@@ -189,14 +132,13 @@ echo $(kubectl get po -l istio=ingress -o jsonpath={.items[0].status.hostIP}):$(
 Point your browser to:  
 `http://184.xxx.yyy.zzz:30XYZ/productpage` Replace with your own IP and NodePort.
 
-If you refresh the page multiple times, you'll see that the _reviews_ section of the page changes. That's because there are 3 versions of **reviews**_(reviews-v1, reviews-v2, reviews-v3)_ deployment for our **reviews** service.
-![productpage](images/none.png)
-![productpage](images/black.png)
-![productpage](images/red.png)
+
+
+[Enabling Egress Traffic on Istio](https://istio.io/docs/tasks/egress.html)
 
 # Part B:  Configure traffic flow management, access policy and telemetry data aggregation for application
 
-## 5. Traffic flow management - Modify service routes
+## 4. Traffic flow management - Modify service routes
 
 This step shows you how to configure where you want your service to go based on weights and HTTP Headers.
 * Set Default Routes to `reviews-v1` for all microservices  
@@ -221,7 +163,7 @@ This would set every incoming traffic to the version v3 of the reviews microserv
   $ istioctl replace -f samples/apps/bookinfo/route-rule-reviews-v3.yaml
   ```
 
-## 6. Access policy enforcement - Configure access control
+## 5. Access policy enforcement - Configure access control
 
 This step shows you how to control access to your services. If you have done the step above, you'll see that your `productpage` now just shows red stars on the reviews section and if you are logged in as _jason_, you'll see black stars. The `ratings` service is accessed from the `reviews-v2` if you're logged in as _jason_ or it is accessed from `reviews-v3` if you are not logged in as `jason`.
 
@@ -242,9 +184,9 @@ This step shows you how to control access to your services. If you have done the
 ![access-control](images/access.png)
 
 
-## 7. Telemetry data aggregation - Collect metrics, logs and trace spans
+## 6. Telemetry data aggregation - Collect metrics, logs and trace spans
 
-### 7.1 Collect metrics and logs using Prometheus and Grafana
+### 6.1 Collect metrics and logs using Prometheus and Grafana
 
 This step shows you how to configure [Istio Mixer](https://istio.io/docs/concepts/policy-and-control/mixer.html) to gather telemetry for services in your cluster.
 
@@ -334,7 +276,7 @@ This step shows you how to configure [Istio Mixer](https://istio.io/docs/concept
 
 [Collecting Metrics and Logs on Istio](https://istio.io/docs/tasks/metrics-logs.html)
 
-### 7.2 Collect request traces using Zipkin
+### 6.2 Collect request traces using Zipkin
 
 This step shows you how to collect trace spans using [Zipkin](http://zipkin.io).
 * Install the required Istio Addon: [Zipkin](http://zipkin.io)
@@ -358,83 +300,6 @@ This step shows you how to collect trace spans using [Zipkin](http://zipkin.io).
 
 [Zipkin Tracing on Istio](https://istio.io/docs/tasks/zipkin-tracing.html)
 
-# Part C: Enable Egress Traffic for sample application
-
-#### For this part, you should clone this repository. This step requires you to use the YAML files and/or source code for the microservices.
-
-## 8. Create a Compose for MySQL Database in Bluemix
-Provision Compose for MySQL in Bluemix via https://console.ng.bluemix.net/catalog/services/compose-for-mysql  
-Go to Service credentials and view your credentials. Your MySQL hostname, port, user, and password are under your credential uri and it should look like this
-![images](images/mysqlservice.png)
-
-## 9. Configure sample application to use the external database
-
-In this step, you can choose to build your Docker images from source in the [microservices folder](/microservices) or use the given images.  
-> For building your own images, go to [microservices folder](/microservices)
-
-The YAML files you need to modify are:  
-* `details-new.yaml`
-* `reviews-new.yaml`
-* `ratings-new.yaml`
-* `mysql-data.yaml`
-```yaml
-spec:
-  containers:
-  ...
-    image: ## <insert the corresponding image name you built>
-    imagePullPolicy: IfNotPresent
-    env: ## CHANGE THESE VALUES TO YOUR MYSQL DATABASE CREDENTIALS
-    - name: MYSQL_DB_USER
-      value: 'PLACEHOLDER_DB_USER'
-    - name: MYSQL_DB_PASSWORD
-      value: 'PLACEHOLDER_DB_PASSWORD'
-    - name: MYSQL_DB_HOST
-      value: 'PLACEHOLDER_DB_HOST'
-    - name: MYSQL_DB_PORT
-      value: 'PLACEHOLDER_DB_PORT'
-    ...
-```
-
-## 10. Inject Istio envoys with Egress traffic enabled on the application
-
-* Insert data in your MySQL database  
-```bash
-$ kubectl create -f <(istioctl kube-inject -f mysql-data.yaml --includeIPRanges=172.30.0.0/16,172.20.0.0/16)
-```
-The `--includeIPRanges` option is to pass the IP range(s) used for internal cluster services, thereby excluding external IPs from being redirected to the sidecar proxy. The IP range above is for IBM Bluemix provisioned Kubernetes Clusters. For minikube, you will have to use `10.0.0.1/24`
-* Deploy `productpage` with Envoy injection and `gateway`.  
-```bash
-$ kubectl create -f <(istioctl kube-inject -f bookinfo.yaml)
-```
-The `productpage` is not expecting to have egress traffic so you would not need to configure the Envoy to intercept external requests.
-
-* Deploy `details` with Envoy injection and Egress traffic enabled.  
-```bash
-$ kubectl create -f <(istioctl kube-inject -f details-new.yaml --includeIPRanges=172.30.0.0/16,172.20.0.0/16)
-```
-* Deploy `reviews` with Envoy injection and Egress traffic enabled.  
-```bash
-$ kubectl create -f <(istioctl kube-inject -f reviews-new.yaml --includeIPRanges=172.30.0.0/16,172.20.0.0/16)
-```
-* Deploy `ratings` with Envoy injection and Egress traffic enabled.  
-```bash
-$ kubectl create -f <(istioctl kube-inject -f ratings-new.yaml --includeIPRanges=172.30.0.0/16,172.20.0.0/16)
-```
-
-The `details`, `reviews`, `ratings` will have external traffic since your MySQL database is outside of your cluster. That is why you would need to use `--includeIPRanges` option in `istioctl kube-inject`.
-
-You can now access your application to confirm that it is getting data from your MySQL database.
-```bash
-echo $(kubectl get po -l istio=ingress -o jsonpath={.items[0].status.hostIP}):$(kubectl get svc istio-ingress -o jsonpath={.spec.ports[0].nodePort})
-184.xxx.yyy.zzz:30XYZ
-```
-
-Point your browser to:  
-`http://184.xxx.yyy.zzz:30XYZ/productpage` Replace with your own IP and NodePort.
-
-
-
-[Enabling Egress Traffic on Istio](https://istio.io/docs/tasks/egress.html)
 
 # Troubleshooting
 * To delete Istio from your cluster
