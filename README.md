@@ -18,7 +18,7 @@ In this code we show how we can build microservices to connect to external datas
 - [Bluemix DevOps Toolchain Service](https://console.ng.bluemix.net/catalog/services/continuous-delivery)
 
 ## Scenarios
-[Part A: Modify Istio application to external service by rebuilding microservices and enabling egress traffic](#part-c-connect-application-to-external-service-by-rebuilding-microservices-and-enabling-egress-traffic)
+[Part A: Modify Istio application to external service by rebuilding microservices and enabling egress traffic](#part-a-modify-istio-application-to-connect-to-external-datasource-by-rebuilding-microservices-and-enabling-egress-traffic)
 
 [Part B:  Configure traffic flow management, access policy and telemetry data aggregation for application](#part-b-configure-traffic-flow-management-access-policy-and-telemetry-data-aggregation-for-application)
 
