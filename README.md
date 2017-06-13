@@ -24,6 +24,10 @@ The [BookInfo](https://istio.io/docs/samples/bookinfo.html) is a simple applicat
 
 ![ISTIO-PART-B](images/ISTIO-PART-B.png)
 
+[Part C: Configure and use Istio's features for sample application](#part-b-configure-and-use-istios-features-for-sample-application-1)
+
+![ISTIO-PART-C](images/ISTIO-PART-C.png)
+
 # Prerequisite
 Create a Kubernetes cluster with either [Minikube](https://kubernetes.io/docs/getting-started-guides/minikube) for local testing, or with [IBM Bluemix Container Service](https://github.com/IBM/container-journey-template/blob/master/Toolchain_Instructions_new.md) to deploy in cloud. The code here is regularly tested against [Kubernetes Cluster from Bluemix Container Service](https://console.ng.bluemix.net/docs/containers/cs_ov.html#cs_ov) using Travis.
 
@@ -55,8 +59,8 @@ Please follow the [Toolchain instructions](https://github.com/IBM/container-jour
 
 ## Part C: Enable Egress Traffic for sample application
 
-8. [Create a MySQL Database](#8-create-a-mysql-database)
-9. [Configure your sample application](#9-configure-your-sample-application)
+8. [Create a Compose for MySQL database in Bluemix](#8-create-a-compose-for-mysql-database-in-bluemix)
+9. [Configure sample application to use the external database](#9-configure-sample-application-to-use-the-external-database)
 10. [Inject Istio envoys with Egress traffic enabled on the application](#10-inject-istio-envoys-with-egress-traffic-enabled-on-the-application)
 
 #### [Troubleshooting](#troubleshooting-1)
@@ -358,11 +362,13 @@ This step shows you how to collect trace spans using [Zipkin](http://zipkin.io).
 
 #### For this part, you should clone this repository. This step requires you to use the YAML files and/or source code for the microservices.
 
-## 8. Create a Compose for MySQL Database on Bluemix
+## 8. Create a Compose for MySQL Database in Bluemix
 Provision Compose for MySQL in Bluemix via https://console.ng.bluemix.net/catalog/services/compose-for-mysql  
 Go to Service credentials and view your credentials. Your MySQL hostname, port, user, and password are under your credential uri and it should look like this
 ![images](images/mysqlservice.png)
-## 9. Configure your sample application
+
+## 9. Configure sample application to use the external database
+
 In this step, you can choose to build your Docker images from source in the [microservices folder](/microservices) or use the given images.  
 > For building your own images, go to [microservices folder](/microservices)
 
@@ -390,6 +396,7 @@ spec:
 ```
 
 ## 10. Inject Istio envoys with Egress traffic enabled on the application
+
 * Insert data in your MySQL database  
 ```bash
 $ kubectl create -f <(istioctl kube-inject -f mysql-data.yaml --includeIPRanges=172.30.0.0/16,172.20.0.0/16)
