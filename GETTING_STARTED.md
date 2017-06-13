@@ -142,6 +142,12 @@ echo $(kubectl get po -l istio=ingress -o jsonpath={.items[0].status.hostIP}):$(
 Point your browser to:  
 `http://184.xxx.yyy.zzz:30XYZ/productpage` Replace with your own IP and NodePort.
 
+If you refresh the page multiple times, you'll see that the _reviews_ section of the page changes. That's because there are 3 versions of **reviews**_(reviews-v1, reviews-v2, reviews-v3)_ deployment for our **reviews** service.
+![productpage](images/none.png)
+![productpage](images/black.png)
+![productpage](images/red.png)
+
+
 # Troubleshooting
 * To delete Istio from your cluster
 ```bash
