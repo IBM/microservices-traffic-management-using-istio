@@ -16,11 +16,11 @@ The [BookInfo](https://istio.io/docs/samples/bookinfo.html) is a simple applicat
 - [Bluemix DevOps Toolchain Service](https://console.ng.bluemix.net/catalog/services/continuous-delivery)
 
 ## Scenarios
-[Part A: Deploy Istio service mesh and sample application on Kubernetes](#part-a-deploy-istio-service-mesh-and-sample-application-on-kubernetes-1)
+[Part A: Deploy Istio service mesh and application on Kubernetes cluster](#part-a-deploy-istio-service-mesh-and-application-on-kubernetes-cluster)
 
-[Part B: Configure and use Istio's features for sample application](#part-b-configure-and-use-istios-features-for-sample-application-1)
+[Part B:  Configure traffic flow management, access policy and telemetry data aggregation for application](#part-b-configure-traffic-flow-management-access-policy-and-telemetry-data-aggregation-for-application)
 
-[Part C: Connect sample application to external service by enabling Egress traffic](#part-c-connect-sample-application-to-external-service-by-enabling-egress-traffic)
+[Part C: Connect application to external service by rebuilding microservices and enabling egress traffic](#part-c-connect-application-to-external-service-by-rebuilding-microservices-and-enabling-egress-traffic)
 
 # Prerequisite
 Create a Kubernetes cluster with either [Minikube](https://kubernetes.io/docs/getting-started-guides/minikube) for local testing, or with [IBM Bluemix Container Service](https://github.com/IBM/container-journey-template/blob/master/Toolchain_Instructions_new.md) to deploy in cloud. The code here is regularly tested against [Kubernetes Cluster from Bluemix Container Service](https://console.ng.bluemix.net/docs/containers/cs_ov.html#cs_ov) using Travis.
@@ -36,7 +36,7 @@ Please follow the [Toolchain instructions](https://github.com/IBM/container-jour
 
 # Steps
 
-## Part A: Deploy Istio service mesh and sample application on Kubernetes
+## Part A: Deploy Istio service mesh and application on Kubernetes Cluster
 
 ![ISTIO-PART-A](images/ISTIO-PART-A.png)
 
@@ -45,7 +45,7 @@ Please follow the [Toolchain instructions](https://github.com/IBM/container-jour
 3. [Inject Istio envoys on the application](#3-inject-istio-envoys-on-the-application)
 4. [Access your application running on Istio](#4-access-your-application-running-on-istio)
 
-## Part B: Configure and use Istio's features for sample application
+## Part B: Configure traffic flow management, access policy and telemetry data aggregation for application
 
 ![ISTIO-PART-B](images/ISTIO-PART-B.png)
 
@@ -55,7 +55,7 @@ Please follow the [Toolchain instructions](https://github.com/IBM/container-jour
      - 7.1 [Collect metrics and logs using Prometheus and Grafana](#71-collect-metrics-and-logs-using-prometheus-and-grafana)
      - 7.2 [Collect request traces using Zipkin](#72-collect-request-traces-using-zipkin)
 
-## Part C: Connect sample application to external service by enabling Egress traffic
+## Part C: Connect application to external service by rebuilding microservices and enabling egress traffic
 
 ![ISTIO-PART-C](images/ISTIO-PART-C.png)
 
@@ -65,7 +65,7 @@ Please follow the [Toolchain instructions](https://github.com/IBM/container-jour
 
 #### [Troubleshooting](#troubleshooting-1)
 
-# Part A: Deploy Istio service mesh and sample application on Kubernetes
+# Part A: Deploy Istio service mesh and application on Kubernetes cluster
 
 ## 1. Install Istio on Kubernetes
 
@@ -194,7 +194,7 @@ If you refresh the page multiple times, you'll see that the _reviews_ section of
 ![productpage](images/black.png)
 ![productpage](images/red.png)
 
-# Part B: Configure and use Istio's features for sample application
+# Part B:  Configure traffic flow management, access policy and telemetry data aggregation for application
 
 ## 5. Traffic flow management - Modify service routes
 
