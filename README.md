@@ -69,7 +69,7 @@ Provision Compose for MySQL in Bluemix via https://console.ng.bluemix.net/catalo
 Go to Service credentials and view your credentials. Your MySQL hostname, port, user, and password are under your credential uri and it should look like this
 ![images](images/mysqlservice.png)
 
-## 2. Configure sample application to use the external database
+## 2. Modify sample application to use the external database
 
 In this step, you can choose to build your Docker images from source in the [microservices folder](/microservices) or use the given images.  
 > For building your own images, go to [microservices folder](/microservices)
