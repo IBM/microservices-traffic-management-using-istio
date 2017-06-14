@@ -102,26 +102,26 @@ spec:
 
 * Insert data in your MySQL database  
 ```bash
-$ kubectl create -f <(istioctl kube-inject -f mysql-data.yaml --includeIPRanges=172.30.0.0/16,172.20.0.0/16)
+$ kubectl apply -f <(istioctl kube-inject -f mysql-data.yaml --includeIPRanges=172.30.0.0/16,172.20.0.0/16)
 ```
 The `--includeIPRanges` option is to pass the IP range(s) used for internal cluster services, thereby excluding external IPs from being redirected to the sidecar proxy. The IP range above is for IBM Bluemix provisioned Kubernetes Clusters. For minikube, you will have to use `10.0.0.1/24`
 * Deploy `productpage` with Envoy injection and `gateway`.  
 ```bash
-$ kubectl create -f <(istioctl kube-inject -f bookinfo.yaml)
+$ kubectl apply -f <(istioctl kube-inject -f bookinfo.yaml)
 ```
 The `productpage` is not expecting to have egress traffic so you would not need to configure the Envoy to intercept external requests.
 
 * Deploy `details` with Envoy injection and Egress traffic enabled.  
 ```bash
-$ kubectl create -f <(istioctl kube-inject -f details-new.yaml --includeIPRanges=172.30.0.0/16,172.20.0.0/16)
+$ kubectl apply -f <(istioctl kube-inject -f details-new.yaml --includeIPRanges=172.30.0.0/16,172.20.0.0/16)
 ```
 * Deploy `reviews` with Envoy injection and Egress traffic enabled.  
 ```bash
-$ kubectl create -f <(istioctl kube-inject -f reviews-new.yaml --includeIPRanges=172.30.0.0/16,172.20.0.0/16)
+$ kubectl apply -f <(istioctl kube-inject -f reviews-new.yaml --includeIPRanges=172.30.0.0/16,172.20.0.0/16)
 ```
 * Deploy `ratings` with Envoy injection and Egress traffic enabled.  
 ```bash
-$ kubectl create -f <(istioctl kube-inject -f ratings-new.yaml --includeIPRanges=172.30.0.0/16,172.20.0.0/16)
+$ kubectl apply -f <(istioctl kube-inject -f ratings-new.yaml --includeIPRanges=172.30.0.0/16,172.20.0.0/16)
 ```
 
 The `details`, `reviews`, `ratings` will have external traffic since your MySQL database is outside of your cluster. That is why you would need to use `--includeIPRanges` option in `istioctl kube-inject`.
