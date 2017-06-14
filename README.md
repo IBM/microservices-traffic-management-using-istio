@@ -61,6 +61,10 @@ Please follow the [Toolchain instructions](https://github.com/IBM/container-jour
 # 1. Create an external datasource for application
 
 ### 1.1 Create MySQL Database in a container
+Using a MySQL Database in a container in the same as your application's cluster would mean that you would not need to enable egress traffic as it is in the same network or IP range with the Istio-enabled application. The source code for the Docker image used in creating a MySQL Database is in the [microservices folder](/microservices). The image also adds initial data to be used later in the application.  
+```bash
+$ kubectl apply -f <(istioctl kube-inject -f book-database.yaml)
+```
 
 ### 1.2 Create Compose for MySQL Database in Bluemix
 Provision Compose for MySQL in Bluemix via https://console.ng.bluemix.net/catalog/services/compose-for-mysql  
@@ -81,7 +85,7 @@ The YAML files you need to modify are:
 * `details-new.yaml`
 * `reviews-new.yaml`
 * `ratings-new.yaml`
-* `mysql-data.yaml`
+* `mysql-data.yaml` _Not needed if you are using [1.1 MySQL in a container](#11-create-mysql-database-in-a-container) of your cluster_
 ```yaml
 spec:
   containers:
@@ -102,11 +106,13 @@ spec:
 
 ## 3. Deploy application microservices and Istio envoys with Egress traffic enabled
 
-* Insert data in your MySQL database  
+* Insert data in your MySQL database in Bluemix. **NOTE:** _If you are running a [1.1 MySQL in a container](#11-create-mysql-database-in-a-container) of your cluster, you would not need to do this as the initial data is already deployed with the image_
 ```bash
 $ kubectl apply -f <(istioctl kube-inject -f mysql-data.yaml --includeIPRanges=172.30.0.0/16,172.20.0.0/16)
 ```
 The `--includeIPRanges` option is to pass the IP range(s) used for internal cluster services, thereby excluding external IPs from being redirected to the sidecar proxy. The IP range above is for IBM Bluemix provisioned Kubernetes Clusters. For minikube, you will have to use `10.0.0.1/24`
+> IMPORTANT NOTE: You don't need to add `--includeIPRanges` parameter if you are using a [1.1 MySQL in a container](#11-create-mysql-database-in-a-container).
+
 * Deploy `productpage` with Envoy injection and `gateway`.  
 ```bash
 $ kubectl apply -f <(istioctl kube-inject -f bookinfo.yaml)
