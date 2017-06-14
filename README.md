@@ -24,7 +24,7 @@ In this code we show how we can build microservices to connect to external datas
 
 # Prerequisite
 Create a Kubernetes cluster with either [Minikube](https://kubernetes.io/docs/getting-started-guides/minikube) for local testing, or with [IBM Bluemix Container Service](https://github.com/IBM/container-journey-template/blob/master/Toolchain_Instructions_new.md) to deploy in cloud. The code here is regularly tested against [Kubernetes Cluster from Bluemix Container Service](https://console.ng.bluemix.net/docs/containers/cs_ov.html#cs_ov) using Travis.
- 
+
 # Deploy to Bluemix
 If you want to deploy the BookInfo app directly to Bluemix, click on 'Deploy to Bluemix' button below to create a Bluemix DevOps service toolchain and pipeline for deploying the sample, else jump to [Steps](#steps)
 
@@ -71,6 +71,9 @@ Go to Service credentials and view your credentials. Your MySQL hostname, port, 
 
 In this step, you can choose to build your Docker images from source in the [microservices folder](/microservices) or use the given images.  
 > For building your own images, go to [microservices folder](/microservices)
+
+The original [Sample BookInfo Application](https://github.com/istio/istio/tree/master/samples/apps/bookinfo/src) was modified in this journey to leverage a MySQL database. The modified microservices are the `details`, `ratings`, and `reviews`. The **details microservice** is using Ruby and a `mysql` ruby gem was added to connect to a MySQL database. The **ratings microservice** is using Node.js and a `mysql` module was added to connect to a MySQL database. The **reviews v1,v2,v3 microservices** is using Java and a `mysql-connector-java` dependency was added in [build.gradle](/microservices/reviews/reviews-application/build.gradle) to connect to a MySQL database. More additional source code was added to [details.rb](/microservices/details/details.rb), [ratings.js](/microservices/ratings/ratings.js), [LibertyRestEndpoint.java](/microservices/reviews/reviews-application/src/main/java/application/rest/LibertyRestEndpoint.java) enables the application to use the details data (Publisher, number of pages, etc.) from the MySQL Database.
+
 
 The YAML files you need to modify are:  
 * `details-new.yaml`
@@ -157,7 +160,7 @@ This is indicated by the `weight: 50` in the yaml file.
   $ istioctl replace -f samples/apps/bookinfo/route-rule-reviews-50-v3.yaml
   # using `replace` should allow you to edit exisiting route-rules.
   ```
-* Route 100% of the traffic to the `version: v3` of the **reviews microservicese**  
+* Route 100% of the traffic to the `version: v3` of the **reviews microservices**  
 This would set every incoming traffic to the version v3 of the reviews microservice. Run:
   ```bash
   $ istioctl replace -f samples/apps/bookinfo/route-rule-reviews-v3.yaml
