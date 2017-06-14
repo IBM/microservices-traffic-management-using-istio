@@ -1,12 +1,12 @@
 [![Build Status](https://travis-ci.org/IBM/Microservices-with-Istio-Service-Mesh-on-Kubernetes.svg?branch=master)](https://travis-ci.org/IBM/Microservices-with-Istio-Service-Mesh-on-Kubernetes)
 
-# Extend Istio microservices to connect to an external datasource by configuring egress policies on Envoy and test canary deplyoments
+# Extend Istio application to connect to external service(s) by configuring egress policies and test canary deployments
 
 [Istio](http://istio.io) is an open platform that provides a uniform way to connect, manage, and secure microservices. Istio is the result of a joint collaboration between IBM, Google and Lyft as a means to support traffic flow management, access policy enforcement and the telemetry data aggregation between microservices, all without requiring changes to the code of your microservice. Istio provides an easy way to create this service mesh by deploying a [control plane](https://istio.io/docs/concepts/what-is-istio/overview.html#architecture) and injecting sidecars, an extended version of the  [Envoy](https://lyft.github.io/envoy/) proxy, in the same Pod as your microservice.
 
 The [BookInfo](https://istio.io/docs/samples/bookinfo.html) is a simple application that is composed of four microservices. The application is written in different languages for each of its microservices namely Python, Java, Ruby, and Node.js.
 
-In this code we show how we can build microservices to connect to external datasource, and configure Itsio  envoy to allow egress traffic.
+In this code we show how we can build microservices to connect to external datasource, and configure Itsio to allow egress traffic.
 
 ## Included Components
 - [Istio](https://istio.io/)
@@ -18,9 +18,9 @@ In this code we show how we can build microservices to connect to external datas
 - [Bluemix DevOps Toolchain Service](https://console.ng.bluemix.net/catalog/services/continuous-delivery)
 
 ## Scenarios
-[Part A: Modify Istio application to external service by rebuilding microservices and enabling egress traffic](#part-a-modify-istio-application-to-connect-to-external-datasource-by-rebuilding-microservices-and-enabling-egress-traffic)
+[Part A: Modify Istio application to connect to external service by rebuilding microservices and enabling egress traffic](#part-a-modify-istio-application-to-connect-to-external-datasource-by-rebuilding-microservices-and-enabling-egress-traffic)
 
-[Part B:  Configure traffic flow management, access policy and telemetry data aggregation for application](#part-b-configure-traffic-flow-management-access-policy-and-telemetry-data-aggregation-for-application)
+[Part B: Configure traffic flow management, access policy and telemetry data aggregation for application](#part-b-configure-traffic-flow-management-access-policy-and-telemetry-data-aggregation-for-application)
 
 # Prerequisite
 Create a Kubernetes cluster with either [Minikube](https://kubernetes.io/docs/getting-started-guides/minikube) for local testing, or with [IBM Bluemix Container Service](https://github.com/IBM/container-journey-template/blob/master/Toolchain_Instructions_new.md) to deploy in cloud. The code here is regularly tested against [Kubernetes Cluster from Bluemix Container Service](https://console.ng.bluemix.net/docs/containers/cs_ov.html#cs_ov) using Travis.
@@ -41,8 +41,8 @@ Please follow the [Toolchain instructions](https://github.com/IBM/container-jour
 1. [Create an external datasource for application](#1-create-an-external-datasource-for-application)
      - 1.1 [Create MySQL database in a container](#11-create-mysql-database-in-a-container)
      - 1.2 [Create Compose for MySQL database in Bluemix](#12-create-compose-for-mysql-database-in-bluemix)
-2. [Configure sample application to use the external database](#2-configure-sample-application-to-use-the-external-database)
-3. [Inject Istio envoys with Egress traffic enabled on the application](#3-inject-istio-envoys-with-egress-traffic-enabled-on-the-application)
+2. [Modify sample application to use the external database](#2-modify-sample-application-to-use-the-external-database)
+3. [Deploy application microservices and Istio envoys with Egress traffic enabled](#3-deploy-application-microservices-and-istio-envoys-with-egress-traffic-enabled-on-the-application)
 
 ## Part B: Configure traffic flow management, access policy and telemetry data aggregation for application
 
@@ -95,7 +95,7 @@ spec:
     ...
 ```
 
-## 3. Inject Istio envoys with Egress traffic enabled on the application
+## 3. Deploy application microservices and Istio envoys with Egress traffic enabled
 
 * Insert data in your MySQL database  
 ```bash
