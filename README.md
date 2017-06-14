@@ -25,6 +25,8 @@ In this code we show how we can build microservices to connect to external datas
 # Prerequisite
 Create a Kubernetes cluster with either [Minikube](https://kubernetes.io/docs/getting-started-guides/minikube) for local testing, or with [IBM Bluemix Container Service](https://github.com/IBM/container-journey-template/blob/master/Toolchain_Instructions_new.md) to deploy in cloud. The code here is regularly tested against [Kubernetes Cluster from Bluemix Container Service](https://console.ng.bluemix.net/docs/containers/cs_ov.html#cs_ov) using Travis.
 
+Install [Istio's core components/control plane](https://istio.io/docs/tasks/installing-istio.html) in your cluster.
+
 # Deploy to Bluemix
 If you want to deploy the BookInfo app directly to Bluemix, click on 'Deploy to Bluemix' button below to create a Bluemix DevOps service toolchain and pipeline for deploying the sample, else jump to [Steps](#steps)
 
@@ -148,6 +150,8 @@ Point your browser to:
 [Enabling Egress Traffic on Istio](https://istio.io/docs/tasks/egress.html)
 
 # Part B:  Configure traffic flow management, access policy and telemetry data aggregation for application
+
+#### You would need to be in the root directory of the [Istio release](https://istio.io/docs/tasks/installing-istio.html) you have downloaded on the [Prerequisites](#prerequisite) section.
 
 ## 4. Traffic flow management - Modify service routes
 
