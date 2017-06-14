@@ -41,8 +41,8 @@ Please follow the [Toolchain instructions](https://github.com/IBM/container-jour
 1. [Create an external datasource for application](#1-create-an-external-datasource-for-application)
      - 1.1 [Create MySQL database in a container](#11-create-mysql-database-in-a-container)
      - 1.2 [Create Compose for MySQL database in Bluemix](#12-create-compose-for-mysql-database-in-bluemix)
-2. [Configure sample application to use the external database](#2-configure-sample-application-to-use-the-external-database)
-3. [Inject Istio envoys with Egress traffic enabled on the application](#3-inject-istio-envoys-with-egress-traffic-enabled-on-the-application)
+2. [Modify sample application to use the external database](#2-modify-sample-application-to-use-the-external-database)
+3. [Deploy application microservices and Istio envoys with Egress traffic enabled](#3-deploy-application-microservices-and-istio-envoys-with-egress-traffic-enabled-on-the-application)
 
 ## Part B: Configure traffic flow management, access policy and telemetry data aggregation for application
 
@@ -95,7 +95,7 @@ spec:
     ...
 ```
 
-## 3. Inject Istio envoys with Egress traffic enabled on the application
+## 3. Deploy application microservices and Istio envoys with Egress traffic enabled
 
 * Insert data in your MySQL database  
 ```bash
