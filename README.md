@@ -24,6 +24,8 @@ In this code we show how we can build microservices to connect to external datas
 
 # Prerequisite
 Create a Kubernetes cluster with either [Minikube](https://kubernetes.io/docs/getting-started-guides/minikube) for local testing, or with [IBM Bluemix Container Service](https://github.com/IBM/container-journey-template/blob/master/Toolchain_Instructions_new.md) to deploy in cloud. The code here is regularly tested against [Kubernetes Cluster from Bluemix Container Service](https://console.ng.bluemix.net/docs/containers/cs_ov.html#cs_ov) using Travis.
+
+You will also need Istio service mesh installed on top of your Kubernetes cluster. Please follow the instructions [here](https://github.com/IBM/Microservices-with-Istio-Service-Mesh-on-Kubernetes/blob/master/GETTING_STARTED.md) to get Istio mesh installed on Kubernetes, and try out the [sample bookinfor application](https://github.com/IBM/Microservices-with-Istio-Service-Mesh-on-Kubernetes/blob/master/GETTING_STARTED.md#2-deploy-sample-bookinfo-application-on-kubernetes) to verify. 
  
 # Deploy to Bluemix
 If you want to deploy the BookInfo app directly to Bluemix, click on 'Deploy to Bluemix' button below to create a Bluemix DevOps service toolchain and pipeline for deploying the sample, else jump to [Steps](#steps)
