@@ -111,7 +111,7 @@ spec:
 $ kubectl apply -f <(istioctl kube-inject -f mysql-data.yaml --includeIPRanges=172.30.0.0/16,172.20.0.0/16)
 ```
 The `--includeIPRanges` option is to pass the IP range(s) used for internal cluster services, thereby excluding external IPs from being redirected to the sidecar proxy. The IP range above is for IBM Bluemix provisioned Kubernetes Clusters. For minikube, you will have to use `10.0.0.1/24`
-> IMPORTANT NOTE: You don't need to add `--includeIPRanges` parameter if you are using a [1.1 MySQL in a container](#11-create-mysql-database-in-a-container).
+> IMPORTANT NOTE: You don't need to add `--includeIPRanges` parameter if you are using a [1.1 MySQL in a container](#11-create-mysql-database-in-a-container). However, for services otuside of your cluster, you would need to enable egress traffic and add `--includeIPRanges` if it is not an http/https protocol. You can read more about enabling egress traffic for http/https protocol [here](https://istio.io/docs/tasks/egress.html#using-the-istio-egress-service)
 
 * Deploy `productpage` with Envoy injection and `gateway`.  
 ```bash
