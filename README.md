@@ -63,7 +63,7 @@ Please follow the [Toolchain instructions](https://github.com/IBM/container-jour
 # 1. Create an external datasource for application
 
 ### 1.1 Create MySQL Database in a container
-Using a MySQL Database in a container in the same as your application's cluster would mean that you would not need to enable egress traffic as it is in the same network or IP range with the Istio-enabled application. The source code for the Docker image used in creating a MySQL Database is in the [microservices folder](/microservices). The image also adds initial data to be used later in the application.  
+Using a MySQL Database in a container in the same as your application's cluster would mean that you would not need to enable egress traffic as it is in the same network or IP range with the Istio-enabled application. The source code for the Docker image used in creating a MySQL Database is in the [microservices folder](/microservices). The image also adds initial data that will be used later in the application.  
 ```bash
 $ kubectl apply -f <(istioctl kube-inject -f book-database.yaml)
 ```
