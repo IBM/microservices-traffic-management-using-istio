@@ -45,7 +45,7 @@ $ docker build -t registry.ng.bluemix.net/<your-namespace>/reviews-v3
 
 ## MySQL Data generator
 
-1. Build the images using the Dockerfile in `mysql_data` folder.
+1. Build the image using the Dockerfile in `mysql_data` folder.
 ```bash
 $ docker build -t registry.ng.bluemix.net/<your-namespace>/mysql-bookinfo .
 ```
@@ -53,4 +53,15 @@ $ docker build -t registry.ng.bluemix.net/<your-namespace>/mysql-bookinfo .
 2. Push the image.
 ```bash
 $ docker push registry.ng.bluemix.net/<your-namespace>/mysql-bookinfo
+```
+
+## MySQL in a container
+
+1. Build the image using the Dockerfile in `bookinfo_db`.
+```bash
+$ docker build -t registry.ng.bluemix.net/<your-namespace>/book-database .
+```
+2. Push the image.
+```bash
+$ docker push registry.ng.bluemix.net/<your-namespace>/book-database
 ```
