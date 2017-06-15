@@ -25,8 +25,8 @@ In this code we show how we can build microservices to connect to external datas
 # Prerequisite
 Create a Kubernetes cluster with either [Minikube](https://kubernetes.io/docs/getting-started-guides/minikube) for local testing, or with [IBM Bluemix Container Service](https://github.com/IBM/container-journey-template/blob/master/Toolchain_Instructions_new.md) to deploy in cloud. The code here is regularly tested against [Kubernetes Cluster from Bluemix Container Service](https://console.ng.bluemix.net/docs/containers/cs_ov.html#cs_ov) using Travis.
 
-You will also need Istio service mesh installed on top of your Kubernetes cluster. Please follow the instructions [here](https://github.com/IBM/Microservices-with-Istio-Service-Mesh-on-Kubernetes/blob/master/GETTING_STARTED.md) to get Istio mesh installed on Kubernetes, and try out the [sample bookinfo application](https://github.com/IBM/Microservices-with-Istio-Service-Mesh-on-Kubernetes/blob/master/GETTING_STARTED.md#2-deploy-sample-bookinfo-application-on-kubernetes) to verify. 
- 
+You will also need Istio service mesh installed on top of your Kubernetes cluster. Please follow the instructions [here](https://github.com/IBM/Microservices-with-Istio-Service-Mesh-on-Kubernetes/blob/master/GETTING_STARTED.md) to get Istio mesh installed on Kubernetes, and try out the [sample bookinfo application](https://github.com/IBM/Microservices-with-Istio-Service-Mesh-on-Kubernetes/blob/master/GETTING_STARTED.md#2-deploy-sample-bookinfo-application-on-kubernetes) to verify.
+
 # Deploy to Bluemix
 If you want to deploy the BookInfo app directly to Bluemix, click on 'Deploy to Bluemix' button below to create a Bluemix DevOps service toolchain and pipeline for deploying the sample, else jump to [Steps](#steps)
 
@@ -63,6 +63,10 @@ Please follow the [Toolchain instructions](https://github.com/IBM/container-jour
 # 1. Create an external datasource for application
 
 ### 1.1 Create MySQL Database in a container
+Using a MySQL Database in a container in the same as your application's cluster would mean that you would not need to enable egress traffic as it is in the same network or IP range with the Istio-enabled application. The source code for the Docker image used in creating a MySQL Database is in the [microservices folder](/microservices). The image also adds initial data that will be used later in the application.  
+```bash
+$ kubectl apply -f <(istioctl kube-inject -f book-database.yaml)
+```
 
 ### 1.2 Create Compose for MySQL Database in Bluemix
 Provision Compose for MySQL in Bluemix via https://console.ng.bluemix.net/catalog/services/compose-for-mysql  
@@ -74,11 +78,16 @@ Go to Service credentials and view your credentials. Your MySQL hostname, port, 
 In this step, you can choose to build your Docker images from source in the [microservices folder](/microservices) or use the given images.  
 > For building your own images, go to [microservices folder](/microservices)
 
+The original [Sample BookInfo Application](https://github.com/istio/istio/tree/master/samples/apps/bookinfo/src) was modified in this journey to leverage a MySQL database. The modified microservices are the `details`, `ratings`, and `reviews`. The **details microservice** is using Ruby and a `mysql` ruby gem was added to connect to a MySQL database. The **ratings microservice** is using Node.js and a `mysql` module was added to connect to a MySQL database. The **reviews v1,v2,v3 microservices** is using Java and a `mysql-connector-java` dependency was added in [build.gradle](/microservices/reviews/reviews-application/build.gradle) to connect to a MySQL database. More source code was added to [details.rb](/microservices/details/details.rb), [ratings.js](/microservices/ratings/ratings.js), [LibertyRestEndpoint.java](/microservices/reviews/reviews-application/src/main/java/application/rest/LibertyRestEndpoint.java) that enables the application to use the details, ratings, and reviews data from the MySQL Database.  
+Preview of added source code for `ratings.js` for connecting to MySQL database:
+![ratings_diff](images/ratings_diff.png)
+
+
 The YAML files you need to modify are:  
 * `details-new.yaml`
 * `reviews-new.yaml`
 * `ratings-new.yaml`
-* `mysql-data.yaml`
+* `mysql-data.yaml` _Not needed if you are using [1.1 MySQL in a container](#11-create-mysql-database-in-a-container) of your cluster_
 ```yaml
 spec:
   containers:
@@ -99,28 +108,30 @@ spec:
 
 ## 3. Deploy application microservices and Istio envoys with Egress traffic enabled
 
-* Insert data in your MySQL database  
+* Insert data in your MySQL database in Bluemix. **NOTE:** _If you are running a [1.1 MySQL in a container](#11-create-mysql-database-in-a-container) of your cluster, you would not need to do this as the initial data is already deployed with the image_
 ```bash
-$ kubectl create -f <(istioctl kube-inject -f mysql-data.yaml --includeIPRanges=172.30.0.0/16,172.20.0.0/16)
+$ kubectl apply -f <(istioctl kube-inject -f mysql-data.yaml --includeIPRanges=172.30.0.0/16,172.20.0.0/16)
 ```
 The `--includeIPRanges` option is to pass the IP range(s) used for internal cluster services, thereby excluding external IPs from being redirected to the sidecar proxy. The IP range above is for IBM Bluemix provisioned Kubernetes Clusters. For minikube, you will have to use `10.0.0.1/24`
+> IMPORTANT NOTE: You don't need to add `--includeIPRanges` parameter if you are using a [1.1 MySQL in a container](#11-create-mysql-database-in-a-container). However, for services otuside of your cluster, you would need to enable egress traffic and add `--includeIPRanges` if it is not an http/https protocol. You can read more about enabling egress traffic for http/https protocol [here](https://istio.io/docs/tasks/egress.html#using-the-istio-egress-service)
+
 * Deploy `productpage` with Envoy injection and `gateway`.  
 ```bash
-$ kubectl create -f <(istioctl kube-inject -f bookinfo.yaml)
+$ kubectl apply -f <(istioctl kube-inject -f bookinfo.yaml)
 ```
 The `productpage` is not expecting to have egress traffic so you would not need to configure the Envoy to intercept external requests.
 
 * Deploy `details` with Envoy injection and Egress traffic enabled.  
 ```bash
-$ kubectl create -f <(istioctl kube-inject -f details-new.yaml --includeIPRanges=172.30.0.0/16,172.20.0.0/16)
+$ kubectl apply -f <(istioctl kube-inject -f details-new.yaml --includeIPRanges=172.30.0.0/16,172.20.0.0/16)
 ```
 * Deploy `reviews` with Envoy injection and Egress traffic enabled.  
 ```bash
-$ kubectl create -f <(istioctl kube-inject -f reviews-new.yaml --includeIPRanges=172.30.0.0/16,172.20.0.0/16)
+$ kubectl apply -f <(istioctl kube-inject -f reviews-new.yaml --includeIPRanges=172.30.0.0/16,172.20.0.0/16)
 ```
 * Deploy `ratings` with Envoy injection and Egress traffic enabled.  
 ```bash
-$ kubectl create -f <(istioctl kube-inject -f ratings-new.yaml --includeIPRanges=172.30.0.0/16,172.20.0.0/16)
+$ kubectl apply -f <(istioctl kube-inject -f ratings-new.yaml --includeIPRanges=172.30.0.0/16,172.20.0.0/16)
 ```
 
 The `details`, `reviews`, `ratings` will have external traffic since your MySQL database is outside of your cluster. That is why you would need to use `--includeIPRanges` option in `istioctl kube-inject`.
@@ -139,6 +150,8 @@ Point your browser to:
 [Enabling Egress Traffic on Istio](https://istio.io/docs/tasks/egress.html)
 
 # Part B:  Configure traffic flow management, access policy and telemetry data aggregation for application
+
+#### You would need to be in the root directory of the [Istio release](https://istio.io/docs/tasks/installing-istio.html) you have downloaded on the [Prerequisites](#prerequisite) section.
 
 ## 4. Traffic flow management - Modify service routes
 
@@ -159,7 +172,7 @@ This is indicated by the `weight: 50` in the yaml file.
   $ istioctl replace -f samples/apps/bookinfo/route-rule-reviews-50-v3.yaml
   # using `replace` should allow you to edit exisiting route-rules.
   ```
-* Route 100% of the traffic to the `version: v3` of the **reviews microservicese**  
+* Route 100% of the traffic to the `version: v3` of the **reviews microservices**  
 This would set every incoming traffic to the version v3 of the reviews microservice. Run:
   ```bash
   $ istioctl replace -f samples/apps/bookinfo/route-rule-reviews-v3.yaml

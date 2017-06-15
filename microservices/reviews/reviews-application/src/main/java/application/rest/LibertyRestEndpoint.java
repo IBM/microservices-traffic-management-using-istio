@@ -49,11 +49,7 @@ public class LibertyRestEndpoint extends Application {
     private final static String dbPort = System.getenv("MYSQL_DB_PORT");
     private final static String dbUser = System.getenv("MYSQL_DB_USER");
     private final static String dbPassword = System.getenv("MYSQL_DB_PASSWORD");
-    
 
-    @Resource(lookup="jdbc/mydb")
-    private DataSource dataSource;
-    
     private final static String review_resp = ""+
       "<blockquote>"+
       "<p>"+
@@ -152,7 +148,7 @@ public class LibertyRestEndpoint extends Application {
       Integer[] reviewID = new Integer[2];
       String[] review = new String[2];
       String[] reviewer = new String[2];
-      
+
       try {
       Class.forName("com.mysql.jdbc.Driver").newInstance();
       String URL = "jdbc:mysql://" + dbHost + ":" + dbPort + "/bookinfo_db" ;
@@ -161,9 +157,9 @@ public class LibertyRestEndpoint extends Application {
       Statement st = con.createStatement();
       String sql = ("SELECT * FROM reviews;");
       ResultSet rs = st.executeQuery(sql);
-      
+
       int count = 0;
-      while (rs.next()) { 
+      while (rs.next()) {
        reviewID[count] = rs.getInt("ReviewID");
        review[count] = rs.getString("Review");
        reviewer[count] = rs.getString("Reviewer");
@@ -176,8 +172,8 @@ public class LibertyRestEndpoint extends Application {
       catch (Exception ex) {
     	  ex.printStackTrace();
       }
-      
-      
+
+
       if(ratings_enabled){
         JsonObject ratings = getRatings(user, xreq, xtraceid, xspanid, xparentspanid, xsampled, xflags, xotspan);
 

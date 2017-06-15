@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: book-database
+  labels:
+    app: book-database
+spec:
+  ports:
+    - port: 3306
+      protocol: TCP
+      targetPort: 3306
+  selector:
+    app: book-database
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: book-database
+  labels:
+    app: book-database
+spec:
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: book-database
+    spec:
+      containers:
+      - image: anthonyamanse/bookinfo_db
+        name: book-database
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: password
+        ports:
+        - containerPort: 3306
+          name: db
