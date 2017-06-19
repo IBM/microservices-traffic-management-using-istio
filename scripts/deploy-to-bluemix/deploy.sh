@@ -84,6 +84,12 @@ else
   sed -i s#PLACEHOLDER_DB_HOST#$MYSQL_DB_HOST#g $(ls | grep new | grep -v productpage)
   sed -i s#PLACEHOLDER_DB_PORT#$MYSQL_DB_PORT#g $(ls | grep new | grep -v productpage)
   cat $(ls | grep new | grep -v productpage) | grep "value: '"
+  sed -i s#PLACEHOLDER_DB_USER#$MYSQL_DB_USER#g mysql-data.yaml
+  sed -i s#PLACEHOLDER_DB_PASSWORD#$MYSQL_DB_PASSWORD#g mysql-data.yaml
+  sed -i s#PLACEHOLDER_DB_HOST#$MYSQL_DB_HOST#g mysql-data.yaml
+  sed -i s#PLACEHOLDER_DB_PORT#$MYSQL_DB_PORT#g mysql-data.yaml
+  cat mysql-data.yaml | grep "value: ''"
+  kubectl apply -f <(istioctl kube-inject -f mysql-data.yaml --includeIPRanges=172.30.0.0/16,172.20.0.0/16)
 fi
 if [[ -z $SLACK_WEBHOOK_URL ]]
 then

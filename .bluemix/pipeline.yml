@@ -3,7 +3,7 @@ stages:
 - name: BUILD
   inputs:
   - type: git
-    branch: topic-post
+    branch: master
     service: ${SAMPLE_REPO}
   triggers:
   - type: commit

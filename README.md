@@ -32,6 +32,18 @@ If you want to deploy the BookInfo app directly to Bluemix, click on 'Deploy to 
 
 > You will need to create your Kubernetes cluster first and make sure it is fully deployed in your Bluemix account.
 
+Some Required variables to fill out are:
+* MYSQL DB USER
+* MYSQL DB PASSWORD
+* MYSQL DB HOST  
+* MYSQL DB PORT
+
+> NOTE: Leave the MYSQL variables **blank** if you want to the toolchain to use MySQL in a container
+
+* SLACK WEBHOOK URL
+
+![images/env-variables.png](images/env-variables.png)
+
 [![Create Toolchain](https://github.com/IBM/container-journey-template/blob/master/images/button.png)](https://console.ng.bluemix.net/devops/setup/deploy/)
 
 Please follow the [Toolchain instructions](https://github.com/IBM/container-journey-template/blob/master/Toolchain_Instructions.md) to complete your toolchain and pipeline.
