@@ -35,11 +35,12 @@ sed -i s#PLACEHOLDER_DB_PORT#3306#g $(ls | grep new | grep -v productpage)
 curl -L https://git.io/getIstio | sh -
 cd $(ls | grep istio)
 sudo mv bin/istioctl /usr/local/bin/
-echo "default" | ./samples/apps/bookinfo/cleanup.sh
 
 kubectl delete --ignore-not-found=true -f install/kubernetes/istio.yaml
 kubectl delete --ignore-not-found=true -f install/kubernetes/addons
 kubectl delete --ignore-not-found=true -f install/kubernetes/istio-rbac-alpha.yaml
+kubectl delete istioconfigs --all
+kubectl delete thirdpartyresource istio-config.istio.io
 kubectl delete --ignore-not-found=true -f ../book-database.yaml
 kubectl delete --ignore-not-found=true -f ../productpage-new.yaml
 kubectl delete --ignore-not-found=true -f ../details-new.yaml
@@ -113,10 +114,11 @@ if [ $HEALTH -eq 200 ]
 then
   echo "Everything looks good."
   echo "Cleaning up..."
-  echo "default" | ./samples/apps/bookinfo/cleanup.sh
   kubectl delete -f install/kubernetes/istio.yaml
   kubectl delete --ignore-not-found=true -f install/kubernetes/addons
   kubectl delete -f install/kubernetes/istio-rbac-alpha.yaml
+  kubectl delete istioconfigs --all
+  kubectl delete thirdpartyresource istio-config.istio.io
   echo "Deleted Istio in cluster"
   kubectl delete --ignore-not-found=true -f ../book-database.yaml
   kubectl delete --ignore-not-found=true -f ../productpage-new.yaml
