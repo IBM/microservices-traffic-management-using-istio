@@ -29,14 +29,14 @@ spec:
         imagePullPolicy: Always
         env:
         - name: MYSQL_DB_USER
-          value: 'admin'
+          value: 'PLACEHOLDER_DB_USER'
         - name: MYSQL_DB_PASSWORD
-          value: 'YICIKXHVMSPLXINF'
+          value: 'PLACEHOLDER_DB_PASSWORD'
         - name: MYSQL_DB_HOST
-          value: 'sl-us-dal-9-portal.5.dblayer.com'
+          value: 'PLACEHOLDER_DB_HOST'
         - name: MYSQL_DB_PORT
-          value: '23966'
+          value: 'PLACEHOLDER_DB_PORT'
         - name: SLACK_WEBHOOK_URL
-          value: 'https://hooks.slack.com/services/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'
+          value: 'PLACEHOLDER_SLACK'
         ports:
         - containerPort: 9080

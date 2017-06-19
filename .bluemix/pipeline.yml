@@ -3,7 +3,7 @@ stages:
 - name: BUILD
   inputs:
   - type: git
-    branch: master
+    branch: topic-post
     service: ${SAMPLE_REPO}
   triggers:
   - type: commit
@@ -39,6 +39,21 @@ stages:
   - name: API_KEY
     type: secure
     value: ${API_KEY}
+  - name: MYSQL_DB_USER
+    type: text
+    value: ${MYSQL_DB_USER}
+  - name: MYSQL_DB_PASSWORD
+    type: text
+    value: ${MYSQL_DB_PASSWORD}
+  - name: MYSQL_DB_HOST
+    type: text
+    value: ${MYSQL_DB_HOST}
+  - name: MYSQL_DB_PORT
+    type: text
+    value: ${MYSQL_DB_PORT}
+  - name: SLACK_WEBHOOK_URL
+    type: text
+    value: ${SLACK_WEBHOOK_URL}
   jobs:
   - name: Deploy
     type: deployer
