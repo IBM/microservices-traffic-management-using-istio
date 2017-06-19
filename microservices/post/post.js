@@ -14,6 +14,7 @@
 
 var http = require('http');
 var dispatcher = require('httpdispatcher');
+var request = require('request');
 var mysql = require('mysql');
 
 port = parseInt(process.argv[2]);
@@ -23,14 +24,20 @@ var portNumber = process.env.MYSQL_DB_PORT;
 var username = process.env.MYSQL_DB_USER;
 var password = process.env.MYSQL_DB_PASSWORD;
 
+var slackWebHookURL = process.env.SLACK_WEBHOOK_URL
 
 
-var first_rating = 0;
-var second_rating = 0;
-var third_rating = 0;
-var fourth_rating = 0;
-var fifth_rating = 0;
-var ratingsResponse;
+var form = '<br>' +
+            '<form action="/postReview" method="post">' +
+            'Reviewer:<br>' +
+            '<input type="text" name="reviewer" value="Your name here" maxlength="40" required><br><br>' +
+            'Rating:<br>' +
+            '<input type="number" name="rating" size="1" min="1" max="5" required><br><br>' +
+            'Review:<br>' +
+            '<textarea name="review" rows="3" cols="100" wrap="soft" maxlength="1000" required></textarea><br><br>' +
+            '<input type="submit" value="Submit"><br><br><br>' +
+            '<a href="deleteReviews">This link instantly deletes all the reviews from the database.</a>' +
+            '</form>';
 
 dispatcher.onGet("/", function(req, res) {
     res.writeHead(200)
@@ -52,13 +59,20 @@ dispatcher.onGet("/", function(req, res) {
         '<title>Book ratings service</title>' +
         '<body>' +
         '<p><h2>Hello! This is the book ratings service. My content is</h2></p>' +
-        '<div>' + JSON.stringify(ratingsResponse) + '</div>' +
+        '<div>' + form + '</div>' +
         '</body>' +
         '</html>',
         {"Content-type": "text/html"})
 })
 
-dispatcher.onGet("/ratings", function(req, res) {
+dispatcher.onGet("/post", function(req, res) {
+    res.writeHead(200)
+    res.end(form)
+})
+
+dispatcher.onGet("/deleteReviews", function(req, res) {
+    res.writeHead(302, {'Location': '/productpage'}, {'Content-Type': 'text/plain'})
+
     var connection = mysql.createConnection({
         host: hostName,
         port: portNumber,
@@ -68,35 +82,59 @@ dispatcher.onGet("/ratings", function(req, res) {
     });
 
     connection.connect();
-    connection.query('SELECT Rating FROM reviews WHERE BookID=1', function (error, results, fields) {
+
+    SQLstatement = "DELETE FROM reviews"
+
+    connection.query(SQLstatement, function (error, fields) {
         if (error) throw error;
-        if (results[0]) {
-            first_rating = results[0].Rating;
-        }
-        console.log(first_rating);
-        if (results[1]) {
-            second_rating = results[1].Rating;
-        }
-        console.log(second_rating);
-        if (results[2]) {
-            third_rating = results[2].Rating;
-        }
-        console.log(third_rating);
-        if (results[3]) {
-            fourth_rating = results[3].Rating;
-        }
-        console.log(fourth_rating);
-        if (results[4]) {
-            fifth_rating = results[4].Rating;
-        }
-        console.log(fifth_rating);
-        ratingsResponse = {"Reviewer1": first_rating, "Reviewer2": second_rating, "Reviewer3": third_rating, "Reviewer4": fourth_rating, "Reviewer5": fifth_rating};
-        console.log(ratingsResponse);
-        var json = JSON.stringify(ratingsResponse)
-        res.writeHead(200, {"Content-type": "application/json"})
-        res.end(json)
+        console.log("Reviews deleted.")
     });
+
     connection.end();
+    res.end()
+})
+
+dispatcher.onPost("/postReview", function(req, res) {
+    // https://hooks.slack.com/services/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
+    res.writeHead(302, {'Location': '/productpage'}, {'Content-Type': 'text/plain'})
+
+    var reviewer = req.params.reviewer
+    var review = req.params.review
+    var rating = req.params.rating
+    var message = "A review from " + reviewer + " has been posted with a rating of " + rating + " -- _'" + review + "'_"
+    var json = { text: message }
+
+    var connection = mysql.createConnection({
+        host: hostName,
+        port: portNumber,
+        user: username,
+        password: password,
+        database : 'bookinfo_db'
+    });
+
+    connection.connect();
+
+    SQLstatement = "INSERT INTO reviews (BookID,Reviewer,Review,Rating) VALUES (\"1\",\"" + reviewer + "\",\""+ review + "\",\"" + rating + "\")"
+
+    connection.query(SQLstatement, function (error, fields) {
+        if (error) throw error;
+        console.log("1 record inserted")
+    });
+
+
+    request({
+        url: slackWebHookURL,
+        method: "POST",
+        json: true,   // <--Very important!!!
+        body: json
+    }, function (error, response, body){
+        //console.log(response);
+    });
+
+    connection.end();
+
+    res.end()
+
 })
 
 dispatcher.onGet("/health", function(req, res) {
