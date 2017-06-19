@@ -26,6 +26,6 @@ spec:
       containers:
       - name: productpage
         image: anthonyamanse/test-productpage-v1
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         ports:
         - containerPort: 9080

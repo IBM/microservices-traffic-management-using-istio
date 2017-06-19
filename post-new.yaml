@@ -25,7 +25,7 @@ spec:
     spec:
       containers:
       - name: post
-        image: anthonyamanse/test-post-v1:testPost5
+        image: anthonyamanse/post-v1
         imagePullPolicy: Always
         env:
         - name: MYSQL_DB_USER
