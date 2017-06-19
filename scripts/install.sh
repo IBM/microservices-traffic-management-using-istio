@@ -40,6 +40,7 @@ echo "default" | ./samples/apps/bookinfo/cleanup.sh
 kubectl delete --ignore-not-found=true -f install/kubernetes/istio.yaml
 kubectl delete --ignore-not-found=true -f install/kubernetes/addons
 kubectl delete --ignore-not-found=true -f install/kubernetes/istio-rbac-alpha.yaml
+kubectl delete --ignore-not-found=true -f ../book-database.yaml
 kubectl delete --ignore-not-found=true -f ../productpage-new.yaml
 kubectl delete --ignore-not-found=true -f ../details-new.yaml
 kubectl delete --ignore-not-found=true -f ../ratings-new.yaml
@@ -78,7 +79,7 @@ echo "Istio setup done."
 function initial_setup() {
 echo "Creating BookInfo with Injected Envoys..."
 echo "Creating local MySQL database..."
-kubectl apply -f <(istioctl kube-inject -f book-database.yaml)
+kubectl apply -f <(istioctl kube-inject -f ../book-database.yaml)
 echo "Creating ingress resource..."
 kubectl apply -f ingress.yaml
 echo "Creating product page..."
@@ -117,6 +118,7 @@ then
   kubectl delete --ignore-not-found=true -f install/kubernetes/addons
   kubectl delete -f install/kubernetes/istio-rbac-alpha.yaml
   echo "Deleted Istio in cluster"
+  kubectl delete --ignore-not-found=true -f ../book-database.yaml
   kubectl delete --ignore-not-found=true -f ../productpage-new.yaml
   kubectl delete --ignore-not-found=true -f ../details-new.yaml
   kubectl delete --ignore-not-found=true -f ../ratings-new.yaml
