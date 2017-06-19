@@ -26,12 +26,19 @@ function cluster_setup() {
 bx cs workers anthony-cluster-travis
 $(bx cs cluster-config anthony-cluster-travis | grep export)
 
+sed -i s#PLACEHOLDER_DB_USER#book_user#g $(ls | grep new | grep productpage)
+sed -i s#PLACEHOLDER_DB_PASSWORD#password#g $(ls | grep new | grep productpage)
+sed -i s#PLACEHOLDER_DB_HOST#book-database#g $(ls | grep new | grep productpage)
+sed -i s#PLACEHOLDER_DB_PORT#3306#g $(ls | grep new | grep productpage)
+
+
 curl -L https://git.io/getIstio | sh -
 cd $(ls | grep istio)
 sudo mv bin/istioctl /usr/local/bin/
 echo "default" | ./samples/apps/bookinfo/cleanup.sh
 
 kubectl delete --ignore-not-found=true -f install/kubernetes/istio.yaml
+kubectl delete --ignore-not-found=true -f install/kubernetes/addons
 kubectl delete --ignore-not-found=true -f install/kubernetes/istio-rbac-alpha.yaml
 kubectl delete --ignore-not-found=true -f ../productpage-new.yaml
 kubectl delete --ignore-not-found=true -f ../details-new.yaml
@@ -107,6 +114,7 @@ then
   echo "Cleaning up..."
   echo "default" | ./samples/apps/bookinfo/cleanup.sh
   kubectl delete -f install/kubernetes/istio.yaml
+  kubectl delete --ignore-not-found=true -f install/kubernetes/addons
   kubectl delete -f install/kubernetes/istio-rbac-alpha.yaml
   echo "Deleted Istio in cluster"
   kubectl delete --ignore-not-found=true -f ../productpage-new.yaml

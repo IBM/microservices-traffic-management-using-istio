@@ -64,6 +64,13 @@ Please follow the [Toolchain instructions](https://github.com/IBM/container-jour
 
 ### 1.1 Create MySQL Database in a container
 Using a MySQL Database in a container in the same as your application's cluster would mean that you would not need to enable egress traffic as it is in the same network or IP range with the Istio-enabled application. The source code for the Docker image used in creating a MySQL Database is in the [microservices folder](/microservices). The image also adds initial data that will be used later in the application.  
+Credentials are:
+```bash
+MYSQL_DB_USER=book_user
+MYSQL_DB_PASSWORD=password
+MYSQL_DB_HOST=book-database
+MYSQL_DB_PORT=3306
+```
 ```bash
 $ kubectl apply -f <(istioctl kube-inject -f book-database.yaml)
 ```
@@ -99,13 +106,13 @@ spec:
     imagePullPolicy: IfNotPresent
     env: ## CHANGE THESE VALUES TO YOUR MYSQL DATABASE CREDENTIALS
     - name: MYSQL_DB_USER
-      value: 'PLACEHOLDER_DB_USER'
+      value: 'PLACEHOLDER_DB_USER' # change to book_user if you did Step 1.1 MySQL in a container
     - name: MYSQL_DB_PASSWORD
-      value: 'PLACEHOLDER_DB_PASSWORD'
+      value: 'PLACEHOLDER_DB_PASSWORD' # change to password if you did Step 1.1 MySQL in a container
     - name: MYSQL_DB_HOST
-      value: 'PLACEHOLDER_DB_HOST'
+      value: 'PLACEHOLDER_DB_HOST' # change to book-database if you did Step 1.1 MySQL in a container
     - name: MYSQL_DB_PORT
-      value: 'PLACEHOLDER_DB_PORT'
+      value: 'PLACEHOLDER_DB_PORT' # change to 3306 if you did Step 1.1 MySQL in a container
     ...
     ## THIS ENVIRONMENT VARIABLE IS FOR post-new.yaml
     ## Change the value to your Slack team's incoming webhook url
