@@ -26,10 +26,10 @@ function cluster_setup() {
 bx cs workers anthony-cluster-travis
 $(bx cs cluster-config anthony-cluster-travis | grep export)
 
-sed -i s#PLACEHOLDER_DB_USER#book_user#g $(ls | grep new | grep productpage)
-sed -i s#PLACEHOLDER_DB_PASSWORD#password#g $(ls | grep new | grep productpage)
-sed -i s#PLACEHOLDER_DB_HOST#book-database#g $(ls | grep new | grep productpage)
-sed -i s#PLACEHOLDER_DB_PORT#3306#g $(ls | grep new | grep productpage)
+sed -i s#PLACEHOLDER_DB_USER#book_user#g $(ls | grep new | grep -v productpage)
+sed -i s#PLACEHOLDER_DB_PASSWORD#password#g $(ls | grep new | grep -v productpage)
+sed -i s#PLACEHOLDER_DB_HOST#book-database#g $(ls | grep new | grep -v productpage)
+sed -i s#PLACEHOLDER_DB_PORT#3306#g $(ls | grep new | grep -v productpage)
 
 
 curl -L https://git.io/getIstio | sh -
