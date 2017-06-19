@@ -31,6 +31,22 @@ cd $(ls | grep istio)
 sudo mv bin/istioctl /usr/local/bin/
 echo "default" | ./samples/apps/bookinfo/cleanup.sh
 
+kubectl delete --ignore-not-found=true -f install/kubernetes/istio.yaml
+kubectl delete --ignore-not-found=true -f install/kubernetes/istio-rbac-alpha.yaml
+kubectl delete --ignore-not-found=true -f productpage-new.yaml
+kubectl delete --ignore-not-found=true -f details-new.yaml
+kubectl delete --ignore-not-found=true -f ratings-new.yaml
+kubectl delete --ignore-not-found=true -f reviews-new.yaml
+kubectl delete --ignore-not-found=true -f post-new.yaml
+kubectl delete --ignore-not-found=true -f ingress.yaml
+kuber=$(kubectl get pods | grep Terminating)
+while [ ${#kuber} -ne 0 ]
+do
+    sleep 5s
+    kubectl get pods | grep Terminating
+    kuber=$(kubectl get pods | grep Terminating)
+done
+
 kubectl apply -f install/kubernetes/istio-rbac-alpha.yaml
 kubectl apply -f install/kubernetes/istio.yaml
 
@@ -49,11 +65,25 @@ do
     PODS=$(kubectl get pods | grep istio | grep ContainerCreating)
     sleep 5s
 done
+echo "Istio setup done."
 }
 
 function initial_setup() {
 echo "Creating BookInfo with Injected Envoys..."
-kubectl apply -f <(istioctl kube-inject -f samples/apps/bookinfo/bookinfo.yaml)
+echo "Creating local MySQL database..."
+kubectl apply -f <(istioctl kube-inject -f book-database.yaml)
+echo "Creating ingress resource..."
+kubectl apply -f ingress.yaml
+echo "Creating product page..."
+kubectl apply -f <(istioctl kube-inject -f productpage-new.yaml)
+echo "Creating details service..."
+kubectl apply -f <(istioctl kube-inject -f details-new.yaml --includeIPRanges=172.30.0.0/16,172.20.0.0/16)
+echo "Creating reviews service..."
+kubectl apply -f <(istioctl kube-inject -f reviews-new.yaml --includeIPRanges=172.30.0.0/16,172.20.0.0/16)
+echo "Creating ratings service..."
+kubectl apply -f <(istioctl kube-inject -f ratings-new.yaml --includeIPRanges=172.30.0.0/16,172.20.0.0/16)
+echo "Creating post service..."
+kubectl apply -f <(istioctl kube-inject -f post-new.yaml --includeIPRanges=172.30.0.0/16,172.20.0.0/16)
 
 PODS=$(kubectl get pods | grep Init)
 while [ ${#PODS} -ne 0 ]
@@ -74,11 +104,25 @@ HEALTH=$(curl -o /dev/null -s -w "%{http_code}\n" http://$GATEWAY_URL/productpag
 if [ $HEALTH -eq 200 ]
 then
   echo "Everything looks good."
-  echo "Cleaning up."
+  echo "Cleaning up..."
   echo "default" | ./samples/apps/bookinfo/cleanup.sh
   kubectl delete -f install/kubernetes/istio.yaml
   kubectl delete -f install/kubernetes/istio-rbac-alpha.yaml
   echo "Deleted Istio in cluster"
+  kubectl delete --ignore-not-found=true -f productpage-new.yaml
+  kubectl delete --ignore-not-found=true -f details-new.yaml
+  kubectl delete --ignore-not-found=true -f ratings-new.yaml
+  kubectl delete --ignore-not-found=true -f reviews-new.yaml
+  kubectl delete --ignore-not-found=true -f post-new.yaml
+  kubectl delete --ignore-not-found=true -f ingress.yaml
+  kuber=$(kubectl get pods | grep Terminating)
+  while [ ${#kuber} -ne 0 ]
+  do
+      sleep 5s
+      kubectl get pods | grep Terminating
+      kuber=$(kubectl get pods | grep Terminating)
+  done
+  echo "Deleted Book Info app"
 else
   echo "Health check failed."
   exit 1
