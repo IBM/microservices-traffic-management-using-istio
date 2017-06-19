@@ -95,17 +95,17 @@ fi
 
 echo "Creating BookInfo with Injected Envoys..."
 echo "Creating ingress resource..."
-kubectl apply -f ../ingress.yaml
+kubectl apply -f ingress.yaml
 echo "Creating product page..."
-kubectl apply -f <(istioctl kube-inject -f ../productpage-new.yaml)
+kubectl apply -f <(istioctl kube-inject -f productpage-new.yaml)
 echo "Creating details service..."
-kubectl apply -f <(istioctl kube-inject -f ../details-new.yaml --includeIPRanges=172.30.0.0/16,172.20.0.0/16)
+kubectl apply -f <(istioctl kube-inject -f details-new.yaml --includeIPRanges=172.30.0.0/16,172.20.0.0/16)
 echo "Creating reviews service..."
-kubectl apply -f <(istioctl kube-inject -f ../reviews-new.yaml --includeIPRanges=172.30.0.0/16,172.20.0.0/16)
+kubectl apply -f <(istioctl kube-inject -f reviews-new.yaml --includeIPRanges=172.30.0.0/16,172.20.0.0/16)
 echo "Creating ratings service..."
-kubectl apply -f <(istioctl kube-inject -f ../ratings-new.yaml --includeIPRanges=172.30.0.0/16,172.20.0.0/16)
+kubectl apply -f <(istioctl kube-inject -f ratings-new.yaml --includeIPRanges=172.30.0.0/16,172.20.0.0/16)
 echo "Creating post service..."
-kubectl apply -f <(istioctl kube-inject -f ../post-new.yaml --includeIPRanges=172.30.0.0/16,172.20.0.0/16)
+kubectl apply -f <(istioctl kube-inject -f post-new.yaml --includeIPRanges=172.30.0.0/16,172.20.0.0/16)
 
 PODS=$(kubectl get pods | grep Init)
 while [ ${#PODS} -ne 0 ]
