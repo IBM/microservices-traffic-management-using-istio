@@ -43,6 +43,18 @@ $ docker build -t registry.ng.bluemix.net/<your-namespace>/reviews-v2
 $ docker build -t registry.ng.bluemix.net/<your-namespace>/reviews-v3
 ```
 
+## Product Page image
+
+1. Build the image using the Dockerfile in `productpage` folder.
+```bash
+$ dcoker build -t registry.ng.bluemix.net/<your-namespace>/productpage-v1
+```
+
+2. Push the image.
+```bash
+$ docker build -t registry.ng.bluemix.net/<your-namespace>/productpage-v1
+```
+
 ## MySQL Data generator
 
 1. Build the image using the Dockerfile in `mysql_data` folder.
