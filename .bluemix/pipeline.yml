@@ -43,7 +43,7 @@ stages:
     type: text
     value: ${MYSQL_DB_USER}
   - name: MYSQL_DB_PASSWORD
-    type: text
+    type: secure
     value: ${MYSQL_DB_PASSWORD}
   - name: MYSQL_DB_HOST
     type: text

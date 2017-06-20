@@ -31,7 +31,7 @@ var form = '<br>' +
             '<form action="/postReview" method="post">' +
             'Reviewer:<br>' +
             '<input type="text" name="reviewer" value="Your name here" maxlength="40" required><br><br>' +
-            'Rating:<br>' +
+            'Rating: (1-5)<br>' +
             '<input type="number" name="rating" size="1" min="1" max="5" required><br><br>' +
             'Review:<br>' +
             '<textarea name="review" rows="3" cols="100" wrap="soft" maxlength="1000" required></textarea><br><br>' +

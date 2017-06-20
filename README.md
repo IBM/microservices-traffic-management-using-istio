@@ -32,17 +32,14 @@ If you want to deploy the BookInfo app directly to Bluemix, click on 'Deploy to 
 
 > You will need to create your Kubernetes cluster first and make sure it is fully deployed in your Bluemix account.
 
-Some Required variables to fill out are:
+Some Required variables to fill out are:  
+> NOTE: Leave the MYSQL variables **blank** if you want to the toolchain to use MySQL in a container
+
 * MYSQL DB USER
 * MYSQL DB PASSWORD
 * MYSQL DB HOST  
 * MYSQL DB PORT
-
-> NOTE: Leave the MYSQL variables **blank** if you want to the toolchain to use MySQL in a container
-
 * SLACK WEBHOOK URL
-
-![images/env-variables.png](images/env-variables.png)
 
 [![Create Toolchain](https://github.com/IBM/container-journey-template/blob/master/images/button.png)](https://console.ng.bluemix.net/devops/setup/deploy/)
 
@@ -98,7 +95,7 @@ In this step, you can choose to build your Docker images from source in the [mic
 > For building your own images, go to [microservices folder](/microservices)
 
 The original [Sample BookInfo Application](https://github.com/istio/istio/tree/master/samples/apps/bookinfo/src) was modified in this journey to leverage a MySQL database. The modified microservices are the `details`, `ratings`, and `reviews`. The **details microservice** is using Ruby and a `mysql` ruby gem was added to connect to a MySQL database. The **ratings microservice** is using Node.js and a `mysql` module was added to connect to a MySQL database. The **reviews v1,v2,v3 microservices** is using Java and a `mysql-connector-java` dependency was added in [build.gradle](/microservices/reviews/reviews-application/build.gradle) to connect to a MySQL database. More source code was added to [details.rb](/microservices/details/details.rb), [ratings.js](/microservices/ratings/ratings.js), [LibertyRestEndpoint.java](/microservices/reviews/reviews-application/src/main/java/application/rest/LibertyRestEndpoint.java) that enables the application to use the details, ratings, and reviews data from the MySQL Database.  
-Another service called `post` was added that lets users who are logged in can post a review of their own. This service is using Node.js and it also needs access to the database. The service also sends data to the Slack webhook URL provided in `post-new.yaml` that sends a Slack message.  
+A new microservice called `post` was added that lets users who are logged in can post a review of their own. This service is using Node.js and it also needs access to the database. The service also sends data to the Slack webhook URL provided in `post-new.yaml` that sends a Slack message.  
 The `productpage` was then modified to use the `post` service's form section in addition to `details` and `reviews` sections.
 Preview of added source code for `ratings.js` for connecting to MySQL database:
 ![ratings_diff](images/ratings_diff.png)
@@ -106,7 +103,7 @@ Preview of added source code for `ratings.js` for connecting to MySQL database:
 
 The YAML files you need to modify are:  
 * `details-new.yaml`
-* `reviews-new.yaml`
+* `reviews-new.yaml` _Change all the environment variables for each version in the yaml file_
 * `ratings-new.yaml`
 * `post-new.yaml` For slack notifications, you will need your own _[incoming webhook URL](https://api.slack.com/incoming-webhooks)_.
 * `mysql-data.yaml` _Not needed if you are using [1.1 MySQL in a container](#11-create-mysql-database-in-a-container) of your cluster_
@@ -168,7 +165,7 @@ $ kubectl apply -f <(istioctl kube-inject -f ratings-new.yaml --includeIPRanges=
 $ kubectl apply -f <(istioctl kube-inject -f post-new.yaml --includeIPRanges=172.30.0.0/16,172.20.0.0/16)
 ```
 
-The `details`, `reviews`, `ratings`, `post` services will have external traffic since your MySQL database is outside of your cluster. That is why you would need to use `--includeIPRanges` option in `istioctl kube-inject`.
+The `details`, `reviews`, `ratings`, `post` services will have external traffic since your MySQL database _(and Slack's webhook URL if you added one)_ is outside of your cluster. That is why you would need to use `--includeIPRanges` option in `istioctl kube-inject`.
 
 You can now access your application to confirm if it gets the data from your MySQL database.
 ```bash
@@ -181,7 +178,7 @@ Point your browser to:
 
 ![webpage](images/app-view.png)
 
-If you log in to the application usng the **Sign in** button at the top-right corner, you will be able to post more reviews. _Note: The application only gets the first five reviews._
+If you log in to the application using the **Sign in** button at the top-right corner, you will be able to post more reviews. _Note: The application only gets the first five reviews._
 
 ![webpage-logged-in](images/app-view-logged-in.png)
 

@@ -83,7 +83,7 @@
           "title": "MYSQL DB USER",
           "key": "mysql-db-user"
         },{
-          "type": "text",
+          "type": "password",
           "readonly": false,
           "title": "MYSQL DB PASSWORD",
           "key": "mysql-db-password"
@@ -100,7 +100,7 @@
         },{
           "type": "text",
           "readonly": false,
-          "title": "SLACK WEBHOOK URL",
+          "title": "Slack Webhook URL (Optional)",
           "key": "slack-webhook-url"
         },
         {
