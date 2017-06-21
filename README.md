@@ -8,7 +8,7 @@ The [BookInfo](https://istio.io/docs/samples/bookinfo.html) is a simple applicat
 
 In this code we show how we can deploy Istio framework and sample application on Kubernetes, and then focus on how can we enable Istio applications to connect to external service(s) by configuring egress policies on Envoy sidecars. We then show version based routing and deployments, and perform request tracing.
 
-![istio-architecture](istio-architecture.png)
+![istio-architecture](images/istio-architecture.png)
 
 ## Included Components
 - [Istio](https://istio.io/)
