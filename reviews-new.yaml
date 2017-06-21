@@ -25,7 +25,7 @@ spec:
     spec:
       containers:
       - name: reviews
-        image: anthonyamanse/test-reviews-v1
+        image: anthonyamanse/reviews-v1
         imagePullPolicy: Always
         env:
         - name: MYSQL_DB_USER
@@ -36,6 +36,8 @@ spec:
           value: 'PLACEHOLDER_DB_HOST'
         - name: MYSQL_DB_PORT
           value: 'PLACEHOLDER_DB_PORT'
+        - name: SLACK_WEBHOOK_URL
+          value: 'PLACEHOLDER_SLACK_URL'
         ports:
         - containerPort: 9080
 ---
@@ -53,7 +55,7 @@ spec:
     spec:
       containers:
       - name: reviews
-        image: anthonyamanse/test-reviews-v2
+        image: anthonyamanse/reviews-v2
         imagePullPolicy: Always
         env:
         - name: MYSQL_DB_USER
@@ -64,6 +66,8 @@ spec:
           value: 'PLACEHOLDER_DB_HOST'
         - name: MYSQL_DB_PORT
           value: 'PLACEHOLDER_DB_PORT'
+        - name: SLACK_WEBHOOK_URL
+          value: 'PLACEHOLDER_SLACK_URL'
         ports:
         - containerPort: 9080
 ---
@@ -81,7 +85,7 @@ spec:
     spec:
       containers:
       - name: reviews
-        image: anthonyamanse/test-reviews-v3
+        image: anthonyamanse/reviews-v3
         imagePullPolicy: Always
         env:
         - name: MYSQL_DB_USER
@@ -92,5 +96,7 @@ spec:
           value: 'PLACEHOLDER_DB_HOST'
         - name: MYSQL_DB_PORT
           value: 'PLACEHOLDER_DB_PORT'
+        - name: SLACK_WEBHOOK_URL
+          value: 'PLACEHOLDER_SLACK_URL'
         ports:
         - containerPort: 9080

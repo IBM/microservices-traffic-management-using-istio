@@ -94,18 +94,13 @@ Go to Service credentials and view your credentials. Your MySQL hostname, port, 
 In this step, you can choose to build your Docker images from source in the [microservices folder](/microservices) or use the given images.  
 > For building your own images, go to [microservices folder](/microservices)
 
-The original [Sample BookInfo Application](https://github.com/istio/istio/tree/master/samples/apps/bookinfo/src) was modified in this journey to leverage a MySQL database. The modified microservices are the `details`, `ratings`, and `reviews`. The **details microservice** is using Ruby and a `mysql` ruby gem was added to connect to a MySQL database. The **ratings microservice** is using Node.js and a `mysql` module was added to connect to a MySQL database. The **reviews v1,v2,v3 microservices** is using Java and a `mysql-connector-java` dependency was added in [build.gradle](/microservices/reviews/reviews-application/build.gradle) to connect to a MySQL database. More source code was added to [details.rb](/microservices/details/details.rb), [ratings.js](/microservices/ratings/ratings.js), [LibertyRestEndpoint.java](/microservices/reviews/reviews-application/src/main/java/application/rest/LibertyRestEndpoint.java) that enables the application to use the details, ratings, and reviews data from the MySQL Database.  
-A new microservice called `post` was added that lets users who are logged in can post a review of their own. This service is using Node.js and it also needs access to the database. The service also sends data to the Slack webhook URL provided in `post-new.yaml` that sends a Slack message.  
-The `productpage` was then modified to use the `post` service's form section in addition to `details` and `reviews` sections.
-Preview of added source code for `ratings.js` for connecting to MySQL database:
-![ratings_diff](images/ratings_diff.png)
+The original [Sample BookInfo Application](https://github.com/istio/istio/tree/master/samples/apps/bookinfo/src) was modified in this journey to leverage a MySQL database. The modified microservices are the `details`, `ratings`, and `reviews`. The **details microservice** is using Ruby and a `mysql` ruby gem was added to connect to a MySQL database. The **ratings microservice** is using Node.js and a `mysql` module was added to connect to a MySQL database. The **reviews v1,v2,v3 microservices** is using Java and a `mysql-connector-java` dependency was added in [build.gradle](/microservices/reviews/reviews-application/build.gradle) to connect to a MySQL database. More source code was added to [details.rb](/microservices/details/details.rb), [ratings.js](/microservices/ratings/ratings.js), [LibertyRestEndpoint.java](/microservices/reviews/reviews-application/src/main/java/application/rest/LibertyRestEndpoint.java) that enables the application to use the data from the MySQL Database. [LibertyRestEndpoint.java](/microservices/reviews/reviews-application/src/main/java/application/rest/LibertyRestEndpoint.java) was modified to show a form and allows the user to post their own review. A slack notification functionality was also added to send a notification to the [Slack webhook URL](https://api.slack.com/incoming-webhooks) provided in the environment variable on `reviews-new.yaml`.
 
 
 The YAML files you need to modify are:  
 * `details-new.yaml`
-* `reviews-new.yaml` _Change all the environment variables for each version in the yaml file_
+* `reviews-new.yaml` _Change all the environment variables for each version in the yaml file_. For **slack notifications**, you will need your own _[incoming webhook URL](https://api.slack.com/incoming-webhooks)_.
 * `ratings-new.yaml`
-* `post-new.yaml` For slack notifications, you will need your own _[incoming webhook URL](https://api.slack.com/incoming-webhooks)_.
 * `mysql-data.yaml` _Not needed if you are using [1.1 MySQL in a container](#11-create-mysql-database-in-a-container) of your cluster_
 ```yaml
 spec:
@@ -123,7 +118,7 @@ spec:
     - name: MYSQL_DB_PORT
       value: 'PLACEHOLDER_DB_PORT' # change to 3306 if you did Step 1.1 MySQL in a container
     ...
-    ## THIS ENVIRONMENT VARIABLE IS FOR post-new.yaml
+    ## THIS ENVIRONMENT VARIABLE IS FOR reviews-new.yaml
     ## Change the value to your Slack team's incoming webhook url
     - name: SLACK_WEBHOOK_URL
       value: 'https://hooks.slack.com/services/AAA/BBB/CCC'
@@ -133,18 +128,14 @@ spec:
 
 * Insert data in your MySQL database in Bluemix. **NOTE:** _If you are running a [1.1 MySQL in a container](#11-create-mysql-database-in-a-container) of your cluster, you would not need to do this as the initial data is already deployed with the image_
 ```bash
-$ kubectl apply -f <(istioctl kube-inject -f mysql-data.yaml --includeIPRanges=172.30.0.0/16,172.20.0.0/16)
+$ kubectl apply -f mysql-data.yaml # you don't have to inject Istio with this as it only runs once.
 ```
 The `--includeIPRanges` option is to pass the IP range(s) used for internal cluster services, thereby excluding external IPs from being redirected to the sidecar proxy. The IP range above is for IBM Bluemix provisioned Kubernetes Clusters. For minikube, you will have to use `10.0.0.1/24`
 > IMPORTANT NOTE: You don't need to add `--includeIPRanges` parameter if you are using a [1.1 MySQL in a container](#11-create-mysql-database-in-a-container). However, for services otuside of your cluster, you would need to enable egress traffic and add `--includeIPRanges` if it is not an http/https protocol. You can read more about enabling egress traffic for http/https protocol [here](https://istio.io/docs/tasks/egress.html#using-the-istio-egress-service)
 
-* Deploy `ingress.yaml` ingress resource. This will be used by the ingress controller.
-```bash
-$ kubectl apply -f ingress.yaml
-```
 * Deploy `productpage` with Envoy injection and `gateway`.  
 ```bash
-$ kubectl apply -f <(istioctl kube-inject -f productpage-new.yaml)
+$ kubectl apply -f <(istioctl kube-inject -f bookinfo.yaml)
 ```
 The `productpage` is not expecting to have egress traffic so you would not need to configure the Envoy to intercept external requests.
 
@@ -160,12 +151,8 @@ $ kubectl apply -f <(istioctl kube-inject -f reviews-new.yaml --includeIPRanges=
 ```bash
 $ kubectl apply -f <(istioctl kube-inject -f ratings-new.yaml --includeIPRanges=172.30.0.0/16,172.20.0.0/16)
 ```
-* Deploy `post` with Envoy injection and Egress traffic enabled.
-```bash
-$ kubectl apply -f <(istioctl kube-inject -f post-new.yaml --includeIPRanges=172.30.0.0/16,172.20.0.0/16)
-```
 
-The `details`, `reviews`, `ratings`, `post` services will have external traffic since your MySQL database _(and Slack's webhook URL if you added one)_ is outside of your cluster. That is why you would need to use `--includeIPRanges` option in `istioctl kube-inject`.
+The `details`, `reviews`, `ratings` services will have external traffic since your MySQL database _(and Slack's webhook URL if you added one)_ is outside of your cluster. That is why you would need to use `--includeIPRanges` option in `istioctl kube-inject`.
 
 You can now access your application to confirm if it gets the data from your MySQL database.
 ```bash
@@ -178,10 +165,7 @@ Point your browser to:
 
 ![webpage](images/app-view.png)
 
-If you log in to the application using the **Sign in** button at the top-right corner, you will be able to post more reviews. _Note: The application only gets the first five reviews._
-
-![webpage-logged-in](images/app-view-logged-in.png)
-
+You can post a review using the form below the reviews section.
 
 [Enabling Egress Traffic on Istio](https://istio.io/docs/tasks/egress.html)
 
@@ -346,8 +330,8 @@ This step shows you how to collect trace spans using [Zipkin](http://zipkin.io).
 
 * Go to your Zipkin Dashboard again and you will see a number of traces done. _Click on Find Traces button with the appropriate Start and End Time_
 ![zipkin](images/zipkin-traces.png)
-* Click on one of those traces and you will see the details of the traffic you sent to your BookInfo App. It shows how much time it took for the request on `productpage` to finish. It also shows how much time it took for the requests on the `details`,`reviews`, `ratings`, and `post` services.
-![zipkin](images/zipkin-trace.png)
+* Click on one of those traces and you will see the details of the traffic you sent to your BookInfo App. It shows how much time it took for the request on `productpage` to finish. It also shows how much time it took for the requests on the `details`,`reviews`, and `ratings` services.
+![zipkin](images/zipkin-details.png)
 
 [Zipkin Tracing on Istio](https://istio.io/docs/tasks/zipkin-tracing.html)
 
@@ -363,12 +347,10 @@ $ kubectl delete thirdpartyresource istio-config.istio.io
 * To delete all addons: `kubectl delete -f install/kubernetes/addons`
 * To delete the BookInfo app:
 ```bash
-$ kubectl delete -f productpage-new.yaml
+$ kubectl delete -f bookinfo.yaml
 $ kubectl delete -f details-new.yaml
 $ kubectl delete -f ratings-new.yaml
 $ kubectl delete -f reviews-new.yaml
-$ kubectl delete -f post-new.yaml
-$ kubectl delete -f ingress.yaml
 ```
 
 # References
