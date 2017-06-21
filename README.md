@@ -6,7 +6,7 @@
 
 The [BookInfo](https://istio.io/docs/samples/bookinfo.html) is a simple application that is composed of four microservices. The application is written in different languages for each of its microservices namely Python, Java, Ruby, and Node.js.
 
-In this code we show how we can deploy Istio framework and sample application, and then focus on how can we enable and modify application to connect to external service(s) by configuring egress policies on Envoy sidecars. We then show version based routing and deployments, and perform request tracing.
+In this code we show how we can deploy Istio framework on Kubernetes, and then focus on how can we enable and modify sample application to connect to external service(s) by configuring egress policies on Envoy sidecars. We then show version based routing, and perform request tracing.
 
 ![istio-architecture](images/istio-architecture.png)
 
