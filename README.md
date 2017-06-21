@@ -2,11 +2,11 @@
 
 # Extend Istio enabled applications to connect to external service(s) by configuring egress policies and test canary deployments
 
-[Istio](http://istio.io) is an open platform that provides a uniform way to connect, manage, and secure microservices. Istio is the result of a joint collaboration between IBM, Google and Lyft as a means to support traffic flow management, access policy enforcement and the telemetry data aggregation between microservices, all without requiring changes to the code of your microservice. Istio provides an easy way to create this service mesh by deploying a [control plane](https://istio.io/docs/concepts/what-is-istio/overview.html#architecture) and injecting sidecars, an extended version of the  [Envoy](https://lyft.github.io/envoy/) proxy, in the same Pod as your microservice.
+[Istio](http://istio.io) is an open platform that provides a uniform way to connect, manage, and secure microservices. Istio is the result of a joint collaboration between IBM, Google and Lyft as a means to support traffic flow management, access policy enforcement and the telemetry data aggregation between microservices. Istio provides an easy way to create this service mesh by deploying a [control plane](https://istio.io/docs/concepts/what-is-istio/overview.html#architecture) and injecting sidecars, an extended version of the  [Envoy](https://lyft.github.io/envoy/) proxy, in the same Pod as your microservice.
 
 The [BookInfo](https://istio.io/docs/samples/bookinfo.html) is a simple application that is composed of four microservices. The application is written in different languages for each of its microservices namely Python, Java, Ruby, and Node.js.
 
-In this code we show how we can deploy Istio framework on Kubernetes, and then focus on how can we enable and modify applications to connect to external service(s) by configuring egress policies on Envoy sidecars. We then show version based routing, and perform request tracing for the modified application.
+In this code we show how we can deploy Istio framework on Kubernetes, and then focus on how can we extend Istio enabled applications to connect to external service(s) by configuring egress policies on Envoy sidecars. We then show version based routing, and perform request tracing for the modified application.
 
 ![istio-architecture](images/istio-architecture.png)
 
