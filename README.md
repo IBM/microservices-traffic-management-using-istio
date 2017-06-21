@@ -18,11 +18,6 @@ In this code we show how we can deploy Istio framework on Kubernetes, and then f
 - [Prometheus](https://prometheus.io/)
 - [Bluemix DevOps Toolchain Service](https://console.ng.bluemix.net/catalog/services/continuous-delivery)
 
-## Scenarios
-[Part A: Modify Istio application to connect to external service by rebuilding microservices and enabling egress traffic](#part-a-modify-istio-application-to-connect-to-external-datasource-by-rebuilding-microservices-and-enabling-egress-traffic)
-
-[Part B: Configure traffic flow management, access policy and telemetry data aggregation for application](#part-b-configure-traffic-flow-management-access-policy-and-telemetry-data-aggregation-for-application)
-
 # Prerequisite
 Create a Kubernetes cluster with either [Minikube](https://kubernetes.io/docs/getting-started-guides/minikube) for local testing, or with [IBM Bluemix Container Service](https://github.com/IBM/container-journey-template/blob/master/Toolchain_Instructions_new.md) to deploy in cloud. The code here is regularly tested against [Kubernetes Cluster from Bluemix Container Service](https://console.ng.bluemix.net/docs/containers/cs_ov.html#cs_ov) using Travis.
 
@@ -41,7 +36,7 @@ Please follow the [Toolchain instructions](https://github.com/IBM/container-jour
 
 ## Part A: Modify Istio application to connect to external datasource by rebuilding microservices and enabling egress traffic
 
-1. [Create an external datasource for application](#1-create-an-external-datasource-for-application)
+1. [Create a datasource for application](#1-create-a-datasource-for-application)
      - 1.1 [Create MySQL database in a container](#11-create-mysql-database-in-a-container)
      - 1.2 [Create Compose for MySQL database in Bluemix](#12-create-compose-for-mysql-database-in-bluemix)
 2. [Modify sample application to use the external database](#2-modify-sample-application-to-use-the-external-database)
@@ -61,7 +56,7 @@ Please follow the [Toolchain instructions](https://github.com/IBM/container-jour
 
 #### Clone this repository. This step requires you to use the YAML files and/or source code for the microservices.
 
-# 1. Create an external datasource for application
+# 1. Create a datasource for application
 
 ### 1.1 Create MySQL Database in a container
 Using a MySQL Database in a container in the same as your application's cluster would mean that you would not need to enable egress traffic as it is in the same network or IP range with the Istio-enabled application. The source code for the Docker image used in creating a MySQL Database is in the [microservices folder](/microservices). The image also adds initial data that will be used later in the application.  
