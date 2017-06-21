@@ -4,8 +4,9 @@
 
 As microservices grow in size and complexity, they can become harder to manage. How do we enable this growing number of microservices to connect, load balance, and provide role based routing? Istio, a joint collaboration between IBM, Google and Lyft attempts to solve this problem. Istio provides an easy way to create a service mesh by deploying a [control plane](https://istio.io/docs/concepts/what-is-istio/overview.html#architecture) and injecting sidecars, an extended version of the  [Envoy](https://lyft.github.io/envoy/) proxy, in the same environment as your microservics
 
-Also since Istio tightly controls traffic routing, how do we enable microservices to communicate and connect with external services? 
-In this code we show how we can deploy Istio framework on Kubernetes, and then focus on how can we extend Istio enabled applications to connect to external service(s) by configuring egress policies on Envoy sidecars. We then show version based routing, and perform request tracing for the modified application.
+Also since Istio tightly controls traffic routing, every traffic goes through proxy sidecars. Currently only htpp/https based outgoing connections are allowed. Those external http/https services need to be registered with Istio. Also what happens if your application has multiple endpoint connections which are not http/https based? 
+
+In this code we attempt to show those scenarios. We first show how we can deploy Istio framework on Kubernetes, and then focus on how can we extend Istio enabled applications to connect to external service(s) by configuring egress policies on Envoy sidecars. We then show version based routing, and perform request tracing for the modified application.
 
 We leverage the Istio sample application to go through this. The [BookInfo](https://istio.io/docs/samples/bookinfo.html) is a simple application that is composed of four microservices. The application is written in different languages for each of its microservices namely Python, Java, Ruby, and Node.js.
 
