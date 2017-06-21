@@ -7,7 +7,7 @@ This guide is intended for maintainers — anybody with commit access to one or 
 | Name | GitHub | Slack | email |
 |---|---|---|---|
 | Animesh Singh | singhan | animeshsingh | singhan@us.ibm.com |
-| Ryan Moe  | rmoe | rmoe | Ryan.Moe@ibm.com |
+| Anthony Amanse  | AnthonyAmanse | AnthonyAmanse | Anthony.Amanse@ibm.com |
 
 ## Methodoology:
 
