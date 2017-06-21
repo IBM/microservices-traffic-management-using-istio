@@ -35,7 +35,7 @@ Please follow the [Toolchain instructions](https://github.com/IBM/container-jour
 
 # Steps
 
-## Part A: Modify Istio application to connect to external datasource by rebuilding microservices and enabling egress traffic
+## Part A: Modify sample application to connect to external datasource, deploy the application and Istio envoys with egress traffic enabled
 
 1. [Create a datasource for the application](#1-create-a-datasource-for-the-application)
      - 1.1 [Create MySQL database in a container](#11-create-mysql-database-in-a-container) OR
