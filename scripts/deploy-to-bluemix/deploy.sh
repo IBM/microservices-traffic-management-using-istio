@@ -19,8 +19,28 @@ eval "$exp"
 curl -L https://git.io/getIstio | sh -
 cd $(ls | grep istio)
 export PATH="$PATH:$(pwd)/bin"
-echo "default" | ./samples/apps/bookinfo/cleanup.sh
 
+echo "Deleting existing Istio control plane and book info application"
+kubectl delete --ignore-not-found=true -f install/kubernetes/istio.yaml
+kubectl delete --ignore-not-found=true -f install/kubernetes/addons
+kubectl delete --ignore-not-found=true -f install/kubernetes/istio-rbac-alpha.yaml
+kubectl delete istioconfigs --all
+kubectl delete thirdpartyresource istio-config.istio.io
+kubectl delete --ignore-not-found=true -f ../book-database.yaml
+kubectl delete --ignore-not-found=true -f ../bookinfo.yaml
+kubectl delete --ignore-not-found=true -f ../details-new.yaml
+kubectl delete --ignore-not-found=true -f ../ratings-new.yaml
+kubectl delete --ignore-not-found=true -f ../reviews-new.yaml
+
+kuber=$(kubectl get pods | grep Terminating)
+while [ ${#kuber} -ne 0 ]
+do
+    sleep 5s
+    kubectl get pods | grep Terminating
+    kuber=$(kubectl get pods | grep Terminating)
+done
+
+echo "CREATING ISTIO CONTROL PLANE"
 kubectl apply -f install/kubernetes/istio-rbac-alpha.yaml
 kubectl apply -f install/kubernetes/istio.yaml
 
@@ -43,8 +63,48 @@ done
 echo "Finished Istio Control Plane setup."
 sleep 5s
 
+if [[ -z $MYSQL_DB_USER ]] && [[ -z $MYSQL_DB_PASSWORD ]] && [[ -z $MYSQL_DB_HOST ]] && [[ -z $MYSQL_DB_PORT ]]
+then
+  echo "MYSQL_DB_USER,PASSWORD,HOST,PORT are not set. Going to be using MySQL in a container inside the cluster."
+  cd ..
+  sed -i s#PLACEHOLDER_DB_USER#book_user#g $(ls | grep new)
+  sed -i s#PLACEHOLDER_DB_PASSWORD#password#g $(ls | grep new)
+  sed -i s#PLACEHOLDER_DB_HOST#book-database#g $(ls | grep new)
+  sed -i s#PLACEHOLDER_DB_PORT#3306#g $(ls | grep new)
+  cat $(ls | grep new) | grep "value: '"
+  kubectl apply -f <(istioctl kube-inject -f book-database.yaml)
+else
+  echo "Changing variables..."
+  cd ..
+  sed -i s#PLACEHOLDER_DB_USER#$MYSQL_DB_USER#g $(ls | grep new)
+  sed -i s#PLACEHOLDER_DB_PASSWORD#$MYSQL_DB_PASSWORD#g $(ls | grep new)
+  sed -i s#PLACEHOLDER_DB_HOST#$MYSQL_DB_HOST#g $(ls | grep new)
+  sed -i s#PLACEHOLDER_DB_PORT#$MYSQL_DB_PORT#g $(ls | grep new)
+  cat $(ls | grep new) | grep "value: '"
+  sed -i s#PLACEHOLDER_DB_USER#$MYSQL_DB_USER#g mysql-data.yaml
+  sed -i s#PLACEHOLDER_DB_PASSWORD#$MYSQL_DB_PASSWORD#g mysql-data.yaml
+  sed -i s#PLACEHOLDER_DB_HOST#$MYSQL_DB_HOST#g mysql-data.yaml
+  sed -i s#PLACEHOLDER_DB_PORT#$MYSQL_DB_PORT#g mysql-data.yaml
+  cat mysql-data.yaml | grep "value: ''"
+  kubectl apply -f mysql-data.yaml
+fi
+if [[ -z $SLACK_WEBHOOK_URL ]]
+then
+  echo "Slack notification will not be enabled"
+else
+  echo "Slack notification is enabled. Changing required variables to the one you set..."
+  sed -i s#PLACEHOLDER_SLACK#$SLACK_WEBHOOK_URL#g reviews-new.yaml
+fi
+
 echo "Creating BookInfo with Injected Envoys..."
-kubectl apply -f <(istioctl kube-inject -f samples/apps/bookinfo/bookinfo.yaml)
+echo "Creating product page and ingress resource..."
+kubectl apply -f <(istioctl kube-inject -f bookinfo.yaml)
+echo "Creating details service..."
+kubectl apply -f <(istioctl kube-inject -f details-new.yaml --includeIPRanges=172.30.0.0/16,172.20.0.0/16)
+echo "Creating reviews service..."
+kubectl apply -f <(istioctl kube-inject -f reviews-new.yaml --includeIPRanges=172.30.0.0/16,172.20.0.0/16)
+echo "Creating ratings service..."
+kubectl apply -f <(istioctl kube-inject -f ratings-new.yaml --includeIPRanges=172.30.0.0/16,172.20.0.0/16)
 
 PODS=$(kubectl get pods | grep Init)
 while [ ${#PODS} -ne 0 ]

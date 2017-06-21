@@ -33,6 +33,15 @@ If you want to deploy the BookInfo app directly to Bluemix, click on 'Deploy to 
 
 > You will need to create your Kubernetes cluster first and make sure it is fully deployed in your Bluemix account.
 
+Some Required variables to fill out are:  
+> NOTE: Leave the MYSQL variables **blank** if you want to the toolchain to use MySQL in a container
+
+* MYSQL DB USER
+* MYSQL DB PASSWORD
+* MYSQL DB HOST  
+* MYSQL DB PORT
+* SLACK WEBHOOK URL
+
 [![Create Toolchain](https://github.com/IBM/container-journey-template/blob/master/images/button.png)](https://console.ng.bluemix.net/devops/setup/deploy/)
 
 Please follow the [Toolchain instructions](https://github.com/IBM/container-journey-template/blob/master/Toolchain_Instructions.md) to complete your toolchain and pipeline.
@@ -65,6 +74,13 @@ Please follow the [Toolchain instructions](https://github.com/IBM/container-jour
 
 ### 1.1 Create MySQL Database in a container
 Using a MySQL Database in a container in the same as your application's cluster would mean that you would not need to enable egress traffic as it is in the same network or IP range with the Istio-enabled application. The source code for the Docker image used in creating a MySQL Database is in the [microservices folder](/microservices). The image also adds initial data that will be used later in the application.  
+Credentials are:
+```bash
+MYSQL_DB_USER=book_user
+MYSQL_DB_PASSWORD=password
+MYSQL_DB_HOST=book-database
+MYSQL_DB_PORT=3306
+```
 ```bash
 $ kubectl apply -f <(istioctl kube-inject -f book-database.yaml)
 ```
@@ -79,14 +95,12 @@ Go to Service credentials and view your credentials. Your MySQL hostname, port, 
 In this step, you can choose to build your Docker images from source in the [microservices folder](/microservices) or use the given images.  
 > For building your own images, go to [microservices folder](/microservices)
 
-The original [Sample BookInfo Application](https://github.com/istio/istio/tree/master/samples/apps/bookinfo/src) was modified in this journey to leverage a MySQL database. The modified microservices are the `details`, `ratings`, and `reviews`. The **details microservice** is using Ruby and a `mysql` ruby gem was added to connect to a MySQL database. The **ratings microservice** is using Node.js and a `mysql` module was added to connect to a MySQL database. The **reviews v1,v2,v3 microservices** is using Java and a `mysql-connector-java` dependency was added in [build.gradle](/microservices/reviews/reviews-application/build.gradle) to connect to a MySQL database. More source code was added to [details.rb](/microservices/details/details.rb), [ratings.js](/microservices/ratings/ratings.js), [LibertyRestEndpoint.java](/microservices/reviews/reviews-application/src/main/java/application/rest/LibertyRestEndpoint.java) that enables the application to use the details, ratings, and reviews data from the MySQL Database.  
-Preview of added source code for `ratings.js` for connecting to MySQL database:
-![ratings_diff](images/ratings_diff.png)
+The original [Sample BookInfo Application](https://github.com/istio/istio/tree/master/samples/apps/bookinfo/src) was modified in this journey to leverage a MySQL database. The modified microservices are the `details`, `ratings`, and `reviews`. The **details microservice** is using Ruby and a `mysql` ruby gem was added to connect to a MySQL database. The **ratings microservice** is using Node.js and a `mysql` module was added to connect to a MySQL database. The **reviews v1,v2,v3 microservices** is using Java and a `mysql-connector-java` dependency was added in [build.gradle](/microservices/reviews/reviews-application/build.gradle) to connect to a MySQL database. More source code was added to [details.rb](/microservices/details/details.rb), [ratings.js](/microservices/ratings/ratings.js), [LibertyRestEndpoint.java](/microservices/reviews/reviews-application/src/main/java/application/rest/LibertyRestEndpoint.java) that enables the application to use the data from the MySQL Database. [LibertyRestEndpoint.java](/microservices/reviews/reviews-application/src/main/java/application/rest/LibertyRestEndpoint.java) was modified to show a form and allows the user to post their own review. A slack notification functionality was also added to send a notification to the [Slack webhook URL](https://api.slack.com/incoming-webhooks) provided in the environment variable on `reviews-new.yaml`.
 
 
 The YAML files you need to modify are:  
 * `details-new.yaml`
-* `reviews-new.yaml`
+* `reviews-new.yaml` _Change all the environment variables for each version in the yaml file_. For **slack notifications**, you will need your own _[incoming webhook URL](https://api.slack.com/incoming-webhooks)_.
 * `ratings-new.yaml`
 * `mysql-data.yaml` _Not needed if you are using [1.1 MySQL in a container](#11-create-mysql-database-in-a-container) of your cluster_
 ```yaml
@@ -97,21 +111,25 @@ spec:
     imagePullPolicy: IfNotPresent
     env: ## CHANGE THESE VALUES TO YOUR MYSQL DATABASE CREDENTIALS
     - name: MYSQL_DB_USER
-      value: 'PLACEHOLDER_DB_USER'
+      value: 'PLACEHOLDER_DB_USER' # change to book_user if you did Step 1.1 MySQL in a container
     - name: MYSQL_DB_PASSWORD
-      value: 'PLACEHOLDER_DB_PASSWORD'
+      value: 'PLACEHOLDER_DB_PASSWORD' # change to password if you did Step 1.1 MySQL in a container
     - name: MYSQL_DB_HOST
-      value: 'PLACEHOLDER_DB_HOST'
+      value: 'PLACEHOLDER_DB_HOST' # change to book-database if you did Step 1.1 MySQL in a container
     - name: MYSQL_DB_PORT
-      value: 'PLACEHOLDER_DB_PORT'
+      value: 'PLACEHOLDER_DB_PORT' # change to 3306 if you did Step 1.1 MySQL in a container
     ...
+    ## THIS ENVIRONMENT VARIABLE IS FOR reviews-new.yaml
+    ## Change the value to your Slack team's incoming webhook url
+    - name: SLACK_WEBHOOK_URL
+      value: 'https://hooks.slack.com/services/AAA/BBB/CCC'
 ```
 
 ## 3. Deploy application microservices and Istio envoys with Egress traffic enabled
 
 * Insert data in your MySQL database in Bluemix. **NOTE:** _If you are running a [1.1 MySQL in a container](#11-create-mysql-database-in-a-container) of your cluster, you would not need to do this as the initial data is already deployed with the image_
 ```bash
-$ kubectl apply -f <(istioctl kube-inject -f mysql-data.yaml --includeIPRanges=172.30.0.0/16,172.20.0.0/16)
+$ kubectl apply -f mysql-data.yaml # you don't have to inject Istio with this as it only runs once.
 ```
 The `--includeIPRanges` option is to pass the IP range(s) used for internal cluster services, thereby excluding external IPs from being redirected to the sidecar proxy. The IP range above is for IBM Bluemix provisioned Kubernetes Clusters. For minikube, you will have to use `10.0.0.1/24`
 > IMPORTANT NOTE: You don't need to add `--includeIPRanges` parameter if you are using a [1.1 MySQL in a container](#11-create-mysql-database-in-a-container). However, for services otuside of your cluster, you would need to enable egress traffic and add `--includeIPRanges` if it is not an http/https protocol. You can read more about enabling egress traffic for http/https protocol [here](https://istio.io/docs/tasks/egress.html#using-the-istio-egress-service)
@@ -135,9 +153,9 @@ $ kubectl apply -f <(istioctl kube-inject -f reviews-new.yaml --includeIPRanges=
 $ kubectl apply -f <(istioctl kube-inject -f ratings-new.yaml --includeIPRanges=172.30.0.0/16,172.20.0.0/16)
 ```
 
-The `details`, `reviews`, `ratings` will have external traffic since your MySQL database is outside of your cluster. That is why you would need to use `--includeIPRanges` option in `istioctl kube-inject`.
+The `details`, `reviews`, `ratings` services will have external traffic since your MySQL database _(and Slack's webhook URL if you added one)_ is outside of your cluster. That is why you would need to use `--includeIPRanges` option in `istioctl kube-inject`.
 
-You can now access your application to confirm that it is getting data from your MySQL database.
+You can now access your application to confirm if it gets the data from your MySQL database.
 ```bash
 echo $(kubectl get po -l istio=ingress -o jsonpath={.items[0].status.hostIP}):$(kubectl get svc istio-ingress -o jsonpath={.spec.ports[0].nodePort})
 184.xxx.yyy.zzz:30XYZ
@@ -146,7 +164,9 @@ echo $(kubectl get po -l istio=ingress -o jsonpath={.items[0].status.hostIP}):$(
 Point your browser to:  
 `http://184.xxx.yyy.zzz:30XYZ/productpage` Replace with your own IP and NodePort.
 
+![webpage](images/app-view.png)
 
+You can post a review using the form below the reviews section.
 
 [Enabling Egress Traffic on Istio](https://istio.io/docs/tasks/egress.html)
 
@@ -326,7 +346,13 @@ $ kubectl delete istioconfigs --all
 $ kubectl delete thirdpartyresource istio-config.istio.io
 ```
 * To delete all addons: `kubectl delete -f install/kubernetes/addons`
-* To delete the BookInfo app and its route-rules: `./samples/apps/bookinfo/cleanup.sh`
+* To delete the BookInfo app:
+```bash
+$ kubectl delete -f bookinfo.yaml
+$ kubectl delete -f details-new.yaml
+$ kubectl delete -f ratings-new.yaml
+$ kubectl delete -f reviews-new.yaml
+```
 
 # References
 [Istio.io](https://istio.io/docs/tasks/index.html)

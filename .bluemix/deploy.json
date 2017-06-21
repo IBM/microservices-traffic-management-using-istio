@@ -77,6 +77,31 @@
           "readonly": false,
           "title": "Bluemix Cluster Name",
           "key": "bluemix-cluster-name"
+        },{
+          "type": "text",
+          "readonly": false,
+          "title": "MYSQL DB USER",
+          "key": "mysql-db-user"
+        },{
+          "type": "password",
+          "readonly": false,
+          "title": "MYSQL DB PASSWORD",
+          "key": "mysql-db-password"
+        },{
+          "type": "text",
+          "readonly": false,
+          "title": "MYSQL DB HOST",
+          "key": "mysql-db-host"
+        },{
+          "type": "text",
+          "readonly": false,
+          "title": "MYSQL DB PORT",
+          "key": "mysql-db-port"
+        },{
+          "type": "text",
+          "readonly": false,
+          "title": "Slack Webhook URL (Optional)",
+          "key": "slack-webhook-url"
         },
         {
             "type": "table",

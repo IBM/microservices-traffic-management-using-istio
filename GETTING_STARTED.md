@@ -145,6 +145,10 @@ If you refresh the page multiple times, you'll see that the _reviews_ section of
 ![productpage](images/black.png)
 ![productpage](images/red.png)
 
+Now that you have tried the sample Book Info application, you will need to delete it before proceeding to deploy a [modified Book Info application](/README.md).
+```bash
+$ kubectl delete -f samples/apps/bookinfo/bookinfo.yaml
+```
 
 # Troubleshooting
 * To delete Istio from your cluster

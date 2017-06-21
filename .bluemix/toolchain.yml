@@ -14,7 +14,7 @@ sample-repo:
   parameters:
     repo_name: "{{name}}"
     repo_url: https://github.com/IBM/Microservices-with-Istio-Service-Mesh-on-Kubernetes.git
-    type: clone
+    type: fork
     has_issues: false
 
 # Pipelines
@@ -36,6 +36,11 @@ sample-build:
       API_KEY: "{{deploy.parameters.bluemix-api-key}}"
       BLUEMIX_ACCOUNT: "{{deploy.parameters.bluemix-cluster-account}}"
       CLUSTER_NAME: "{{deploy.parameters.bluemix-cluster-name}}"
+      MYSQL_DB_USER: "{{deploy.parameters.mysql-db-user}}"
+      MYSQL_DB_PASSWORD: "{{deploy.parameters.mysql-db-password}}"
+      MYSQL_DB_HOST: "{{deploy.parameters.mysql-db-host}}"
+      MYSQL_DB_PORT: "{{deploy.parameters.mysql-db-port}}"
+      SLACK_WEBHOOK_URL: "{{deploy.parameters.slack-webhook-url}}"
      execute: true
     services: ["sample-repo"]
   hidden: [form, description]
