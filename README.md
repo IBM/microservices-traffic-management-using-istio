@@ -6,7 +6,9 @@
 
 The [BookInfo](https://istio.io/docs/samples/bookinfo.html) is a simple application that is composed of four microservices. The application is written in different languages for each of its microservices namely Python, Java, Ruby, and Node.js.
 
-In this code we show how we can build microservices to connect to external datasource, and configure Itsio to allow egress traffic.
+In this code we show how we can deploy Istio framework and sample application, and then focus on how can we enable and modify application to connect to external service(s) by configuring egress policies on Envoy sidecars. We then show version based routing and deployments, and perform request tracing.
+
+![istio-architecture](images/istio-architecture.png)
 
 ## Included Components
 - [Istio](https://istio.io/)
@@ -14,7 +16,6 @@ In this code we show how we can build microservices to connect to external datas
 - [Grafana](http://docs.grafana.org/guides/getting_started)
 - [Zipkin](http://zipkin.io/)
 - [Prometheus](https://prometheus.io/)
-- [Bluemix container service](https://console.ng.bluemix.net/catalog/?taxonomyNavigation=apps&category=containers)
 - [Bluemix DevOps Toolchain Service](https://console.ng.bluemix.net/catalog/services/continuous-delivery)
 
 ## Scenarios
