@@ -79,9 +79,7 @@ function initial_setup() {
 echo "Creating BookInfo with Injected Envoys..."
 echo "Creating local MySQL database..."
 kubectl apply -f <(istioctl kube-inject -f ../book-database.yaml)
-echo "Creating ingress resource..."
-kubectl apply -f ../ingress.yaml
-echo "Creating product page..."
+echo "Creating product page and ingress resource..."
 kubectl apply -f <(istioctl kube-inject -f ../bookinfo.yaml)
 echo "Creating details service..."
 kubectl apply -f <(istioctl kube-inject -f ../details-new.yaml --includeIPRanges=172.30.0.0/16,172.20.0.0/16)
