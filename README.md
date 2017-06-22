@@ -1,14 +1,24 @@
 [![Build Status](https://travis-ci.org/IBM/Microservices-with-Istio-Service-Mesh-on-Kubernetes.svg?branch=master)](https://travis-ci.org/IBM/Microservices-with-Istio-Service-Mesh-on-Kubernetes)
 
-# Extend Istio enabled applications to connect to external service(s) by configuring egress policies and test canary deployments
+# Istio: Microservice Traffic Management 
 
-As microservices grow in size and complexity, they can become harder to manage. How do we enable this growing number of microservices to connect, load balance, and provide role based routing? Istio, a joint collaboration between IBM, Google and Lyft attempts to solve this problem. Istio provides an easy way to create a service mesh by deploying a [control plane](https://istio.io/docs/concepts/what-is-istio/overview.html#architecture) and injecting sidecars, an extended version of the  [Envoy](https://lyft.github.io/envoy/) proxy, in the same environment as your microservics
+Microservices and containers changed application design and deployment patterns, but along with them brought challenges like service discovery, routing, failure handling, and visibility to microservices. "Service mesh" architecture was born to handle these features. Applications are getting decoupled internally as microservices, and the responsibility of maintaining coupling between these microservices is passed to the service mesh. 
 
-Also since Istio tightly controls traffic routing, every traffic goes through proxy sidecars. Currently only http/https based outgoing connections are allowed. Those external http/https services need to be registered with Istio. Also what happens if your application has multiple endpoint connections which are not http/https based? 
+Istio, a joint collaboration between IBM, Google and Lyft Istio provides an easy way to create a service mesh that will manage many of these complex tasks automatically for you without the need to modify the microservices themselves. Istio does this by:
 
-In this code we attempt to show those scenarios. We first show how we can deploy Istio framework on Kubernetes, and then focus on how can we extend Istio enabled applications to connect to external service(s) by configuring egress policies on Envoy sidecars. We then show version based routing, and perform request tracing for the modified application.
+1. Injecting “sidecars”, secondary containers that sit along side of each instance of a microservice, that acts as a proxy to intercept all incoming and outgoing network traffic,
+2. By deploying a control plane that manages the overall network infrastructure and enforces the policy rules defined by the devops team
 
-We leverage the Istio sample application to go through this. The [BookInfo](https://istio.io/docs/samples/bookinfo.html) is a simple application that is composed of four microservices. The application is written in different languages for each of its microservices namely Python, Java, Ruby, and Node.js.
+Once Istio is installed some of the key feature which it makes available include 
+
+Traffic management: Content and policy based routing to different versions of the same microservice
+Access control: Control access to the microservices based on traffic origination points and users
+Monitoring: In depth monitoring and logs data collection for microservices, as well as collecting request traces
+
+In the first part of this journey we show how can we can deploy the sample [BookInfo](https://istio.io/docs/samples/bookinfo.html) application and inject sidecars to get all the Istio features, and walk through them one by one. The is a simple application that is composed of four microservices. The application is written in different languages for each of its microservices namely Python, Java, Ruby, and Node.js.
+
+Also since Istio tightly controls traffic routing to provide above mentioned benefits, it introduces some drawbacks. Outgoing traffic to external services outside the Istio data plane can only be enabled by specialized configuration. In the second part of the journey we 
+focus on how Istio can be configured to allow applications to connect to external services. For that we modify the Istio sample application to use an external database (the default Bookinfo application doesn't use a database) and then show we can enable egress traffic. 
 
 ![istio-architecture](images/istio-architecture.png)
 
