@@ -50,7 +50,7 @@ Please follow the [Toolchain instructions](https://github.com/IBM/container-jour
 
 1. [Deploy sample BookInfo application on Kubernetes](#1-deploy-sample-bookinfo-application-on-kubernetes)
 2. [Inject Istio envoys on the application](#2-inject-istio-envoys-on-the-application)
-3. [Manage Traffic flow](#3-traffic-flow-management---modify-service-routes)
+3. [Configure Traffic flow](#3-traffic-flow-management---modify-service-routes)
 4. [Configure access control](#4-access-policy-enforcement---configure-access-control)
 5. [Collect metrics, logs and trace spans](#5-telemetry-data-aggregation---collect-metrics-logs-and-trace-spans)
      - 5.1 [Collect metrics and logs using Prometheus and Grafana](#51-collect-metrics-and-logs-using-prometheus-and-grafana)
@@ -324,7 +324,7 @@ The YAML files you need to modify are:
 * `details-new.yaml`
 * `reviews-new.yaml`
 * `ratings-new.yaml`
-* `mysql-data.yaml` _Not needed if you are using [1.1 MySQL in a container](#11-create-mysql-database-in-a-container) of your cluster_
+* `mysql-data.yaml` 
 ```yaml
 spec:
   containers:
@@ -345,12 +345,13 @@ spec:
 
 ## 8. Deploy application microservices and Istio envoys with Egress traffic enabled
 
-* Insert data in your MySQL database in Bluemix. **NOTE:** _If you are running a [1.1 MySQL in a container](#11-create-mysql-database-in-a-container) of your cluster, you would not need to do this as the initial data is already deployed with the image_
+* Insert data in your MySQL database in Bluemix. 
+
 ```bash
 $ kubectl apply -f <(istioctl kube-inject -f mysql-data.yaml --includeIPRanges=172.30.0.0/16,172.20.0.0/16)
 ```
 The `--includeIPRanges` option is to pass the IP range(s) used for internal cluster services, thereby excluding external IPs from being redirected to the sidecar proxy. The IP range above is for IBM Bluemix provisioned Kubernetes Clusters. For minikube, you will have to use `10.0.0.1/24`
-> IMPORTANT NOTE: You don't need to add `--includeIPRanges` parameter if you are using a [1.1 MySQL in a container](#11-create-mysql-database-in-a-container). However, for services otuside of your cluster, you would need to enable egress traffic and add `--includeIPRanges` if it is not an http/https protocol. You can read more about enabling egress traffic for http/https protocol [here](https://istio.io/docs/tasks/egress.html#using-the-istio-egress-service)
+> IMPORTANT NOTE: For services otuside of your cluster, you would need to enable egress traffic and add `--includeIPRanges` if it is not an http/https protocol. You can read more about enabling egress traffic for http/https protocol [here](https://istio.io/docs/tasks/egress.html#using-the-istio-egress-service)
 
 * Deploy `productpage` with Envoy injection and `gateway`.  
 ```bash
@@ -378,13 +379,8 @@ You can now access your application to confirm that it is getting data from your
 echo $(kubectl get po -l istio=ingress -o jsonpath={.items[0].status.hostIP}):$(kubectl get svc istio-ingress -o jsonpath={.spec.ports[0].nodePort})
 184.xxx.yyy.zzz:30XYZ
 ```
-
 Point your browser to:  
 `http://184.xxx.yyy.zzz:30XYZ/productpage` Replace with your own IP and NodePort.
-
-
-
-[Enabling Egress Traffic on Istio](https://istio.io/docs/tasks/egress.html)
 
 # Troubleshooting
 * To delete Istio from your cluster
