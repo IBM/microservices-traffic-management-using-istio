@@ -11,7 +11,7 @@ Istio, a joint collaboration between IBM, Google and Lyft Istio provides an easy
 
 Once Istio is installed some of the key feature which it makes available include 
 
-- Traffic management: Content and policy based routing to different versions of the application
+- Traffic management: Content and policy based load balancing and routing
 - Access control: Control access to the microservices based on traffic origination points and users
 - Monitoring: In depth monitoring and logs data collection for microservices, as well as collecting request traces
 
