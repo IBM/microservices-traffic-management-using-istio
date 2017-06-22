@@ -48,20 +48,20 @@ Please follow the [Toolchain instructions](https://github.com/IBM/container-jour
 
 ## Part A: Deploy sample Bookinfo application to Kubernetes and inject Istio sidecars to enable traffic flow management, access policy and monitoring data aggregation for application
 
-1. [Deploy sample BookInfo application on Kubernetes]()
-2. [Inject Istio envoys on the application]()
-3. [Traffic flow management - Modify service routes](#4-traffic-flow-management---modify-service-routes)
-4. [Access policy enforcement - Configure access control](#5-access-policy-enforcement---configure-access-control)
-5. [Telemetry data aggregation - Collect metrics, logs and trace spans](#6-telemetry-data-aggregation---collect-metrics-logs-and-trace-spans)
-     - 6.1 [Collect metrics and logs using Prometheus and Grafana](#61-collect-metrics-and-logs-using-prometheus-and-grafana)
-     - 6.2 [Collect request traces using Zipkin](#62-collect-request-traces-using-zipkin)
+1. [Deploy sample BookInfo application on Kubernetes](#1-deploy-sample-bookinfo-application-on-kubernetes)
+2. [Inject Istio envoys on the application](#2-inject-istio-envoys-on-the-application)
+3. [Manage Traffic flow](#3-traffic-flow-management---modify-service-routes)
+4. [Configure access control](#4-access-policy-enforcement---configure-access-control)
+5. [Collect metrics, logs and trace spans](#5-telemetry-data-aggregation---collect-metrics-logs-and-trace-spans)
+     - 5.1 [Collect metrics and logs using Prometheus and Grafana](#51-collect-metrics-and-logs-using-prometheus-and-grafana)
+     - 5.2 [Collect request traces using Zipkin](#52-collect-request-traces-using-zipkin)
 
 ## Part B: Modify sample application to connect to external datasource, deploy the application and Istio envoys with egress traffic enabled
-6. [Create a datasource for the application](#1-create-a-datasource-for-the-application)
-     - 1.1 [Create MySQL database in a container](#11-create-mysql-database-in-a-container) OR
-     - 1.2 [Create Compose for MySQL database in Bluemix](#12-create-compose-for-mysql-database-in-bluemix)
-7. [Modify sample application to use the external database](#2-modify-sample-application-to-use-the-external-database)
-8. [Deploy application microservices and Istio envoys with egress traffic enabled](#3-deploy-application-microservices-and-istio-envoys-with-egress-traffic-enabled)
+6. [Create a datasource for the application](#6-create-a-datasource-for-the-application)
+     - 6.1 [Create MySQL database in a container](#61-create-mysql-database-in-a-container) OR
+     - 6.2 [Create Compose for MySQL database in Bluemix](#62-create-compose-for-mysql-database-in-bluemix)
+7. [Modify sample application to use the external database](#7-modify-sample-application-to-use-the-external-database)
+8. [Deploy application microservices and Istio envoys with egress traffic enabled](#8-deploy-application-microservices-and-istio-envoys-with-egress-traffic-enabled)
 
 ## Part A: Deploy sample Bookinfo application and inject Istio sidecars to enable traffic flow management, access policy and monitoring data aggregation for application
 
@@ -140,7 +140,7 @@ If you refresh the page multiple times, you'll see that the _reviews_ section of
 ![productpage](images/black.png)
 ![productpage](images/red.png)
 
-## 4. Traffic flow management - Modify service routes
+## 3. Traffic flow management - Modify service routes
 
 This step shows you how to configure where you want your service to go based on weights and HTTP Headers.
 * Set Default Routes to `reviews-v1` for all microservices  
@@ -165,7 +165,7 @@ This would set every incoming traffic to the version v3 of the reviews microserv
   $ istioctl replace -f samples/apps/bookinfo/route-rule-reviews-v3.yaml
   ```
 
-## 5. Access policy enforcement - Configure access control
+## 4. Access policy enforcement - Configure access control
 
 This step shows you how to control access to your services. If you have done the step above, you'll see that your `productpage` now just shows red stars on the reviews section and if you are logged in as _jason_, you'll see black stars. The `ratings` service is accessed from the `reviews-v2` if you're logged in as _jason_ or it is accessed from `reviews-v3` if you are not logged in as `jason`.
 
@@ -186,9 +186,9 @@ This step shows you how to control access to your services. If you have done the
 ![access-control](images/access.png)
 
 
-## 6. Telemetry data aggregation - Collect metrics, logs and trace spans
+## 5. Telemetry data aggregation - Collect metrics, logs and trace spans
 
-### 6.1 Collect metrics and logs using Prometheus and Grafana
+### 5.1 Collect metrics and logs using Prometheus and Grafana
 
 This step shows you how to configure [Istio Mixer](https://istio.io/docs/concepts/policy-and-control/mixer.html) to gather telemetry for services in your cluster.
 
@@ -278,7 +278,7 @@ This step shows you how to configure [Istio Mixer](https://istio.io/docs/concept
 
 [Collecting Metrics and Logs on Istio](https://istio.io/docs/tasks/metrics-logs.html)
 
-### 6.2 Collect request traces using Zipkin
+### 5.2 Collect request traces using Zipkin
 
 This step shows you how to collect trace spans using [Zipkin](http://zipkin.io).
 * Install the required Istio Addon: [Zipkin](http://zipkin.io)
@@ -306,20 +306,20 @@ This step shows you how to collect trace spans using [Zipkin](http://zipkin.io).
 
 #### Clone this repository. This step requires you to use the YAML files and/or source code for the microservices.
 
-# 1. Create a datasource for the application
+# 6. Create a datasource for the application
 
-### 1.1 Create MySQL Database in a container
+### 6.1 Create MySQL Database in a container
 Using a MySQL Database in a container in the same as your application's cluster would mean that you would not need to enable egress traffic as it is in the same network or IP range with the Istio-enabled application. The source code for the Docker image used in creating a MySQL Database is in the [microservices folder](/microservices). The image also adds initial data that will be used later in the application.  
 ```bash
 $ kubectl apply -f <(istioctl kube-inject -f book-database.yaml)
 ```
 
-### 1.2 Create Compose for MySQL Database in Bluemix
+### 6.2 Create Compose for MySQL Database in Bluemix
 Provision Compose for MySQL in Bluemix via https://console.ng.bluemix.net/catalog/services/compose-for-mysql  
 Go to Service credentials and view your credentials. Your MySQL hostname, port, user, and password are under your credential uri and it should look like this
 ![images](images/mysqlservice.png)
 
-## 2. Modify sample application to use the external database
+## 7. Modify sample application to use the external database
 
 In this step, you can choose to build your Docker images from source in the [microservices folder](/microservices) or use the given images.  
 > For building your own images, go to [microservices folder](/microservices)
@@ -352,7 +352,7 @@ spec:
     ...
 ```
 
-## 3. Deploy application microservices and Istio envoys with Egress traffic enabled
+## 8. Deploy application microservices and Istio envoys with Egress traffic enabled
 
 * Insert data in your MySQL database in Bluemix. **NOTE:** _If you are running a [1.1 MySQL in a container](#11-create-mysql-database-in-a-container) of your cluster, you would not need to do this as the initial data is already deployed with the image_
 ```bash
