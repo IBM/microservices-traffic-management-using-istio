@@ -65,7 +65,7 @@ Please follow the [Toolchain instructions](https://github.com/IBM/container-jour
 
 ## 1. Deploy sample BookInfo application on Kubernetes
 
-In this part, we will be using the sample BookInfo Application that comes as default with Istio code base.
+In this part, we will be using the sample BookInfo Application that comes as default with Istio code base. As mentioned above, the application that is composed of four microservices, written in different languages for each of its microservices namely Python, Java, Ruby, and Node.js. The default application doesn't use a database and all the microservices store their data in the local file system.
 
 * Deploy the BookInfo Application in your Cluster
 ```bash
@@ -317,10 +317,12 @@ Go to Service credentials and view your credentials. Your MySQL hostname, port, 
 
 ## 7. Modify sample application to use the external database
 
-In this step, you can choose to build your Docker images from source in the [microservices folder](/microservices) or use the given images.  
+In this step, the original sample BookInfo Application is modified to leverage a MySQL database. The modified microservices are the `details`, `ratings`, and `reviews`. This is done to show how Istio can be configured to enable egress traffic for applications leveraging external services outside the Istio data plane, in this case a database.
+
+In this step, you can eitjer choose to build your Docker images for different microservices from source in the [microservices folder](/microservices) or use the given images.
 > For building your own images, go to [microservices folder](/microservices)
 
-The original [Sample BookInfo Application](https://github.com/istio/istio/tree/master/samples/apps/bookinfo/src) was modified in this journey to leverage a MySQL database. The modified microservices are the `details`, `ratings`, and `reviews`. The **details microservice** is using Ruby and a `mysql` ruby gem was added to connect to a MySQL database. The **ratings microservice** is using Node.js and a `mysql` module was added to connect to a MySQL database. The **reviews v1,v2,v3 microservices** is using Java and a `mysql-connector-java` dependency was added in [build.gradle](/microservices/reviews/reviews-application/build.gradle) to connect to a MySQL database. More source code was added to [details.rb](/microservices/details/details.rb), [ratings.js](/microservices/ratings/ratings.js), [LibertyRestEndpoint.java](/microservices/reviews/reviews-application/src/main/java/application/rest/LibertyRestEndpoint.java) that enables the application to use the details, ratings, and reviews data from the MySQL Database.  
+The following modifications were made to the original Bookinfo application. The **details microservice** is using Ruby and a `mysql` ruby gem was added to connect to a MySQL database. The **ratings microservice** is using Node.js and a `mysql` module was added to connect to a MySQL database. The **reviews v1,v2,v3 microservices** is using Java and a `mysql-connector-java` dependency was added in [build.gradle](/microservices/reviews/reviews-application/build.gradle) to connect to a MySQL database. More source code was added to [details.rb](/microservices/details/details.rb), [ratings.js](/microservices/ratings/ratings.js), [LibertyRestEndpoint.java](/microservices/reviews/reviews-application/src/main/java/application/rest/LibertyRestEndpoint.java) that enables the application to use the details, ratings, and reviews data from the MySQL Database.  
 
 Preview of added source code for `ratings.js` for connecting to MySQL database:
 ![ratings_diff](images/ratings_diff.png)
