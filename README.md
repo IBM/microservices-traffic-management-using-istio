@@ -11,7 +11,7 @@ Istio, a joint collaboration between IBM, Google and Lyft Istio provides an easy
 
 Once Istio is installed some of the key feature which it makes available include 
 
-- Traffic management: Content and policy based routing to different versions of the same microservice
+- Traffic management: Content and policy based routing to different versions of the application
 - Access control: Control access to the microservices based on traffic origination points and users
 - Monitoring: In depth monitoring and logs data collection for microservices, as well as collecting request traces
 
@@ -48,26 +48,27 @@ Please follow the [Toolchain instructions](https://github.com/IBM/container-jour
 
 ## Part A: Deploy sample Bookinfo application to Kubernetes and inject Istio sidecars to enable traffic flow management, access policy and monitoring data aggregation for application
 
-4. [Traffic flow management - Modify service routes](#4-traffic-flow-management---modify-service-routes)
-5. [Access policy enforcement - Configure access control](#5-access-policy-enforcement---configure-access-control)
-6. [Telemetry data aggregation - Collect metrics, logs and trace spans](#6-telemetry-data-aggregation---collect-metrics-logs-and-trace-spans)
+1. [Deploy sample BookInfo application on Kubernetes]()
+2. [Inject Istio envoys on the application]()
+3. [Traffic flow management - Modify service routes](#4-traffic-flow-management---modify-service-routes)
+4. [Access policy enforcement - Configure access control](#5-access-policy-enforcement---configure-access-control)
+5. [Telemetry data aggregation - Collect metrics, logs and trace spans](#6-telemetry-data-aggregation---collect-metrics-logs-and-trace-spans)
      - 6.1 [Collect metrics and logs using Prometheus and Grafana](#61-collect-metrics-and-logs-using-prometheus-and-grafana)
      - 6.2 [Collect request traces using Zipkin](#62-collect-request-traces-using-zipkin)
 
 ## Part B: Modify sample application to connect to external datasource, deploy the application and Istio envoys with egress traffic enabled
-
-1. [Create a datasource for the application](#1-create-a-datasource-for-the-application)
+6. [Create a datasource for the application](#1-create-a-datasource-for-the-application)
      - 1.1 [Create MySQL database in a container](#11-create-mysql-database-in-a-container) OR
      - 1.2 [Create Compose for MySQL database in Bluemix](#12-create-compose-for-mysql-database-in-bluemix)
-2. [Modify sample application to use the external database](#2-modify-sample-application-to-use-the-external-database)
-3. [Deploy application microservices and Istio envoys with egress traffic enabled](#3-deploy-application-microservices-and-istio-envoys-with-egress-traffic-enabled)
+7. [Modify sample application to use the external database](#2-modify-sample-application-to-use-the-external-database)
+8. [Deploy application microservices and Istio envoys with egress traffic enabled](#3-deploy-application-microservices-and-istio-envoys-with-egress-traffic-enabled)
 
-## Part A: Deploy sample Bookinfo application to Kubernetes and inject Istio sidecars to enable traffic flow management, access policy and monitoring data aggregation for application
+## Part A: Deploy sample Bookinfo application and inject Istio sidecars to enable traffic flow management, access policy and monitoring data aggregation for application
 
 ## 1. Deploy sample BookInfo application on Kubernetes
 
-In this step, it assumes that you already have your own application that is configured to run in a Kubernetes Cluster.  
-In this journey, you will be using the BookInfo Application that can already run on a Kubernetes Cluster. You can deploy the BookInfo Application without using Istio by not injecting the required Envoys.
+In this part, you will be using the BookInfo Application that can be deployed on a Kubernetes Cluster.
+
 * Deploy the BookInfo Application in your Cluster
 ```bash
 $ kubectl apply -f samples/apps/bookinfo/bookinfo.yaml
@@ -96,9 +97,8 @@ $ echo $(kubectl get po -l app=productpage -o jsonpath={.items[0].status.hostIP}
 184.xxx.yyy.zzz:30XYZ
 ```
 At this point, you can point your browser to http://184.xxx.yyy.zzz:30XYZ/productpage and see the BookInfo Application. The sample BookInfo Application is configured to run on a Kubernetes Cluster.  
-The next step would be deploying this sample application with Istio Envoys injected. By using Istio, you will have access to Istio's features such as _traffic flow management, access policy enforcement and telemetry data aggregation between microservices_. You will not have to modify the BookInfo's source code.
 
-You should now delete the sample application to proceed to the next step.
+The next step would be deploying this sample application with Istio Envoys injected. You should now delete the sample application to proceed to the next step.
 ```bash
 $ kubectl delete -f samples/apps/bookinfo/bookinfo.yaml
 ```
@@ -127,14 +127,11 @@ reviews-v1-2065415949-3gdz5       2/2       Running   0
 reviews-v2-2593570575-92657       2/2       Running   0       
 reviews-v3-3121725201-cn371       2/2       Running   0       
 ```
-## 3. Access your application running on Istio
-
 To access your application, you can check the public IP address of your cluster through `kubectl get nodes` and get the NodePort of the istio-ingress service for port 80 through `kubectl get svc | grep istio-ingress`. Or you can also run the following command to output the IP address and NodePort:
 ```bash
 echo $(kubectl get po -l istio=ingress -o jsonpath={.items[0].status.hostIP}):$(kubectl get svc istio-ingress -o jsonpath={.spec.ports[0].nodePort})
 184.xxx.yyy.zzz:30XYZ
 ```
-
 Point your browser to:  
 `http://184.xxx.yyy.zzz:30XYZ/productpage` Replace with your own IP and NodePort.
 
@@ -142,9 +139,6 @@ If you refresh the page multiple times, you'll see that the _reviews_ section of
 ![productpage](images/none.png)
 ![productpage](images/black.png)
 ![productpage](images/red.png)
-
-
-#### You would need to be in the root directory of the [Istio release](https://istio.io/docs/tasks/installing-istio.html) you have downloaded on the [Prerequisites](#prerequisite) section.
 
 ## 4. Traffic flow management - Modify service routes
 
