@@ -56,10 +56,8 @@ Please follow the [Toolchain instructions](https://github.com/IBM/container-jour
      - 5.1 [Collect metrics and logs using Prometheus and Grafana](#51-collect-metrics-and-logs-using-prometheus-and-grafana)
      - 5.2 [Collect request traces using Zipkin](#52-collect-request-traces-using-zipkin)
 
-## Part B: Modify sample application to connect to external datasource, deploy the application and Istio envoys with egress traffic enabled
-6. [Create a datasource for the application](#6-create-a-datasource-for-the-application)
-     - 6.1 [Create MySQL database in a container](#61-create-mysql-database-in-a-container) OR
-     - 6.2 [Create Compose for MySQL database in Bluemix](#62-create-compose-for-mysql-database-in-bluemix)
+## Part B: Modify sample application to use an external datasource, deploy the application and Istio envoys with egress traffic enabled
+6. [Create an external datasource for the application](#6-create-an-external-datasource-for-the-application)
 7. [Modify sample application to use the external database](#7-modify-sample-application-to-use-the-external-database)
 8. [Deploy application microservices and Istio envoys with egress traffic enabled](#8-deploy-application-microservices-and-istio-envoys-with-egress-traffic-enabled)
 
@@ -306,15 +304,8 @@ This step shows you how to collect trace spans using [Zipkin](http://zipkin.io).
 
 #### Clone this repository. This step requires you to use the YAML files and/or source code for the microservices.
 
-# 6. Create a datasource for the application
+# 6. Create an external datasource for the application
 
-### 6.1 Create MySQL Database in a container
-Using a MySQL Database in a container in the same as your application's cluster would mean that you would not need to enable egress traffic as it is in the same network or IP range with the Istio-enabled application. The source code for the Docker image used in creating a MySQL Database is in the [microservices folder](/microservices). The image also adds initial data that will be used later in the application.  
-```bash
-$ kubectl apply -f <(istioctl kube-inject -f book-database.yaml)
-```
-
-### 6.2 Create Compose for MySQL Database in Bluemix
 Provision Compose for MySQL in Bluemix via https://console.ng.bluemix.net/catalog/services/compose-for-mysql  
 Go to Service credentials and view your credentials. Your MySQL hostname, port, user, and password are under your credential uri and it should look like this
 ![images](images/mysqlservice.png)
