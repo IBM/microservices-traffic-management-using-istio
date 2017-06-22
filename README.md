@@ -4,7 +4,7 @@
 
 Microservices and containers changed application design and deployment patterns, but along with them brought challenges like service discovery, routing, failure handling, and visibility to microservices. "Service mesh" architecture was born to handle these features. Applications are getting decoupled internally as microservices, and the responsibility of maintaining coupling between these microservices is passed to the service mesh. 
 
-Istio, a joint collaboration between IBM, Google and Lyft Istio provides an easy way to create a service mesh that will manage many of these complex tasks automatically, without the need to modify the microservices themselves. Istio does this by:
+Istio, a joint collaboration between IBM, Google and Lyft provides an easy way to create a service mesh that will manage many of these complex tasks automatically, without the need to modify the microservices themselves. Istio does this by:
 
 1. Injecting “sidecars”, secondary containers that sit along side of each instance of a microservice, that acts as a proxy to intercept all incoming and outgoing network traffic,
 2. By deploying a control plane that manages the overall network infrastructure and enforces the policy rules defined by the devops team
@@ -15,10 +15,10 @@ Once Istio is installed some of the key feature which it makes available include
 - Access control: Control access to the microservices based on traffic origination points and users
 - Monitoring: In depth monitoring and logs data collection for microservices, as well as collecting request traces
 
-In the first part of this journey we show how can we can deploy the sample [BookInfo](https://istio.io/docs/samples/bookinfo.html) application and inject sidecars to get all the Istio features, and walk through them one by one. The is a simple application that is composed of four microservices. The application is written in different languages for each of its microservices namely Python, Java, Ruby, and Node.js.
+In the first part of this journey we show how can we can deploy the sample [BookInfo](https://istio.io/docs/samples/bookinfo.html) application and inject sidecars to get all the Istio features, and walk through them one by one. The is a simple application that is composed of four microservices, written in different languages for each of its microservices namely Python, Java, Ruby, and Node.js.
 
 Also since Istio tightly controls traffic routing to provide above mentioned benefits, it introduces some drawbacks. Outgoing traffic to external services outside the Istio data plane can only be enabled by specialized configuration. In the second part of the journey we 
-focus on how Istio can be configured to allow applications to connect to external services. For that we modify the Istio sample application to use an external database (the default Bookinfo application doesn't use a database) and then use this application as a base to show we can enable egress traffic. 
+focus on how Istio can be configured to allow applications to connect to external services. For that we modify the Istio sample application to use an external database (the default Bookinfo application doesn't use a database) and then use this application as a base to show how we can configure Istio to enable egress traffic
 
 ![istio-architecture](images/istio-architecture.png)
 
