@@ -65,7 +65,7 @@ Please follow the [Toolchain instructions](https://github.com/IBM/container-jour
 
 ## 1. Deploy sample BookInfo application on Kubernetes
 
-In this part, you will be using the BookInfo Application that can be deployed on a Kubernetes Cluster.
+In this part, we will be using the sample BookInfo Application that comes as default with Istio code base.
 
 * Deploy the BookInfo Application in your Cluster
 ```bash
@@ -300,7 +300,7 @@ This step shows you how to collect trace spans using [Zipkin](http://zipkin.io).
 
 [Zipkin Tracing on Istio](https://istio.io/docs/tasks/zipkin-tracing.html)
 
-# Part B: Modify Istio application to connect to external datasource by rebuilding microservices and enabling egress traffic
+## Part B:  Modify sample application to use an external datasource, deploy the application and Istio envoys with egress traffic enabled
 
 #### Clone this repository. This step requires you to use the YAML files and/or source code for the microservices.
 
