@@ -7,14 +7,7 @@ Create a Kubernetes cluster with either [Minikube](https://kubernetes.io/docs/ge
 
 # Steps
 
-## Deploy Istio service mesh and application on Kubernetes Cluster
-
-![ISTIO-PART-A](images/ISTIO-PART-A.png)
-
-1. [Install Istio on Kubernetes](#1-install-istio-on-kubernetes)
-2. [Deploy sample BookInfo application on Kubernetes](#2-deploy-sample-bookinfo-application-on-kubernetes)
-3. [Inject Istio envoys on the application](#3-inject-istio-envoys-on-the-application)
-4. [Access your application running on Istio](#4-access-your-application-running-on-istio)
+## Deploy Istio service mesh on Kubernetes Cluster
 
 ## 1. Install Istio on Kubernetes
 
