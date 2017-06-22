@@ -140,7 +140,12 @@ If you refresh the page multiple times, you'll see that the _reviews_ section of
 
 ## 3. Traffic flow management - Modify service routes
 
-This step shows you how to configure where you want your service to go based on weights and HTTP Headers.
+In this section will be modify our Istio to perform dynamically modify the network traffic between some of the components of our application. In this case we have 2 versions of the “reviews” component (v1 and v2) but we don’t want to replace review-v1 with review-v2 immediately. In most cases, when components are upgraded it’s useful to deploy the new version but only have a small subset of network traffic routed to it so that it can be tested before the old version is removed. This is often referred to as “canary testing”.
+ 
+There are multiple ways in which we can control this routing, can be based on which user is accessing it, or certain percentage of the traffic can be configured to flow to one version etc.
+
+This step shows you how to configure where you want your service to go based on weights and HTTP Headers.You would need to be in the root directory of the Istio release you have downloaded on the Prerequisites section.
+
 * Set Default Routes to `reviews-v1` for all microservices  
 This would set all incoming routes on the services (indicated in the line `destination: <service>`) to the deployment with a tag `version: v1`. To set the default routes, run:
   ```bash
