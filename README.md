@@ -46,7 +46,7 @@ Please follow the [Toolchain instructions](https://github.com/IBM/container-jour
 
 # Steps
 
-## Part A: Deploy sample Bookinfo application and inject Istio sidecars to enable traffic flow management, access policy and monitoring data aggregation for application
+### Part A: Deploy sample Bookinfo application and inject Istio sidecars to enable traffic flow management, access policy and monitoring data aggregation for application
 
 1. [Deploy sample BookInfo application on Kubernetes](#1-deploy-sample-bookinfo-application-on-kubernetes)
 2. [Inject Istio envoys on the application](#2-inject-istio-envoys-on-the-application)
@@ -56,7 +56,7 @@ Please follow the [Toolchain instructions](https://github.com/IBM/container-jour
      - 5.1 [Collect metrics and logs using Prometheus and Grafana](#51-collect-metrics-and-logs-using-prometheus-and-grafana)
      - 5.2 [Collect request traces using Zipkin](#52-collect-request-traces-using-zipkin)
 
-## Part B: Modify sample application to use an external datasource, deploy the application and Istio envoys with egress traffic enabled
+### Part B: Modify sample application to use an external datasource, deploy the application and Istio envoys with egress traffic enabled
 6. [Create an external datasource for the application](#6-create-an-external-datasource-for-the-application)
 7. [Modify sample application to use the external database](#7-modify-sample-application-to-use-the-external-database)
 8. [Deploy application microservices and Istio envoys with egress traffic enabled](#8-deploy-application-microservices-and-istio-envoys-with-egress-traffic-enabled)
