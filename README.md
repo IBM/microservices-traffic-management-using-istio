@@ -304,7 +304,7 @@ This step shows you how to collect trace spans using [Zipkin](http://zipkin.io).
 
 #### Clone this repository. This step requires you to use the YAML files and/or source code for the microservices.
 
-# 6. Create an external datasource for the application
+## 6. Create an external datasource for the application
 
 Provision Compose for MySQL in Bluemix via https://console.ng.bluemix.net/catalog/services/compose-for-mysql  
 Go to Service credentials and view your credentials. Your MySQL hostname, port, user, and password are under your credential uri and it should look like this
