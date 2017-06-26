@@ -72,4 +72,11 @@ spec:
         backend:
           serviceName: productpage
           servicePort: 9080
----
+      - path: /postReview
+        backend:
+          serviceName: reviews
+          servicePort: 9080
+      - path: /deleteReviews
+        backend:
+          serviceName: reviews
+          servicePort: 9080

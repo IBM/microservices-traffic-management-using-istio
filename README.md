@@ -320,7 +320,7 @@ Go to Service credentials and view your credentials. Your MySQL hostname, port, 
 
 In this step, the original sample BookInfo Application is modified to leverage a MySQL database. The modified microservices are the `details`, `ratings`, and `reviews`. This is done to show how Istio can be configured to enable egress traffic for applications leveraging external services outside the Istio data plane, in this case a database.
 
-In this step, you can eitjer choose to build your Docker images for different microservices from source in the [microservices folder](/microservices) or use the given images.
+In this step, you can either choose to build your Docker images for different microservices from source in the [microservices folder](/microservices) or use the given images.
 > For building your own images, go to [microservices folder](/microservices)
 
 The following modifications were made to the original Bookinfo application. The **details microservice** is using Ruby and a `mysql` ruby gem was added to connect to a MySQL database. The **ratings microservice** is using Node.js and a `mysql` module was added to connect to a MySQL database. The **reviews v1,v2,v3 microservices** is using Java and a `mysql-connector-java` dependency was added in [build.gradle](/microservices/reviews/reviews-application/build.gradle) to connect to a MySQL database. More source code was added to [details.rb](/microservices/details/details.rb), [ratings.js](/microservices/ratings/ratings.js), [LibertyRestEndpoint.java](/microservices/reviews/reviews-application/src/main/java/application/rest/LibertyRestEndpoint.java) that enables the application to use the details, ratings, and reviews data from the MySQL Database.  
@@ -354,10 +354,9 @@ spec:
 
 ## 8. Deploy application microservices and Istio envoys with Egress traffic enabled
 
-By default, Istio-enabled applications will be unable to access URLs outside of the cluster. All outbound traffice in the pod are redirected by the its sidecar proxy which only handles destinations inside the cluster.
+By default, Istio-enabled applications will be unable to access URLs outside of the cluster. All outbound traffic in the pod are redirected by its sidecar proxy which only handles destinations inside the cluster.
 
-The `--includeIPRanges` option is to pass the IP range(s) used for internal cluster services, thereby excluding external IPs from being redirected to the sidecar proxy. The IP range above is for IBM Bluemix provisioned Kubernetes Clusters. For minikube, you will have to use `10.0.0.1/24`
-> IMPORTANT NOTE: For services otuside of your cluster, you would need to enable egress traffic and add `--includeIPRanges` if it is not an http/https protocol. You can read more about enabling egress traffic for http/https protocol [here](https://istio.io/docs/tasks/egress.html#using-the-istio-egress-service)
+The `--includeIPRanges` option is to pass the IP range(s) used for internal cluster services, thereby excluding external IPs from being redirected to the sidecar proxy. The IP range above is for IBM Bluemix provisioned Kubernetes Clusters. For minikube, you will have to use `10.0.0.1/24`. For external services using http/https protocol, the Istio Egress service can let you access by registering it in your cluster. You can read more about registering an external http/https service [here](https://istio.io/docs/tasks/egress.html#configuring-the-external-services)
 
 * Insert data in your MySQL database in Bluemix.
 
