@@ -2,14 +2,14 @@
 
 # Istio: Traffic Management for your Microservices
 
-Microservices and containers changed application design and deployment patterns, but along with them brought challenges like service discovery, routing, failure handling, and visibility to microservices. "Service mesh" architecture was born to handle these features. Applications are getting decoupled internally as microservices, and the responsibility of maintaining coupling between these microservices is passed to the service mesh. 
+Microservices and containers changed application design and deployment patterns, but along with them brought challenges like service discovery, routing, failure handling, and visibility to microservices. "Service mesh" architecture was born to handle these features. Applications are getting decoupled internally as microservices, and the responsibility of maintaining coupling between these microservices is passed to the service mesh.
 
 [Istio](https://istio.io/), a joint collaboration between IBM, Google and Lyft provides an easy way to create a service mesh that will manage many of these complex tasks automatically, without the need to modify the microservices themselves. Istio does this by:
 
 1. Injecting “sidecars”, secondary containers that sit along side of each instance of a microservice, that acts as a proxy to intercept all incoming and outgoing network traffic,
 2. By deploying a control plane that manages the overall network infrastructure and enforces the policy rules defined by the devops team
 
-Once Istio is installed some of the key feature which it makes available include 
+Once Istio is installed some of the key feature which it makes available include
 
 - Traffic management: Content and policy based load balancing and routing
 - Access control: Control access to the microservices based on traffic origination points and users
@@ -142,7 +142,7 @@ If you refresh the page multiple times, you'll see that the _reviews_ section of
 ## 3. Traffic flow management - Modify service routes
 
 In this section will be modify our Istio to perform dynamically modify the network traffic between some of the components of our application. In this case we have 2 versions of the “reviews” component (v1 and v2) but we don’t want to replace review-v1 with review-v2 immediately. In most cases, when components are upgraded it’s useful to deploy the new version but only have a small subset of network traffic routed to it so that it can be tested before the old version is removed. This is often referred to as “canary testing”.
- 
+
 There are multiple ways in which we can control this routing, can be based on which user is accessing it, or certain percentage of the traffic can be configured to flow to one version etc.
 
 This step shows you how to configure where you want your service to go based on weights and HTTP Headers.You would need to be in the root directory of the Istio release you have downloaded on the Prerequisites section.
@@ -333,7 +333,7 @@ The YAML files you need to modify are:
 * `details-new.yaml`
 * `reviews-new.yaml`
 * `ratings-new.yaml`
-* `mysql-data.yaml` 
+* `mysql-data.yaml`
 ```yaml
 spec:
   containers:
@@ -354,13 +354,16 @@ spec:
 
 ## 8. Deploy application microservices and Istio envoys with Egress traffic enabled
 
-* Insert data in your MySQL database in Bluemix. 
+By default, Istio-enabled applications will be unable to access URLs outside of the cluster. All outbound traffice in the pod are redirected by the its sidecar proxy which only handles destinations inside the cluster.
 
-```bash
-$ kubectl apply -f <(istioctl kube-inject -f mysql-data.yaml --includeIPRanges=172.30.0.0/16,172.20.0.0/16)
-```
 The `--includeIPRanges` option is to pass the IP range(s) used for internal cluster services, thereby excluding external IPs from being redirected to the sidecar proxy. The IP range above is for IBM Bluemix provisioned Kubernetes Clusters. For minikube, you will have to use `10.0.0.1/24`
 > IMPORTANT NOTE: For services otuside of your cluster, you would need to enable egress traffic and add `--includeIPRanges` if it is not an http/https protocol. You can read more about enabling egress traffic for http/https protocol [here](https://istio.io/docs/tasks/egress.html#using-the-istio-egress-service)
+
+* Insert data in your MySQL database in Bluemix.
+
+```bash
+$ kubectl apply -f mysql-data.yaml
+```
 
 * Deploy `productpage` with Envoy injection and `gateway`.  
 ```bash
