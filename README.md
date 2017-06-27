@@ -6,16 +6,19 @@ Microservices and containers changed application design and deployment patterns,
 
 [Istio](https://istio.io/), a joint collaboration between IBM, Google and Lyft provides an easy way to create a service mesh that will manage many of these complex tasks automatically, without the need to modify the microservices themselves. Istio does this by:
 
-1. Injecting “sidecars”, secondary containers that sit along side of each instance of a microservice, that acts as a proxy to intercept all incoming and outgoing network traffic,
-2. By deploying a control plane that manages the overall network infrastructure and enforces the policy rules defined by the devops team
+1. Deploying a **control plane** that manages the overall network infrastructure and enforces the policy and traffic rules defined by the devops team
+
+2. Deploying a **data plane** which includes “sidecars”, secondary containers that sit along side of each instance of a microservice and act as a proxy to intercept all incoming and outgoing network traffic. Sidecars are implmented using Envoy, an open source edge proxy
 
 Once Istio is installed some of the key feature which it makes available include 
 
-- Traffic management: Content and policy based load balancing and routing
-- Access control: Control access to the microservices based on traffic origination points and users
-- Monitoring: In depth monitoring and logs data collection for microservices, as well as collecting request traces
+- Traffic management using [Istio Pilot](https://istio.io/docs/concepts/what-is-istio/overview.html#pilot): In addition to providing content and policy based load balancing and routing, Pilot also maintains a canonical representation of services in the mesh.
 
-In the [first part](#part-a-deploy-sample-bookinfo-application-and-inject-istio-sidecars-to-enable-traffic-flow-management-access-policy-and-monitoring-data-aggregation-for-application) of this journey we show how can we can deploy the sample [BookInfo](https://istio.io/docs/samples/bookinfo.html) application and inject sidecars to get the Istio features mentioned above, and walk through them one by one. The BookInfo is a simple application that is composed of four microservices, written in different languages for each of its microservices namely Python, Java, Ruby, and Node.js. The application does not use a database, and stores everything in local filesystem.
+- Access control using [Istio Auth](https://istio.io/docs/concepts/what-is-istio/overview.html#istio-auth): Istio Auth controls access to the microservices based on traffic origination points and users, and also provides a key management system to manage keys and certificates
+ 
+- Monitoring, reporting and quota management using [Istio Mixer](https://istio.io/docs/concepts/what-is-istio/overview.html#mixer): Istio Mixer provides in depth monitoring and logs data collection for microservices, as well as collection of request traces. Precondition checking like whether the service consumer is on whitelist, quota management like rate limits etc. are also configured using Mixer.
+
+In the [first part](#part-a-deploy-sample-bookinfo-application-and-inject-istio-sidecars-to-enable-traffic-flow-management-access-policy-and-monitoring-data-aggregation-for-application) of this journey we show how can we can deploy the sample [BookInfo](https://istio.io/docs/samples/bookinfo.html) application and inject sidecars to get the Istio features mentioned above, and walk through the key ones. The BookInfo is a simple application that is composed of four microservices, written in different languages for each of its microservices namely Python, Java, Ruby, and Node.js. The application does not use a database, and stores everything in local filesystem.
 
 Also since Istio tightly controls traffic routing to provide above mentioned benefits, it introduces some drawbacks. Outgoing traffic to external services outside the Istio data plane can only be enabled by specialized configuration, based on the protocol used to connect to the external service.
 
@@ -51,9 +54,9 @@ Please follow the [Toolchain instructions](https://github.com/IBM/container-jour
 
 1. [Deploy sample BookInfo application on Kubernetes](#1-deploy-sample-bookinfo-application-on-kubernetes)
 2. [Inject Istio envoys on the application](#2-inject-istio-envoys-on-the-application)
-3. [Configure Traffic flow](#3-traffic-flow-management---modify-service-routes)
-4. [Configure access control](#4-access-policy-enforcement---configure-access-control)
-5. [Collect metrics, logs and trace spans](#5-telemetry-data-aggregation---collect-metrics-logs-and-trace-spans)
+3. [Configure Traffic flow](#3-traffic-flow-management-using-istio-pilot---modify-service-routes)
+4. [Configure access control](#4-access-policy-enforcement-using-istio-auth---configure-access-control)
+5. [Collect metrics, logs and trace spans](#5-telemetry-data-aggregation-using-istio-mixer---collect-metrics-logs-and-trace-spans)
      - 5.1 [Collect metrics and logs using Prometheus and Grafana](#51-collect-metrics-and-logs-using-prometheus-and-grafana)
      - 5.2 [Collect request traces using Zipkin](#52-collect-request-traces-using-zipkin)
 
@@ -90,14 +93,14 @@ spec:
     app: productpage
 EOF
 ```
-* Output your cluster's IP address and NodePort of your `productpage` service in your terminal: _(If you have a load balancer, you can access it through the IP found on `kubectl get ingress`)_
+* To show your cluster’s IP address and NotePort of your `productpage` service use: _(If you have a load balancer, you can access it through the IP found on `kubectl get ingress`)_
 ```bash
 $ echo $(kubectl get po -l app=productpage -o jsonpath={.items[0].status.hostIP}):$(kubectl get svc productpage -o jsonpath={.spec.ports[0].nodePort})
 184.xxx.yyy.zzz:30XYZ
 ```
-At this point, you can point your browser to http://184.xxx.yyy.zzz:30XYZ/productpage and see the BookInfo Application. The sample BookInfo Application is configured to run on a Kubernetes Cluster.  
+At this point, you can point your browser to http://184.xxx.yyy.zzz:30XYZ/productpage and see the BookInfo Application. 
 
-The next step would be deploying this sample application with Istio Envoys injected. You should now delete the sample application to proceed to the next step.
+The next step would be deploying this sample application with Istio Envoys injected. You should now delete the sample application to proceed to the next step. This is needed at this point because currently Istio doesn't dupport injecting Envoy proxies in an already deployed application, though that's a feature which is in plan.
 ```bash
 $ kubectl delete -f samples/apps/bookinfo/bookinfo.yaml
 ```
@@ -134,18 +137,19 @@ echo $(kubectl get po -l istio=ingress -o jsonpath={.items[0].status.hostIP}):$(
 Point your browser to:  
 `http://184.xxx.yyy.zzz:30XYZ/productpage` Replace with your own IP and NodePort.
 
-If you refresh the page multiple times, you'll see that the _reviews_ section of the page changes. That's because there are 3 versions of **reviews**_(reviews-v1, reviews-v2, reviews-v3)_ deployment for our **reviews** service.
+If you refresh the page multiple times, you'll see that the _reviews_ section of the page changes. That's because there are 3 versions of **reviews**_(reviews-v1, reviews-v2, reviews-v3)_ deployment for our **reviews** service. Istio’s load-balancer is using a round-robin algorithm to iterate through the 3 instances of this service
+
 ![productpage](images/none.png)
 ![productpage](images/black.png)
 ![productpage](images/red.png)
 
-## 3. Traffic flow management - Modify service routes
+## 3. Traffic flow management using Istio Pilot - Modify service routes
 
-In this section will be modify our Istio to perform dynamically modify the network traffic between some of the components of our application. In this case we have 2 versions of the “reviews” component (v1 and v2) but we don’t want to replace review-v1 with review-v2 immediately. In most cases, when components are upgraded it’s useful to deploy the new version but only have a small subset of network traffic routed to it so that it can be tested before the old version is removed. This is often referred to as “canary testing”.
+In this section will be modify Istio to dynamically modify the network traffic between some of the components of our application. In this case we have 2 versions of the “reviews” component (v1 and v2) but we don’t want to replace review-v1 with review-v2 immediately. In most cases, when components are upgraded it’s useful to deploy the new version but only have a small subset of network traffic routed to it so that it can be tested before the old version is removed. This is often referred to as “canary testing”.
  
-There are multiple ways in which we can control this routing, can be based on which user is accessing it, or certain percentage of the traffic can be configured to flow to one version etc.
+There are multiple ways in which we can control this routing. It can be based on which user is accessing it, or certain percentage of the traffic can be configured to flow to one version etc.
 
-This step shows you how to configure where you want your service to go based on weights and HTTP Headers.You would need to be in the root directory of the Istio release you have downloaded on the Prerequisites section.
+This step shows you how to configure where you want your service requests to go based on weights and HTTP Headers.You would need to be in the root directory of the Istio release you have downloaded on the Prerequisites section.
 
 * Set Default Routes to `reviews-v1` for all microservices  
 This would set all incoming routes on the services (indicated in the line `destination: <service>`) to the deployment with a tag `version: v1`. To set the default routes, run:
@@ -169,7 +173,7 @@ This would set every incoming traffic to the version v3 of the reviews microserv
   $ istioctl replace -f samples/apps/bookinfo/route-rule-reviews-v3.yaml
   ```
 
-## 4. Access policy enforcement - Configure access control
+## 4. Access policy enforcement using Istio Auth - Configure access control
 
 This step shows you how to control access to your services. If you have done the step above, you'll see that your `productpage` now just shows red stars on the reviews section and if you are logged in as _jason_, you'll see black stars. The `ratings` service is accessed from the `reviews-v2` if you're logged in as _jason_ or it is accessed from `reviews-v3` if you are not logged in as `jason`.
 
@@ -190,7 +194,7 @@ This step shows you how to control access to your services. If you have done the
 ![access-control](images/access.png)
 
 
-## 5. Telemetry data aggregation - Collect metrics, logs and trace spans
+## 5. Telemetry data aggregation using Istio Mixer - Collect metrics, logs and trace spans
 
 ### 5.1 Collect metrics and logs using Prometheus and Grafana
 
