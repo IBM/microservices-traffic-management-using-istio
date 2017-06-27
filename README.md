@@ -7,7 +7,7 @@ Microservices and containers changed application design and deployment patterns,
 [Istio](https://istio.io/), a joint collaboration between IBM, Google and Lyft provides an easy way to create a service mesh that will manage many of these complex tasks automatically, without the need to modify the microservices themselves. Istio does this by:
 
 1. By deploying a [control plane](https://istio.io/docs/concepts/what-is-istio/overview.html#architecture) that manages the overall network infrastructure and enforces the policy rules defined by the devops team
-2. Injecting “sidecars”, secondary containers that sit along side of each instance of a microservice, that acts as a proxy to intercept all incoming and outgoing network traffic. Sidecars are implmented here using [Envoy proxies](https://istio.io/docs/concepts/what-is-istio/overview.html#envoy) and sit in the [data plane](https://istio.io/docs/concepts/what-is-istio/overview.html#architecture) of istio
+2. Injecting “sidecars”, secondary containers that sit along side of each instance of a microservice, that acts as a proxy to intercept all incoming and outgoing network traffic. Sidecars are implmented here using [Envoy proxies](https://istio.io/docs/concepts/what-is-istio/overview.html#envoy) and sit in the [data plane](https://istio.io/docs/concepts/what-is-istio/overview.html#architecture) of Istio
 
 Once Istio is installed some of the key feature which it makes available include 
 
