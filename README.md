@@ -6,14 +6,14 @@ Microservices and containers changed application design and deployment patterns,
 
 [Istio](https://istio.io/), a joint collaboration between IBM, Google and Lyft provides an easy way to create a service mesh that will manage many of these complex tasks automatically, without the need to modify the microservices themselves. Istio does this by:
 
-1. Injecting “sidecars”, secondary containers that sit along side of each instance of a microservice, that acts as a proxy to intercept all incoming and outgoing network traffic,
+1. Injecting “sidecars”, secondary containers that sit along side of each instance of a microservice, that acts as a proxy to intercept all incoming and outgoing network traffic. Sidexars are implmented here using [Envoy proxies](https://istio.io/docs/concepts/what-is-istio/overview.html#envoy)
 2. By deploying a control plane that manages the overall network infrastructure and enforces the policy rules defined by the devops team
 
 Once Istio is installed some of the key feature which it makes available include 
 
-- Traffic management using [Istio Pilot](https://istio.io/docs/concepts/traffic-management/pilot.html): Content and policy based load balancing and routing
-- Access control using [Istio Auth](https://istio.io/docs/concepts/network-and-auth/auth.html): Control access to the microservices based on traffic origination points and users
-- Monitoring and reporting using [Istio Mixer](https://istio.io/docs/concepts/policy-and-control/mixer.html): In depth monitoring and logs data collection for microservices, as well as collecting request traces
+- Traffic management using [Istio Pilot](https://istio.io/docs/concepts/what-is-istio/overview.html#pilot): Content and policy based load balancing and routing
+- Access control using [Istio Auth](https://istio.io/docs/concepts/what-is-istio/overview.html#istio-auth): Control access to the microservices based on traffic origination points and users
+- Monitoring and reporting using [Istio Mixer](hhttps://istio.io/docs/concepts/what-is-istio/overview.html#mixer): In depth monitoring and logs data collection for microservices, as well as collecting request traces
 
 In the [first part](#part-a-deploy-sample-bookinfo-application-and-inject-istio-sidecars-to-enable-traffic-flow-management-access-policy-and-monitoring-data-aggregation-for-application) of this journey we show how can we can deploy the sample [BookInfo](https://istio.io/docs/samples/bookinfo.html) application and inject sidecars to get the Istio features mentioned above, and walk through them one by one. The BookInfo is a simple application that is composed of four microservices, written in different languages for each of its microservices namely Python, Java, Ruby, and Node.js. The application does not use a database, and stores everything in local filesystem.
 
@@ -51,9 +51,9 @@ Please follow the [Toolchain instructions](https://github.com/IBM/container-jour
 
 1. [Deploy sample BookInfo application on Kubernetes](#1-deploy-sample-bookinfo-application-on-kubernetes)
 2. [Inject Istio envoys on the application](#2-inject-istio-envoys-on-the-application)
-3. [Configure Traffic flow using Istio Pilot](#3-traffic-flow-management---modify-service-routes)
-4. [Configure access control Istio Auth](#4-access-policy-enforcement---configure-access-control)
-5. [Collect metrics, logs and trace spans using Istio Mixer](#5-telemetry-data-aggregation-using---collect-metrics-logs-and-trace-spans)
+3. [Configure Traffic flow](#3-traffic-flow-management-using-istio-pilot---modify-service-routes)
+4. [Configure access control](#4-access-policy-enforcement-using-istio-auth---configure-access-control)
+5. [Collect metrics, logs and trace spans](#5-telemetry-data-aggregation-using-istio-mixer---collect-metrics-logs-and-trace-spans)
      - 5.1 [Collect metrics and logs using Prometheus and Grafana](#51-collect-metrics-and-logs-using-prometheus-and-grafana)
      - 5.2 [Collect request traces using Zipkin](#52-collect-request-traces-using-zipkin)
 
