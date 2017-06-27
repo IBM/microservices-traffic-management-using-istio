@@ -54,7 +54,7 @@ spec:
       containers:
       - name: reviews
         image: anthonyamanse/reviews-v2
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         env:
         - name: MYSQL_DB_USER
           value: 'PLACEHOLDER_DB_USER'
@@ -82,7 +82,7 @@ spec:
       containers:
       - name: reviews
         image: anthonyamanse/reviews-v3
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         env:
         - name: MYSQL_DB_USER
           value: 'PLACEHOLDER_DB_USER'
