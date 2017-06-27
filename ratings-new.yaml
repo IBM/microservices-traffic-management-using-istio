@@ -25,8 +25,8 @@ spec:
     spec:
       containers:
       - name: ratings
-        image: anthonyamanse/ratings-v1:final
-        imagePullPolicy: IfNotPresent
+        image: anthonyamanse/ratings-v1
+        imagePullPolicy: Always
         env:
         - name: MYSQL_DB_USER
           value: 'PLACEHOLDER_DB_USER'

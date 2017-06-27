@@ -39,6 +39,18 @@ stages:
   - name: API_KEY
     type: secure
     value: ${API_KEY}
+  - name: MYSQL_DB_USER
+    type: text
+    value: ${MYSQL_DB_USER}
+  - name: MYSQL_DB_PASSWORD
+    type: secure
+    value: ${MYSQL_DB_PASSWORD}
+  - name: MYSQL_DB_HOST
+    type: text
+    value: ${MYSQL_DB_HOST}
+  - name: MYSQL_DB_PORT
+    type: text
+    value: ${MYSQL_DB_PORT}
   jobs:
   - name: Deploy
     type: deployer

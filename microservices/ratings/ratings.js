@@ -25,8 +25,11 @@ var password = process.env.MYSQL_DB_PASSWORD;
 
 
 
-var first_rating;
-var second_rating;
+var first_rating = 0;
+var second_rating = 0;
+var third_rating = 0;
+var fourth_rating = 0;
+var fifth_rating = 0;
 var ratingsResponse;
 
 dispatcher.onGet("/", function(req, res) {
@@ -64,22 +67,38 @@ dispatcher.onGet("/ratings", function(req, res) {
         database : 'bookinfo_db'
     });
 
+    var json;
     connection.connect();
     connection.query('SELECT Rating FROM reviews WHERE BookID=1', function (error, results, fields) {
         if (error) throw error;
-        console.log('Reviewer1: ', results[0].Rating);
-        first_rating = results[0].Rating;
+        if (results[0]) {
+            first_rating = results[0].Rating;
+        }
         console.log(first_rating);
-        console.log('Reviewer2', results[1].Rating);
-        second_rating = results[1].Rating;
+        if (results[1]) {
+            second_rating = results[1].Rating;
+        }
         console.log(second_rating);
-        ratingsResponse = {"Reviewer1": first_rating, "Reviewer2": second_rating};
+        if (results[2]) {
+            third_rating = results[2].Rating;
+        }
+        console.log(third_rating);
+        if (results[3]) {
+            fourth_rating = results[3].Rating;
+        }
+        console.log(fourth_rating);
+        if (results[4]) {
+            fifth_rating = results[4].Rating;
+        }
+        console.log(fifth_rating);
+        ratingsResponse = {"Reviewer1": first_rating, "Reviewer2": second_rating, "Reviewer3": third_rating, "Reviewer4": fourth_rating, "Reviewer5": fifth_rating};
         console.log(ratingsResponse);
-        var json = JSON.stringify(ratingsResponse)
-        res.writeHead(200, {"Content-type": "application/json"})
-        res.end(json)
+        json = JSON.stringify(ratingsResponse)
+
     });
     connection.end();
+    res.writeHead(200, {"Content-type": "application/json"})
+    res.end(json)
 })
 
 dispatcher.onGet("/health", function(req, res) {
