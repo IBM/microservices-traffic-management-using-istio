@@ -11,9 +11,11 @@ Microservices and containers changed application design and deployment patterns,
 
 Once Istio is installed some of the key feature which it makes available include 
 
-- Traffic management using [Istio Pilot](https://istio.io/docs/concepts/what-is-istio/overview.html#pilot): Content and policy based load balancing and routing
-- Access control using [Istio Auth](https://istio.io/docs/concepts/what-is-istio/overview.html#istio-auth): Control access to the microservices based on traffic origination points and users
-- Monitoring and reporting using [Istio Mixer](https://istio.io/docs/concepts/what-is-istio/overview.html#mixer): In depth monitoring and logs data collection for microservices, as well as collecting request traces
+- Traffic management using [Istio Pilot](https://istio.io/docs/concepts/what-is-istio/overview.html#pilot): In addition to providing content and policy based load balancing and routing, Pilot also maintains a canonical representation of services in the mesh.
+
+- Access control using [Istio Auth](https://istio.io/docs/concepts/what-is-istio/overview.html#istio-auth): Istio Auth controls access to the microservices based on traffic origination points and users, and also provides a key management system to manage keys and certificates
+ 
+- Monitoring, reporting and quota management using [Istio Mixer](https://istio.io/docs/concepts/what-is-istio/overview.html#mixer): Istio Mixer provides in depth monitoring and logs data collection for microservices, as well as collection of request traces. Precondition checking like whether the service consumer is on whitelist, quota management like rate limits etc. are also configured using Mixer.
 
 In the [first part](#part-a-deploy-sample-bookinfo-application-and-inject-istio-sidecars-to-enable-traffic-flow-management-access-policy-and-monitoring-data-aggregation-for-application) of this journey we show how can we can deploy the sample [BookInfo](https://istio.io/docs/samples/bookinfo.html) application and inject sidecars to get the Istio features mentioned above, and walk through them one by one. The BookInfo is a simple application that is composed of four microservices, written in different languages for each of its microservices namely Python, Java, Ruby, and Node.js. The application does not use a database, and stores everything in local filesystem.
 
