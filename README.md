@@ -11,9 +11,9 @@ Microservices and containers changed application design and deployment patterns,
 
 Once Istio is installed some of the key feature which it makes available include 
 
-- Traffic management using Istio Pilot: Content and policy based load balancing and routing
-- Access control using Istio Auth: Control access to the microservices based on traffic origination points and users
-- Monitoring using Istio Mixer: In depth monitoring and logs data collection for microservices, as well as collecting request traces
+- Traffic management using [Istio Pilot](https://istio.io/docs/concepts/traffic-management/pilot.html): Content and policy based load balancing and routing
+- Access control using [Istio Auth](https://istio.io/docs/concepts/network-and-auth/auth.html): Control access to the microservices based on traffic origination points and users
+- Monitoring and reporting using [Istio Mixer](https://istio.io/docs/concepts/policy-and-control/mixer.html): In depth monitoring and logs data collection for microservices, as well as collecting request traces
 
 In the [first part](#part-a-deploy-sample-bookinfo-application-and-inject-istio-sidecars-to-enable-traffic-flow-management-access-policy-and-monitoring-data-aggregation-for-application) of this journey we show how can we can deploy the sample [BookInfo](https://istio.io/docs/samples/bookinfo.html) application and inject sidecars to get the Istio features mentioned above, and walk through them one by one. The BookInfo is a simple application that is composed of four microservices, written in different languages for each of its microservices namely Python, Java, Ruby, and Node.js. The application does not use a database, and stores everything in local filesystem.
 
@@ -52,7 +52,7 @@ Please follow the [Toolchain instructions](https://github.com/IBM/container-jour
 1. [Deploy sample BookInfo application on Kubernetes](#1-deploy-sample-bookinfo-application-on-kubernetes)
 2. [Inject Istio envoys on the application](#2-inject-istio-envoys-on-the-application)
 3. [Configure Traffic flow using Istio Pilot](#3-traffic-flow-management---modify-service-routes)
-4. [Configure access contro Istio Auth](#4-access-policy-enforcement---configure-access-control)
+4. [Configure access control Istio Auth](#4-access-policy-enforcement---configure-access-control)
 5. [Collect metrics, logs and trace spans using Istio Mixer](#5-telemetry-data-aggregation-using---collect-metrics-logs-and-trace-spans)
      - 5.1 [Collect metrics and logs using Prometheus and Grafana](#51-collect-metrics-and-logs-using-prometheus-and-grafana)
      - 5.2 [Collect request traces using Zipkin](#52-collect-request-traces-using-zipkin)
