@@ -360,9 +360,10 @@ spec:
 
 By default, Istio-enabled applications will be unable to access URLs outside of the cluster. All outbound traffic in the pod are redirected by its sidecar proxy which only handles destinations inside the cluster.
 
-The `--includeIPRanges` option is to pass the IP range(s) used for internal cluster services, thereby excluding external IPs from being redirected to the sidecar proxy. The IP range above is for IBM Bluemix provisioned Kubernetes Clusters. For minikube, you will have to use `10.0.0.1/24`. For external services using http/https protocol, the Istio Egress service can let you access by registering it in your cluster. You can read more about registering an external http/https service [here](https://istio.io/docs/tasks/egress.html#configuring-the-external-services)
+The `--includeIPRanges` option is to pass the IP range(s) used for internal cluster services, thereby excluding external IPs from being redirected to the sidecar proxy. The IP range above is for IBM Bluemix provisioned Kubernetes Clusters. For minikube, you will have to use `10.0.0.1/24`. For external services using http/https protocol, the Istio Egress proxy can let you access them by registering it in your cluster. You can read more about registering an external http/https service [here](https://istio.io/docs/tasks/egress.html#configuring-the-external-services)
 
 * Insert data in your MySQL database in Bluemix.
+> This inserts the database design and initial data for the database.
 
 ```bash
 $ kubectl apply -f mysql-data.yaml
