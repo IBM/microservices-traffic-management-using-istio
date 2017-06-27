@@ -52,7 +52,7 @@ Please follow the [Toolchain instructions](https://github.com/IBM/container-jour
 1. [Deploy sample BookInfo application on Kubernetes](#1-deploy-sample-bookinfo-application-on-kubernetes)
 2. [Inject Istio envoys on the application](#2-inject-istio-envoys-on-the-application)
 3. [Configure Traffic flow using Istio Pilot](#3-traffic-flow-management---modify-service-routes)
-4. [Configure access contro Istio Authl](#4-access-policy-enforcement---configure-access-control)
+4. [Configure access contro Istio Auth](#4-access-policy-enforcement---configure-access-control)
 5. [Collect metrics, logs and trace spans using Istio Mixer ](#5-telemetry-data-aggregation-using---collect-metrics-logs-and-trace-spans)
      - 5.1 [Collect metrics and logs using Prometheus and Grafana](#51-collect-metrics-and-logs-using-prometheus-and-grafana)
      - 5.2 [Collect request traces using Zipkin](#52-collect-request-traces-using-zipkin)
