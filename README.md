@@ -51,9 +51,9 @@ Please follow the [Toolchain instructions](https://github.com/IBM/container-jour
 
 1. [Deploy sample BookInfo application on Kubernetes](#1-deploy-sample-bookinfo-application-on-kubernetes)
 2. [Inject Istio envoys on the application](#2-inject-istio-envoys-on-the-application)
-3. [Configure Traffic flow](#3-traffic-flow-management---modify-service-routes)
-4. [Configure access control](#4-access-policy-enforcement---configure-access-control)
-5. [Collect metrics, logs and trace spans](#5-telemetry-data-aggregation---collect-metrics-logs-and-trace-spans)
+3. [Configure Traffic flow using Istio Pilot](#3-traffic-flow-management---modify-service-routes)
+4. [Configure access contro Istio Authl](#4-access-policy-enforcement---configure-access-control)
+5. [Collect metrics, logs and trace spans using Istio Mixer ](#5-telemetry-data-aggregation-using---collect-metrics-logs-and-trace-spans)
      - 5.1 [Collect metrics and logs using Prometheus and Grafana](#51-collect-metrics-and-logs-using-prometheus-and-grafana)
      - 5.2 [Collect request traces using Zipkin](#52-collect-request-traces-using-zipkin)
 
@@ -139,7 +139,7 @@ If you refresh the page multiple times, you'll see that the _reviews_ section of
 ![productpage](images/black.png)
 ![productpage](images/red.png)
 
-## 3. Traffic flow management - Modify service routes
+## 3. Traffic flow management using Istio Pilot - Modify service routes
 
 In this section will be modify our Istio to perform dynamically modify the network traffic between some of the components of our application. In this case we have 2 versions of the “reviews” component (v1 and v2) but we don’t want to replace review-v1 with review-v2 immediately. In most cases, when components are upgraded it’s useful to deploy the new version but only have a small subset of network traffic routed to it so that it can be tested before the old version is removed. This is often referred to as “canary testing”.
  
@@ -169,7 +169,7 @@ This would set every incoming traffic to the version v3 of the reviews microserv
   $ istioctl replace -f samples/apps/bookinfo/route-rule-reviews-v3.yaml
   ```
 
-## 4. Access policy enforcement - Configure access control
+## 4. Access policy enforcement using Istio Auth - Configure access control
 
 This step shows you how to control access to your services. If you have done the step above, you'll see that your `productpage` now just shows red stars on the reviews section and if you are logged in as _jason_, you'll see black stars. The `ratings` service is accessed from the `reviews-v2` if you're logged in as _jason_ or it is accessed from `reviews-v3` if you are not logged in as `jason`.
 
@@ -190,7 +190,7 @@ This step shows you how to control access to your services. If you have done the
 ![access-control](images/access.png)
 
 
-## 5. Telemetry data aggregation - Collect metrics, logs and trace spans
+## 5. Telemetry data aggregation using Istio Mixer - Collect metrics, logs and trace spans
 
 ### 5.1 Collect metrics and logs using Prometheus and Grafana
 
