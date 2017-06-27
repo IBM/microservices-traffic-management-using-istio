@@ -159,8 +159,7 @@ public class LibertyRestEndpoint extends Application {
                                 @HeaderParam("x-ot-span-context") String xotspan,
                                 @FormParam("reviewer") String reviewerForm,
                                 @FormParam("rating") String ratingForm,
-                                @FormParam("review") String reviewForm,
-                                @Context UriInfo uriInfo) throws Exception {
+                                @FormParam("review") String reviewForm) throws Exception {
 
         System.out.println(reviewerForm);
         System.out.println(ratingForm);
@@ -192,8 +191,7 @@ public class LibertyRestEndpoint extends Application {
                                 @HeaderParam("x-b3-parentspanid") String xparentspanid,
                                 @HeaderParam("x-b3-sampled") String xsampled,
                                 @HeaderParam("x-b3-flags") String xflags,
-                                @HeaderParam("x-ot-span-context") String xotspan,
-                                @Context UriInfo uriInfo) throws Exception {
+                                @HeaderParam("x-ot-span-context") String xotspan) throws Exception {
         System.out.println("Deleting reviews...");
         try {
             Class.forName("com.mysql.jdbc.Driver").newInstance();

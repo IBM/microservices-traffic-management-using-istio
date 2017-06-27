@@ -3,7 +3,7 @@ stages:
 - name: BUILD
   inputs:
   - type: git
-    branch: anthonyamanse-patch1
+    branch: master
     service: ${SAMPLE_REPO}
   triggers:
   - type: commit
