@@ -36,6 +36,22 @@
         "bluemix-cluster-name": {
              "description": "Your cluster name. Retrieve it with [bx cs clusters].",
              "type": "string"
+         },
+        "mysql-db-user": {
+             "description": "Your MySQL username. Retrieve it on the credentials section if you are using Compose for MySQL in Bluemix.",
+             "type": "string"
+         },
+        "mysql-db-password": {
+             "description": "Your MySQL password. Retrieve it on the credentials section if you are using Compose for MySQL in Bluemix.",
+             "type": "string"
+         },
+        "mysql-db-host": {
+             "description": "Your MySQL host. Retrieve it on the credentials section if you are using Compose for MySQL in Bluemix.",
+             "type": "string"
+         },
+        "mysql-db-port": {
+             "description": "Your MySQL port number. Retrieve it on the credentials section if you are using Compose for MySQL in Bluemix.",
+             "type": "string"
          }
     },
     "required": ["prod-region", "prod-organization", "prod-space", "prod-app-name", "bluemix-cluster-name"],
