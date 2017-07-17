@@ -52,9 +52,10 @@ other Operating Systems._
 
 ```bash
 $ curl -SL https://github.com/istio/istio/releases/download/0.1.6/istio-0.1.6-linux.tar.gz | tar xzf -
-$ sudo cp istio-0.1.6/bin/istioctl /usr/local/bin/
-$ kubectl apply -f istio-0.1.6/install/kubernetes/istio-rbac-beta.yaml
-$ kubectl apply -f istio-0.1.6/install/kubernetes/istio.yaml
+$ mv istio-0.1.6 istio
+$ sudo cp istio/bin/istioctl /usr/local/bin/
+$ kubectl apply -f istio/install/kubernetes/istio-rbac-beta.yaml
+$ kubectl apply -f istio/install/kubernetes/istio.yaml
 
 ```
 
@@ -93,7 +94,7 @@ In this part, we will be using the sample BookInfo Application that comes as def
 * Deploy the BookInfo Application in your Cluster
 
 ```bash
-$ kubectl apply -f istio-0.1.6/samples/apps/bookinfo/bookinfo.yaml
+$ kubectl apply -f istio/samples/apps/bookinfo/bookinfo.yaml
 ```
 
 * If are using minikube or you don't have access to external load balancers, you need to use NodePort on the `productpage` service. Run the following command to use a NodePort:
@@ -115,7 +116,7 @@ At this point, you can point your browser to the provided URL (or run `$ firefox
 The next step would be deploying this sample application with Istio Envoys injected. You should now delete the sample application to proceed to the next step. This is needed at this point because currently Istio doesn't dupport injecting Envoy proxies in an already deployed application, though that's a feature which is in plan.
 
 ```bash
-$ kubectl delete -f istio-0.1.6/samples/apps/bookinfo/bookinfo.yaml
+$ kubectl delete -f istio/samples/apps/bookinfo/bookinfo.yaml
 ```
 
 ## 2. Inject Istio envoys on the application
@@ -125,7 +126,7 @@ $ kubectl delete -f istio-0.1.6/samples/apps/bookinfo/bookinfo.yaml
 Envoys are deployed as sidecars on each microservice. Injecting Envoy into your microservice means that the Envoy sidecar would manage the ingoing and outgoing calls for the service. To inject an Envoy sidecar to an existing microservice configuration, do:
 
 ```bash
-$ kubectl apply -f <(istioctl kube-inject -f istio-0.1.6/samples/apps/bookinfo/bookinfo.yaml)
+$ kubectl apply -f <(istioctl kube-inject -f istio/samples/apps/bookinfo/bookinfo.yaml)
 ```
 
 > `istioctl kube-inject` modifies the yaml file passed in _-f_. This injects Envoy sidecar into your Kubernetes resource configuration. The only resources updated are Job, DaemonSet, ReplicaSet, and Deployment. Other resources in the YAML file configuration will be left unmodified.
@@ -176,7 +177,7 @@ This step shows you how to configure where you want your service requests to go 
 This would set all incoming routes on the services (indicated in the line `destination: <service>`) to the deployment with a tag `version: v1`. To set the default routes, run:
 
   ```bash
-  $ istioctl create -f istio-0.1.6/samples/apps/bookinfo/route-rule-all-v1.yaml
+  $ istioctl create -f istio/samples/apps/bookinfo/route-rule-all-v1.yaml
   ```
 
 * Set Route to `reviews-v2` of **reviews microservice** for a specific user  
@@ -184,7 +185,7 @@ This would set all incoming routes on the services (indicated in the line `desti
 This would set the route for the user `jason` (You can login as _jason_ with any password in your deploy web application) to see the `version: v2` of the reviews microservice. Run:
 
   ```bash
-  $ istioctl create -f istio-0.1.6/samples/apps/bookinfo/route-rule-reviews-test-v2.yaml
+  $ istioctl create -f istio/samples/apps/bookinfo/route-rule-reviews-test-v2.yaml
   ```
 
 * Route 50% of traffic on **reviews microservice** to `reviews-v1` and 50% to `reviews-v3`.  
@@ -194,7 +195,7 @@ This is indicated by the `weight: 50` in the yaml file.
   > Using `replace` should allow you to edit exisiting route-rules.
 
   ```bash
-  $ istioctl replace -f istio-0.1.6/samples/apps/bookinfo/route-rule-reviews-50-v3.yaml
+  $ istioctl replace -f istio/samples/apps/bookinfo/route-rule-reviews-50-v3.yaml
 
   ```
 
@@ -203,7 +204,7 @@ This is indicated by the `weight: 50` in the yaml file.
 This would set every incoming traffic to the version v3 of the reviews microservice. Run:
 
   ```bash
-  $ istioctl replace -f istio-0.1.6/samples/apps/bookinfo/route-rule-reviews-v3.yaml
+  $ istioctl replace -f istio/samples/apps/bookinfo/route-rule-reviews-v3.yaml
   ```
 
 ## 4. Access policy enforcement using Istio Auth - Configure access control
@@ -213,7 +214,7 @@ This step shows you how to control access to your services. If you have done the
 * To deny access to the ratings service from the traffic coming from `reviews-v3`, you will use `istioctl mixer rule create`
 
   ```bash
-  $ istioctl mixer rule create global ratings.default.svc.cluster.local -f istio-0.1.6/samples/apps/bookinfo/mixer-rule-ratings-denial.yaml
+  $ istioctl mixer rule create global ratings.default.svc.cluster.local -f istio/samples/apps/bookinfo/mixer-rule-ratings-denial.yaml
   ```
 
   The `mixer-rule-ratings-denial.yaml` file creates a rule that denies `kind: denials` access from reviews service and has a label of v3 `selector: source.labels["app"]=="reviews" && source.labels["version"] == "v3"`  
@@ -240,8 +241,8 @@ This step shows you how to configure [Istio Mixer](https://istio.io/docs/concept
 
 * Install the required Istio Addons on your cluster: [Prometheus](https://prometheus.io) and [Grafana](https://grafana.com)
   ```bash
-  $ kubectl apply -f istio-0.1.6/install/kubernetes/addons/prometheus.yaml
-  $ kubectl apply -f istio-0.1.6/install/kubernetes/addons/grafana.yaml
+  $ kubectl apply -f istio/install/kubernetes/addons/prometheus.yaml
+  $ kubectl apply -f istio/install/kubernetes/addons/grafana.yaml
   ```
 * Verify that your **Grafana** dashboard is ready. Get the IP of your cluster `kubectl get nodes` and then the NodePort of your Grafana service `kubectl get svc | grep grafana` or you can run the following command to output both:
 
@@ -297,7 +298,7 @@ This step shows you how to collect trace spans using [Zipkin](http://zipkin.io).
 * Install the required Istio Addon: [Zipkin](http://zipkin.io)
 
   ```bash
-  $ kubectl apply -f istio-0.1.6/install/kubernetes/addons/zipkin.yaml
+  $ kubectl apply -f istio/install/kubernetes/addons/zipkin.yaml
   ```
 
 * Access your **Zipkin Dashboard**. Get the IP of your cluster `kubectl get nodes` and then the NodePort of your Zipkin service `kubectl get svc | grep zipkin` or you can run the following command to output both:
