@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/IBM/Microservices-with-Istio-Service-Mesh-on-Kubernetes.svg?branch=master)](https://travis-ci.org/IBM/Microservices-with-Istio-Service-Mesh-on-Kubernetes)
+[![Build Status](https://travis-ci.org/IBM/Traffic-management-for-your-microservices-using-Istio.svg?branch=master)](https://travis-ci.org/IBM/Traffic-management-for-your-microservices-using-Istio)
 
 # Istio: Traffic Management for your Microservices
 
