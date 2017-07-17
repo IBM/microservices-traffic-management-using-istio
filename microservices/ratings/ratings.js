@@ -94,11 +94,11 @@ dispatcher.onGet("/ratings", function(req, res) {
         ratingsResponse = {"Reviewer1": first_rating, "Reviewer2": second_rating, "Reviewer3": third_rating, "Reviewer4": fourth_rating, "Reviewer5": fifth_rating};
         console.log(ratingsResponse);
         json = JSON.stringify(ratingsResponse)
+        res.writeHead(200, {"Content-type": "application/json"})
+        res.end(json)
 
     });
     connection.end();
-    res.writeHead(200, {"Content-type": "application/json"})
-    res.end(json)
 })
 
 dispatcher.onGet("/health", function(req, res) {
