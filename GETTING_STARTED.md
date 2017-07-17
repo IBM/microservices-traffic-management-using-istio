@@ -3,7 +3,7 @@
 [Istio](http://istio.io) is an open platform that provides a uniform way to connect, manage, and secure microservices. Istio is the result of a joint collaboration between IBM, Google and Lyft as a means to support traffic flow management, access policy enforcement and the telemetry data aggregation between microservices, all without requiring changes to the code of your microservice. Istio provides an easy way to create this service mesh by deploying a [control plane](https://istio.io/docs/concepts/what-is-istio/overview.html#architecture) and injecting sidecars, an extended version of the  [Envoy](https://lyft.github.io/envoy/) proxy, in the same Pod as your microservice.
 
 # Prerequisite
-Create a Kubernetes cluster with either [Minikube](https://kubernetes.io/docs/getting-started-guides/minikube) for local testing, or with [IBM Bluemix Container Service](https://github.com/IBM/container-journey-template/blob/master/README.md) to deploy in cloud. 
+Create a Kubernetes cluster with either [Minikube](https://kubernetes.io/docs/getting-started-guides/minikube) for local testing, or with [IBM Bluemix Container Service](https://github.com/IBM/container-journey-template/blob/master/README.md) to deploy in cloud.
 
 # Steps
 
@@ -12,12 +12,20 @@ Create a Kubernetes cluster with either [Minikube](https://kubernetes.io/docs/ge
 ## 1. Install Istio on Kubernetes
 
 ### 1.1 Download the Istio source
-  1. Download the latest Istio release for your OS: [Istio releases](https://github.com/istio/istio/releases)  
-  2. Extract and go to the root directory.
-  3. Copy the `istioctl` bin to your local bin  
+
+  > Note: This example is tested with istio 1.6, we recommend you use this version for consistency.
+    Ensure you extract the files to the specified location so that the commands in the instructions
+    work for you.
+
+  1. Download Istio release for your OS: [Istio releases](https://github.com/istio/istio/releases)  
+  2. Extract the tarball into the `ibm` directory we created earlier.
+  3. Copy the `istioctl` bin to somewhere in your executable path
+
   ```bash
-  $ cp bin/istioctl /usr/local/bin
-  ## example for macOS
+  $ tar xzvf <path-to-istio-download>
+  $ mv istio-<VERSION> istio
+  $ cp istio/bin/istioctl /usr/local/bin
+
   ```
 
 ### 1.2 Grant Permissions  
