@@ -110,7 +110,7 @@ $ echo $URL
 http://184.xxx.yyy.zzz:30XYZ
 ```
 
-At this point, you can point your browser to the provided URL or run `$ firefox $URL/productpage` and see the BookInfo Application.
+At this point, you can point your browser to the provided URL (or run `$ firefox $GRAFANA/dashboard/db/istio-dashboard` if you have firefox installed) and see the BookInfo Application.
 
 The next step would be deploying this sample application with Istio Envoys injected. You should now delete the sample application to proceed to the next step. This is needed at this point because currently Istio doesn't dupport injecting Envoy proxies in an already deployed application, though that's a feature which is in plan.
 
@@ -250,7 +250,7 @@ This step shows you how to configure [Istio Mixer](https://istio.io/docs/concept
   $ echo $GRAFANA
   184.xxx.yyy.zzz:30XYZ
   ```
-  Point your browser to http://184.xxx.yyy.zzz:30XYZ/dashboard/db/istio-dashboard. `$ firefox $GRAFANA/dashboard/db/istio-dashboard` to go directly to your dashboard.  
+  Point your browser to http://184.xxx.yyy.zzz:30XYZ/dashboard/db/istio-dashboard (or run `$ firefox $GRAFANA/dashboard/db/istio-dashboard` if you have firefox installed) to go directly to your dashboard.  
 
   Your dashboard should look like this:  
   ![Grafana-Dashboard](images/grafana.png)
