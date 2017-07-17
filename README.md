@@ -67,7 +67,7 @@ Please follow the [Toolchain instructions](https://github.com/IBM/container-jour
 
 ## Part A: Deploy sample Bookinfo application and inject Istio sidecars to enable traffic flow management, access policy and monitoring data aggregation for application
 
-#### You must be in the root directory of the [Istio release](https://github.com/istio/istio/releases) you have downloaded. This contains their sample application.
+#### You must be in the root directory of the [Istio release](https://github.com/istio/istio/releases) you have downloaded. This contains their sample application and configurations.
 
 ## 1. Deploy sample BookInfo application on Kubernetes
 
