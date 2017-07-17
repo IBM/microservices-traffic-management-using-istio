@@ -68,6 +68,9 @@ Please follow the [Toolchain instructions](https://github.com/IBM/container-jour
 ## Part A: Deploy sample Bookinfo application and inject Istio sidecars to enable traffic flow management, access policy and monitoring data aggregation for application
 
 #### You must be in the root directory of the [Istio release](https://github.com/istio/istio/releases) you have downloaded. This contains their sample application and configurations.
+```bash
+cd istio-<version>
+```
 
 ## 1. Deploy sample BookInfo application on Kubernetes
 
@@ -315,6 +318,10 @@ This step shows you how to collect trace spans using [Zipkin](http://zipkin.io).
 ## Part B:  Modify sample application to use an external datasource, deploy the application and Istio envoys with egress traffic enabled
 
 #### Clone this repository. This step requires you to use the YAML files and/or source code for the microservices.
+```bash
+git clone https://github.com/IBM/Traffic-management-for-your-microservices-using-Istio.git
+cd Traffic-management-for-your-microservices-using-Istio
+```
 
 ## 6. Create an external datasource for the application
 
