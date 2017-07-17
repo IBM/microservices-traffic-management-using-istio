@@ -23,8 +23,8 @@ sudo mv ./kubectl /usr/local/bin/kubectl
 }
 
 function cluster_setup() {
-bx cs workers anthony-cluster-travis
-$(bx cs cluster-config anthony-cluster-travis | grep export)
+bx cs workers $CLUSTER_NAME
+$(bx cs cluster-config $CLUSTER_NAME | grep export)
 
 sed -i s#PLACEHOLDER_DB_USER#book_user#g $(ls | grep new)
 sed -i s#PLACEHOLDER_DB_PASSWORD#password#g $(ls | grep new)

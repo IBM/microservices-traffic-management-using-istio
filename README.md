@@ -1,5 +1,6 @@
 [![Build Status](https://travis-ci.org/IBM/traffic-management-for-your-microservices-using-istio.svg?branch=master)](https://travis-ci.org/IBM/traffic-management-for-your-microservices-using-istio)
 
+
 # Istio: Traffic Management for your Microservices
 
 Microservices and containers changed application design and deployment patterns, but along with them brought challenges like service discovery, routing, failure handling, and visibility to microservices. "Service mesh" architecture was born to handle these features. Applications are getting decoupled internally as microservices, and the responsibility of maintaining coupling between these microservices is passed to the service mesh.
@@ -324,7 +325,10 @@ This step shows you how to collect trace spans using [Zipkin](http://zipkin.io).
 
 ## Part B:  Modify sample application to use an external datasource, deploy the application and Istio envoys with egress traffic enabled
 
-#### Clone this repository. This step requires you to use the YAML files and/or source code for the microservices.
+#### This part requires you to be in the root directory of this repository to use the YAML files and/or source code for the microservices.
+```bash
+cd demo
+```
 
 ## 6. Create an external datasource for the application
 
