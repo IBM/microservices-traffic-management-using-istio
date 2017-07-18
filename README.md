@@ -46,10 +46,7 @@ $ cd ibm
 $ git clone https://github.com/IBM/Traffic-management-for-your-microservices-using-Istio.git demo
 ```
 
-You will also need Istio service mesh installed on top of your Kubernetes cluster. On Linux (with kubernetes that has beta RBAC) you can run the following:
-
-_See [here](https://github.com/IBM/Microservices-with-Istio-Service-Mesh-on-Kubernetes/blob/master/GETTING_STARTED.md) for troubleshooting, more detailed instructions, and for
-other Operating Systems._
+You will also need Istio service mesh installed on top of your Kubernetes cluster. On **Linux** (with Kubernetes that has **beta RBAC**) you can run the following:
 
 ```bash
 $ curl -SL https://github.com/istio/istio/releases/download/0.1.6/istio-0.1.6-linux.tar.gz | tar xzf -
@@ -59,6 +56,7 @@ $ kubectl apply -f istio/install/kubernetes/istio-rbac-beta.yaml
 $ kubectl apply -f istio/install/kubernetes/istio.yaml
 
 ```
+_See [here](https://github.com/IBM/Microservices-with-Istio-Service-Mesh-on-Kubernetes/blob/master/GETTING_STARTED.md) for other Operating Systems, more detailed instructions, and for troubleshooting._
 
 # Deploy to Bluemix
 If you want to deploy the BookInfo app directly to Bluemix, click on 'Deploy to Bluemix' button below to create a Bluemix DevOps service toolchain and pipeline for deploying the sample, else jump to [Steps](#steps)
