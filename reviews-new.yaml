@@ -28,14 +28,26 @@ spec:
         image: anthonyamanse/reviews-v1
         imagePullPolicy: Always
         env:
-        - name: MYSQL_DB_USER
-          value: 'PLACEHOLDER_DB_USER'
-        - name: MYSQL_DB_PASSWORD
-          value: 'PLACEHOLDER_DB_PASSWORD'
-        - name: MYSQL_DB_HOST
-          value: 'PLACEHOLDER_DB_HOST'
-        - name: MYSQL_DB_PORT
-          value: 'PLACEHOLDER_DB_PORT'
+          - name: MYSQL_DB_USER
+            valueFrom:
+              secretKeyRef:
+                name: demo-credentials
+                key: username
+          - name: MYSQL_DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: demo-credentials
+                key: password
+          - name: MYSQL_DB_HOST
+            valueFrom:
+              secretKeyRef:
+                name: demo-credentials
+                key: host
+          - name: MYSQL_DB_PORT
+            valueFrom:
+              secretKeyRef:
+                name: demo-credentials
+                key: port
         ports:
         - containerPort: 9080
 ---
@@ -56,14 +68,26 @@ spec:
         image: anthonyamanse/reviews-v2
         imagePullPolicy: Always
         env:
-        - name: MYSQL_DB_USER
-          value: 'PLACEHOLDER_DB_USER'
-        - name: MYSQL_DB_PASSWORD
-          value: 'PLACEHOLDER_DB_PASSWORD'
-        - name: MYSQL_DB_HOST
-          value: 'PLACEHOLDER_DB_HOST'
-        - name: MYSQL_DB_PORT
-          value: 'PLACEHOLDER_DB_PORT'
+          - name: MYSQL_DB_USER
+            valueFrom:
+              secretKeyRef:
+                name: demo-credentials
+                key: username
+          - name: MYSQL_DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: demo-credentials
+                key: password
+          - name: MYSQL_DB_HOST
+            valueFrom:
+              secretKeyRef:
+                name: demo-credentials
+                key: host
+          - name: MYSQL_DB_PORT
+            valueFrom:
+              secretKeyRef:
+                name: demo-credentials
+                key: port
         ports:
         - containerPort: 9080
 ---
@@ -84,13 +108,25 @@ spec:
         image: anthonyamanse/reviews-v3
         imagePullPolicy: Always
         env:
-        - name: MYSQL_DB_USER
-          value: 'PLACEHOLDER_DB_USER'
-        - name: MYSQL_DB_PASSWORD
-          value: 'PLACEHOLDER_DB_PASSWORD'
-        - name: MYSQL_DB_HOST
-          value: 'PLACEHOLDER_DB_HOST'
-        - name: MYSQL_DB_PORT
-          value: 'PLACEHOLDER_DB_PORT'
+          - name: MYSQL_DB_USER
+            valueFrom:
+              secretKeyRef:
+                name: demo-credentials
+                key: username
+          - name: MYSQL_DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: demo-credentials
+                key: password
+          - name: MYSQL_DB_HOST
+            valueFrom:
+              secretKeyRef:
+                name: demo-credentials
+                key: host
+          - name: MYSQL_DB_PORT
+            valueFrom:
+              secretKeyRef:
+                name: demo-credentials
+                key: port
         ports:
         - containerPort: 9080

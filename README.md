@@ -43,7 +43,7 @@ Create a working directory to clone this repo and to download Istio into:
 ```bash
 $ mkdir ibm
 $ cd ibm
-$ git clone https://github.com/IBM/Traffic-management-for-your-microservices-using-Istio.git demo
+$ git clone https://github.com/IBM/traffic-management-for-your-microservices-using-istio.git demo
 ```
 
 You will also need Istio service mesh installed on top of your Kubernetes cluster. On **Linux** (with Kubernetes that has **beta RBAC**) you can run the following:
@@ -110,7 +110,7 @@ $ echo $URL
 http://184.xxx.yyy.zzz:30XYZ
 ```
 
-At this point, you can point your browser to the provided URL (or run `$ firefox $GRAFANA/dashboard/db/istio-dashboard` if you have firefox installed) and see the BookInfo Application.
+At this point, you can point your browser to http://184.xxx.yyy.zzz:30XYZ/productpage (or run `$ firefox $URL/productpage` if you have firefox installed) and see the BookInfo Application.
 
 The next step would be deploying this sample application with Istio Envoys injected. You should now delete the sample application to proceed to the next step. This is needed at this point because currently Istio doesn't dupport injecting Envoy proxies in an already deployed application, though that's a feature which is in plan.
 
@@ -347,79 +347,105 @@ Preview of added source code for `ratings.js` for connecting to MySQL database:
 ![ratings_diff](images/ratings_diff.png)
 
 
-The YAML files you need to modify are:  
-* `details-new.yaml`
-* `reviews-new.yaml`
-* `ratings-new.yaml`
-* `mysql-data.yaml`
+You will need to update the `demo/secrets.yaml` file to include the credentials provided by Bluemix Compose.
+
+> Note: The values provided in the secrets file should be run through `base64` first.
+
+```bash
+echo -n <username> | base64
+echo -n <password> | base64
+echo -n <host> | base64
+echo -n <port> | base64
+```
+
 ```yaml
-spec:
-  containers:
-  ...
-    image: ## <insert the corresponding image name you built>
-    imagePullPolicy: IfNotPresent
-    env: ## CHANGE THESE VALUES TO YOUR MYSQL DATABASE CREDENTIALS
-    - name: MYSQL_DB_USER
-      value: 'PLACEHOLDER_DB_USER'
-    - name: MYSQL_DB_PASSWORD
-      value: 'PLACEHOLDER_DB_PASSWORD'
-    - name: MYSQL_DB_HOST
-      value: 'PLACEHOLDER_DB_HOST'
-    - name: MYSQL_DB_PORT
-      value: 'PLACEHOLDER_DB_PORT'
-    ...
+apiVersion: v1
+kind: Secret
+metadata:
+  name: demo-credentials
+type: Opaque
+data:
+  username: YWRtaW4=
+  password: VEhYTktMUFFTWE9BQ1JPRA==
+  host: c2wtdXMtc291dGgtMS1wb3J0YWwuMy5kYmxheWVyLmNvbQ==
+  port: MTg0ODE=
+```
+
+Once the secrets are set add them to your Kubernetes cluster:
+
+```bash
+$ kubectl apply -f demo/secrets.yaml
 ```
 
 ## 8. Deploy application microservices and Istio envoys with Egress traffic enabled
 
 By default, Istio-enabled applications will be unable to access URLs outside of the cluster. All outbound traffic in the pod are redirected by its sidecar proxy which only handles destinations inside the cluster.
 
-The `--includeIPRanges` option is to pass the IP range(s) used for internal cluster services, thereby excluding external IPs from being redirected to the sidecar proxy. The IP range above is for IBM Bluemix provisioned Kubernetes Clusters. For minikube, you will have to use `10.0.0.1/24`. For external services using http/https protocol, the Istio Egress proxy can let you access them by registering it in your cluster. You can read more about registering an external http/https service [here](https://istio.io/docs/tasks/egress.html#configuring-the-external-services)
+The `--includeIPRanges` option is to pass the IP range(s) used for internal cluster services, thereby excluding external IPs from being redirected to the sidecar proxy. The IP range above is for IBM Bluemix provisioned Kubernetes Clusters. For minikube, you will have to use `10.0.0.1/24`. For external services using http/https protocol, the Istio Egress proxy can let you access them by registering it in your cluster. You can read more about registering an external http/https service [here](https://istio.io/docs/tasks/egress.html#configuring-the-external-services).
+
+To simplify we'll set them in an environment variable that we can reuse:
+
+```bash
+$ export IPRANGES=172.30.0.0/16,172.20.0.0/16
+$ echo $IPRANGES
+```
 
 * Insert data in your MySQL database in Bluemix.
 > This inserts the database design and initial data for the database.
 
 ```bash
-$ kubectl apply -f mysql-data.yaml
+$ kubectl apply -f demo/mysql-data.yaml
 ```
 
 * Deploy `productpage` with Envoy injection and `gateway`.  
+
 ```bash
-$ kubectl apply -f <(istioctl kube-inject -f bookinfo.yaml)
+$ kubectl apply -f <(istioctl kube-inject -f demo/bookinfo.yaml)
+
 ```
 The `productpage` is not expecting to have egress traffic so you would not need to configure the Envoy to intercept external requests.
 
 * Deploy `details` with Envoy injection and Egress traffic enabled.  
+
 ```bash
-$ kubectl apply -f <(istioctl kube-inject -f details-new.yaml --includeIPRanges=172.30.0.0/16,172.20.0.0/16)
+$ kubectl apply -f <(istioctl kube-inject -f demo/details-new.yaml --includeIPRanges=${IPRANGES})
 ```
+
 * Deploy `reviews` with Envoy injection and Egress traffic enabled.  
+
 ```bash
-$ kubectl apply -f <(istioctl kube-inject -f reviews-new.yaml --includeIPRanges=172.30.0.0/16,172.20.0.0/16)
+$ kubectl apply -f <(istioctl kube-inject -f demo/reviews-new.yaml --includeIPRanges=${IPRANGES})
 ```
+
 * Deploy `ratings` with Envoy injection and Egress traffic enabled.  
+
 ```bash
-$ kubectl apply -f <(istioctl kube-inject -f ratings-new.yaml --includeIPRanges=172.30.0.0/16,172.20.0.0/16)
+$ kubectl apply -f <(istioctl kube-inject -f demo/ratings-new.yaml --includeIPRanges=${IPRANGES})
 ```
 
 The `details`, `reviews`, `ratings` will have external traffic since your MySQL database is outside of your cluster. That is why you would need to use `--includeIPRanges` option in `istioctl kube-inject`.
 
 You can now access your application to confirm that it is getting data from your MySQL database.
+
 ```bash
-echo $(kubectl get po -l istio=ingress -o jsonpath={.items[0].status.hostIP}):$(kubectl get svc istio-ingress -o jsonpath={.spec.ports[0].nodePort})
+$ export URL=http://$(kubectl get po -l istio=ingress -o jsonpath='{.items[0].status.hostIP}'):$(kubectl get svc istio-ingress -o jsonpath='{.spec.ports[0].nodePort}')
+$ echo $URL
 184.xxx.yyy.zzz:30XYZ
+
 ```
 Point your browser to:  
-`http://184.xxx.yyy.zzz:30XYZ/productpage` Replace with your own IP and NodePort.
+`http://184.xxx.yyy.zzz:30XYZ/productpage` (or run `$ firefox $URL/productpage` if you have firefox installed) Replace with your own IP and NodePort.
 
 # Troubleshooting
 * To delete Istio from your cluster
+
 ```bash
 $ kubectl delete -f install/kubernetes/istio-rbac-alpha.yaml # or istio-rbac-beta.yaml
 $ kubectl delete -f install/kubernetes/istio.yaml
 $ kubectl delete istioconfigs --all
 $ kubectl delete thirdpartyresource istio-config.istio.io
 ```
+
 * To delete all addons: `kubectl delete -f install/kubernetes/addons`
 * To delete the BookInfo app and its route-rules: `./samples/apps/bookinfo/cleanup.sh`
 
