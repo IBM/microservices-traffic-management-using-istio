@@ -36,7 +36,6 @@ sed -i s#"VEhYTktMUFFTWE9BQ1JPRA=="#$PASSWORD_BASE64#g secrets.yaml
 sed -i s#"c2wtdXMtc291dGgtMS1wb3J0YWwuMy5kYmxheWVyLmNvbQ=="#$HOST_BASE64#g secrets.yaml
 sed -i s#"MTg0ODE="#$PORT_BASE64#g secrets.yaml
 
-
 curl -L https://git.io/getIstio | sh -
 cd $(ls | grep istio)
 sudo mv bin/istioctl /usr/local/bin/
@@ -51,6 +50,7 @@ kubectl delete --ignore-not-found=true -f ../book-database.yaml
 kubectl delete --ignore-not-found=true -f ../details-new.yaml
 kubectl delete --ignore-not-found=true -f ../ratings-new.yaml
 kubectl delete --ignore-not-found=true -f ../reviews-new.yaml
+kubectl delete --ignore-not-found=true -f secrets.yaml
 kuber=$(kubectl get pods | grep Terminating)
 while [ ${#kuber} -ne 0 ]
 do
@@ -82,6 +82,7 @@ echo "Istio setup done."
 
 function initial_setup() {
 echo "Creating BookInfo with Injected Envoys..."
+kubectl apply -f secrets.yaml
 echo "Creating local MySQL database..."
 kubectl apply -f <(istioctl kube-inject -f ../book-database.yaml)
 echo "Creating product page and ingress resource..."
@@ -124,6 +125,7 @@ then
   kubectl delete --ignore-not-found=true -f ../details-new.yaml
   kubectl delete --ignore-not-found=true -f ../ratings-new.yaml
   kubectl delete --ignore-not-found=true -f ../reviews-new.yaml
+  kubectl delete --ignore-not-found=true -f secrets.yaml
   kuber=$(kubectl get pods | grep Terminating)
   while [ ${#kuber} -ne 0 ]
   do

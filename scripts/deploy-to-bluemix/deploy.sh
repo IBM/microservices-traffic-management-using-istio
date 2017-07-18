@@ -31,6 +31,7 @@ kubectl delete --ignore-not-found=true -f ../bookinfo.yaml
 kubectl delete --ignore-not-found=true -f ../details-new.yaml
 kubectl delete --ignore-not-found=true -f ../ratings-new.yaml
 kubectl delete --ignore-not-found=true -f ../reviews-new.yaml
+kubectl delete --ignore-not-found=true -f secrets.yaml
 
 kuber=$(kubectl get pods | grep Terminating)
 while [ ${#kuber} -ne 0 ]
@@ -77,6 +78,7 @@ then
   sed -i s#"c2wtdXMtc291dGgtMS1wb3J0YWwuMy5kYmxheWVyLmNvbQ=="#$HOST_BASE64#g secrets.yaml
   sed -i s#"MTg0ODE="#$PORT_BASE64#g secrets.yaml
   cat secrets.yaml
+  kubectl apply -f secrets.yaml
   kubectl apply -f <(istioctl kube-inject -f book-database.yaml)
 else
   echo "Changing variables..."
@@ -91,6 +93,7 @@ else
   sed -i s#"c2wtdXMtc291dGgtMS1wb3J0YWwuMy5kYmxheWVyLmNvbQ=="#$MYSQL_DB_HOST#g secrets.yaml
   sed -i s#"MTg0ODE="#$MYSQL_DB_PORT#g secrets.yaml
   cat secrets.yaml
+  kubectl apply -f secrets.yaml
   kubectl apply -f mysql-data.yaml
 fi
 
