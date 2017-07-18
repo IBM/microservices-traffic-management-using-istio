@@ -323,7 +323,8 @@ This step shows you how to collect trace spans using [Zipkin](http://zipkin.io).
 
 ## Part B:  Modify sample application to use an external datasource, deploy the application and Istio envoys with egress traffic enabled
 
-#### This part requires you to be in the root directory of this repository to use the YAML files and/or source code for the microservices.
+#### In this part, we will modify the sample BookInfo application to use use an external database, and enable the Istio envoys for egress traffic. Please ensure you have the Istio control plane installed on your Kubernetes cluster as mentioned in the prerequisites. This part requires you to be in the root directory of this repository to use the YAML files and/or source code for the microservices. We will run these commands from the demo folder we cloned the source code repository in at the beginning.
+
 ```bash
 cd demo
 ```
