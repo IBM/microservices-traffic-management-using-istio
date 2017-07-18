@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/IBM/traffic-management-for-your-microservices-using-istio.svg?branch=master)](https://travis-ci.org/IBM/traffic-management-for-your-microservices-using-istio)
+[![Build Status](https://travis-ci.org/IBM/microservices-traffic-management-using-istio.svg?branch=master)](https://travis-ci.org/IBM/microservices-traffic-management-using-istio)
 
 
 # Istio: Traffic Management for your Microservices
