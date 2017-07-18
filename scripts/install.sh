@@ -26,10 +26,15 @@ function cluster_setup() {
 bx cs workers $CLUSTER_NAME
 $(bx cs cluster-config $CLUSTER_NAME | grep export)
 
-sed -i s#PLACEHOLDER_DB_USER#book_user#g $(ls | grep new)
-sed -i s#PLACEHOLDER_DB_PASSWORD#password#g $(ls | grep new)
-sed -i s#PLACEHOLDER_DB_HOST#book-database#g $(ls | grep new)
-sed -i s#PLACEHOLDER_DB_PORT#3306#g $(ls | grep new)
+export USERNAME_BASE64=$(echo -n book_user | base64)
+export PASSWORD_BASE64=$(echo -n password | base64)
+export HOST_BASE64=$(echo -n book-database | base64)
+export PORT_BASE64=$(echo -n 3306 | base64)
+
+sed -i s#"YWRtaW4="#$USERNAME_BASE64#g secrets.yaml
+sed -i s#"VEhYTktMUFFTWE9BQ1JPRA=="#$PASSWORD_BASE64#g secrets.yaml
+sed -i s#"c2wtdXMtc291dGgtMS1wb3J0YWwuMy5kYmxheWVyLmNvbQ=="#$HOST_BASE64#g secrets.yaml
+sed -i s#"MTg0ODE="#$PORT_BASE64#g secrets.yaml
 
 
 curl -L https://git.io/getIstio | sh -

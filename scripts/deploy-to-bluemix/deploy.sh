@@ -67,25 +67,30 @@ if [[ -z $MYSQL_DB_USER ]] && [[ -z $MYSQL_DB_PASSWORD ]] && [[ -z $MYSQL_DB_HOS
 then
   echo "MYSQL_DB_USER,PASSWORD,HOST,PORT are not set. Going to be using MySQL in a container inside the cluster."
   cd ..
-  sed -i s#PLACEHOLDER_DB_USER#book_user#g $(ls | grep new)
-  sed -i s#PLACEHOLDER_DB_PASSWORD#password#g $(ls | grep new)
-  sed -i s#PLACEHOLDER_DB_HOST#book-database#g $(ls | grep new)
-  sed -i s#PLACEHOLDER_DB_PORT#3306#g $(ls | grep new)
-  cat $(ls | grep new) | grep "value: '"
+  export USERNAME_BASE64=$(echo -n book_user | base64)
+  export PASSWORD_BASE64=$(echo -n password | base64)
+  export HOST_BASE64=$(echo -n book-database | base64)
+  export PORT_BASE64=$(echo -n 3306 | base64)
+
+  sed -i s#"YWRtaW4="#$USERNAME_BASE64#g secrets.yaml
+  sed -i s#"VEhYTktMUFFTWE9BQ1JPRA=="#$PASSWORD_BASE64#g secrets.yaml
+  sed -i s#"c2wtdXMtc291dGgtMS1wb3J0YWwuMy5kYmxheWVyLmNvbQ=="#$HOST_BASE64#g secrets.yaml
+  sed -i s#"MTg0ODE="#$PORT_BASE64#g secrets.yaml
+  cat secrets.yaml
   kubectl apply -f <(istioctl kube-inject -f book-database.yaml)
 else
   echo "Changing variables..."
   cd ..
-  sed -i s#PLACEHOLDER_DB_USER#$MYSQL_DB_USER#g $(ls | grep new)
-  sed -i s#PLACEHOLDER_DB_PASSWORD#$MYSQL_DB_PASSWORD#g $(ls | grep new)
-  sed -i s#PLACEHOLDER_DB_HOST#$MYSQL_DB_HOST#g $(ls | grep new)
-  sed -i s#PLACEHOLDER_DB_PORT#$MYSQL_DB_PORT#g $(ls | grep new)
-  cat $(ls | grep new) | grep "value: '"
-  sed -i s#PLACEHOLDER_DB_USER#$MYSQL_DB_USER#g mysql-data.yaml
-  sed -i s#PLACEHOLDER_DB_PASSWORD#$MYSQL_DB_PASSWORD#g mysql-data.yaml
-  sed -i s#PLACEHOLDER_DB_HOST#$MYSQL_DB_HOST#g mysql-data.yaml
-  sed -i s#PLACEHOLDER_DB_PORT#$MYSQL_DB_PORT#g mysql-data.yaml
-  cat mysql-data.yaml | grep "value: ''"
+  export MYSQL_DB_USER=$(echo -n $MYSQL_DB_USER | base64)
+  export MYSQL_DB_PASSWORD=$(echo -n $MYSQL_DB_PASSWORD | base64)
+  export MYSQL_DB_HOST=$(echo -n $MYSQL_DB_HOST | base64)
+  export MYSQL_DB_PORT=$(echo -n $MYSQL_DB_PORT | base64)
+
+  sed -i s#"YWRtaW4="#$MYSQL_DB_USER#g secrets.yaml
+  sed -i s#"VEhYTktMUFFTWE9BQ1JPRA=="#$MYSQL_DB_PASSWORD#g secrets.yaml
+  sed -i s#"c2wtdXMtc291dGgtMS1wb3J0YWwuMy5kYmxheWVyLmNvbQ=="#$MYSQL_DB_HOST#g secrets.yaml
+  sed -i s#"MTg0ODE="#$MYSQL_DB_PORT#g secrets.yaml
+  cat secrets.yaml
   kubectl apply -f mysql-data.yaml
 fi
 
