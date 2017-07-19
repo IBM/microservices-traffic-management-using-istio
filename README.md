@@ -171,7 +171,7 @@ There are multiple ways in which we can control this routing. It can be based on
 
 This step shows you how to configure where you want your service requests to go based on weights and HTTP Headers.You would need to be in the root directory of the Istio release you have downloaded on the Prerequisites section.
 
-> If you are having trouble executing `istioctl create` and getting a connection timeout, please use port forwarding as mentioned [here]()
+> If you are having trouble executing `istioctl create` and getting a connection timeout, please use port forwarding as mentioned [here](#port-forwarding-the-istio-pilot)
 
 * Set Default Routes to `reviews-v1` for all microservices  
 
@@ -212,7 +212,7 @@ This would set every incoming traffic to the version v3 of the reviews microserv
 
 This step shows you how to control access to your services. If you have done the step above, you'll see that your `productpage` now just shows red stars on the reviews section and if you are logged in as _jason_, you'll see black stars. The `ratings` service is accessed from the `reviews-v2` if you're logged in as _jason_ or it is accessed from `reviews-v3` if you are not logged in as `jason`.
 
-> If you are having trouble executing `istioctl mixer` and getting a connection timeout, please use port forwarding as mentioned [here]()
+> If you are having trouble executing `istioctl mixer` and getting a connection timeout, please use port forwarding as mentioned [here](#port-forwarding-the-istio-mixer)
 
 * To deny access to the ratings service from the traffic coming from `reviews-v3`, you will use `istioctl mixer rule create`
 
@@ -451,16 +451,18 @@ $ kubectl delete thirdpartyresource istio-config.istio.io
 * To delete the BookInfo app and its route-rules: `./samples/apps/bookinfo/cleanup.sh`
 
 #### Port forwarding the Istio Pilot
+* This forwards the port 8081 from your istio-pilot Pod in your cluster to your local machine
 ```bash
 $ pilot_podname=$(kubectl get pod -l istio=pilot -o=jsonpath={'.items[0].metadata.name'})
-$ kubectl port-forward ${pilot_podname} 8081
+$ kubectl port-forward ${pilot_podname} 8081 &
 $ istioctl create -f istio/samples/apps/bookinfo/route-rule-all-v1.yaml --kube=false --configAPIService=localhost:8081/v1alpha1
 ```
 
 #### Port forwarding the Istio Mixer
+* This forwards the port 9094 from your istio-mixer Pod in your cluster to your local machine
 ```bash
-$ mixer_podname=$(kubectl get pod -l istio=pilot -o=jsonpath={'.items[0].metadata.name'})
-$ kubectl port-forward ${mixer_podname} 9094
+$ mixer_podname=$(kubectl get pod -l istio=mixer -o=jsonpath={'.items[0].metadata.name'})
+$ kubectl port-forward ${mixer_podname} 9094 &
 $ istioctl mixer rule create global ratings.default.svc.cluster.local -f istio/samples/apps/bookinfo/mixer-rule-ratings-denial.yaml --kube=false --mixerAPIService=localhost:9094
 ```
 
