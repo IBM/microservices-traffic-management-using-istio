@@ -455,6 +455,10 @@ $ kubectl delete thirdpartyresource istio-config.istio.io
 ```bash
 $ pilot_podname=$(kubectl get pod -l istio=pilot -o=jsonpath={'.items[0].metadata.name'})
 $ kubectl port-forward ${pilot_podname} 8081 &
+```
+Then execute the istioctl create/get/delete commands with the additional flags.  
+Example:
+```bash
 $ istioctl create -f istio/samples/apps/bookinfo/route-rule-all-v1.yaml --kube=false --configAPIService=localhost:8081/v1alpha1
 ```
 
@@ -463,6 +467,10 @@ $ istioctl create -f istio/samples/apps/bookinfo/route-rule-all-v1.yaml --kube=f
 ```bash
 $ mixer_podname=$(kubectl get pod -l istio=mixer -o=jsonpath={'.items[0].metadata.name'})
 $ kubectl port-forward ${mixer_podname} 9094 &
+```
+Then execute the istioctl mixer commands with the additional flags.  
+Example:
+```bash
 $ istioctl mixer rule create global ratings.default.svc.cluster.local -f istio/samples/apps/bookinfo/mixer-rule-ratings-denial.yaml --kube=false --mixerAPIService=localhost:9094
 ```
 
