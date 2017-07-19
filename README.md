@@ -456,7 +456,7 @@ $ kubectl delete thirdpartyresource istio-config.istio.io
 $ pilot_podname=$(kubectl get pod -l istio=pilot -o=jsonpath={'.items[0].metadata.name'})
 $ kubectl port-forward ${pilot_podname} 8081 &
 ```
-Then execute the istioctl create/get/delete commands with the additional flags.  
+Then execute the istioctl create/get/delete/replace commands with the additional flags.  
 Example:
 ```bash
 $ istioctl create -f istio/samples/apps/bookinfo/route-rule-all-v1.yaml --kube=false --configAPIService=localhost:8081/v1alpha1
