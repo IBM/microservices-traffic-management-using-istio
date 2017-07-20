@@ -82,7 +82,7 @@ echo "Istio setup done."
 
 function initial_setup() {
 echo "Creating BookInfo with Injected Envoys..."
-kubectl apply -f secrets.yaml
+kubectl apply -f ../secrets.yaml
 echo "Creating local MySQL database..."
 kubectl apply -f <(istioctl kube-inject -f ../book-database.yaml)
 echo "Creating product page and ingress resource..."
