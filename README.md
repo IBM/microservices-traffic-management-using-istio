@@ -46,7 +46,7 @@ $ cd ibm
 $ git clone https://github.com/IBM/traffic-management-for-your-microservices-using-istio.git demo
 ```
 
-You will also need Istio service mesh installed on top of your Kubernetes cluster. See [here](https://github.com/IBM/Microservices-with-Istio-Service-Mesh-on-Kubernetes/blob/master/GETTING_STARTED.md) for instructions to deploying Istio service mesh based on your Operating System, Kubernetes RBAC version (alpha/beta) and troubleshooting.
+You will also need Istio service mesh installed on top of your Kubernetes cluster. See [here] (https://github.com/IBM/Microservices-with-Istio-Service-Mesh-on-Kubernetes/blob/master/GETTING_STARTED.md) for instructions to deploy Istio service mesh based on your Operating System, Kubernetes RBAC version (alpha/beta) and troubleshooting.
 
 On **Linux** (with Kubernetes that has **beta RBAC**) you can run the following:
 
