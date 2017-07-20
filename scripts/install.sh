@@ -50,7 +50,7 @@ kubectl delete --ignore-not-found=true -f ../book-database.yaml
 kubectl delete --ignore-not-found=true -f ../details-new.yaml
 kubectl delete --ignore-not-found=true -f ../ratings-new.yaml
 kubectl delete --ignore-not-found=true -f ../reviews-new.yaml
-kubectl delete --ignore-not-found=true -f secrets.yaml
+kubectl delete --ignore-not-found=true -f ../secrets.yaml
 kuber=$(kubectl get pods | grep Terminating)
 while [ ${#kuber} -ne 0 ]
 do
@@ -139,7 +139,7 @@ kubectl delete --ignore-not-found=true -f ../bookinfo.yaml
 kubectl delete --ignore-not-found=true -f ../details-new.yaml
 kubectl delete --ignore-not-found=true -f ../ratings-new.yaml
 kubectl delete --ignore-not-found=true -f ../reviews-new.yaml
-kubectl delete --ignore-not-found=true -f secrets.yaml
+kubectl delete --ignore-not-found=true -f ../secrets.yaml
 kuber=$(kubectl get pods | grep Terminating)
 while [ ${#kuber} -ne 0 ]
 do
