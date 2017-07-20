@@ -148,6 +148,7 @@ do
     kuber=$(kubectl get pods | grep Terminating)
 done
 echo "Deleted Book Info app"
+}
 
 
 
