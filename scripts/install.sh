@@ -50,7 +50,7 @@ kubectl delete --ignore-not-found=true -f ../book-database.yaml
 kubectl delete --ignore-not-found=true -f ../details-new.yaml
 kubectl delete --ignore-not-found=true -f ../ratings-new.yaml
 kubectl delete --ignore-not-found=true -f ../reviews-new.yaml
-kubectl delete --ignore-not-found=true -f secrets.yaml
+kubectl delete --ignore-not-found=true -f ../secrets.yaml
 kuber=$(kubectl get pods | grep Terminating)
 while [ ${#kuber} -ne 0 ]
 do
@@ -110,34 +110,44 @@ function health_check() {
 
 export GATEWAY_URL=$(kubectl get po -l istio=ingress -o jsonpath={.items[0].status.hostIP}):$(kubectl get svc istio-ingress -o jsonpath={.spec.ports[0].nodePort})
 HEALTH=$(curl -o /dev/null -s -w "%{http_code}\n" http://$GATEWAY_URL/productpage)
-if [ $HEALTH -eq 200 ]
-then
-  echo "Everything looks good."
-  echo "Cleaning up..."
-  kubectl delete -f install/kubernetes/istio.yaml
-  kubectl delete --ignore-not-found=true -f install/kubernetes/addons
-  kubectl delete -f install/kubernetes/istio-rbac-alpha.yaml
-  kubectl delete istioconfigs --all
-  kubectl delete thirdpartyresource istio-config.istio.io
-  echo "Deleted Istio in cluster"
-  kubectl delete --ignore-not-found=true -f ../book-database.yaml
-  kubectl delete --ignore-not-found=true -f ../bookinfo.yaml
-  kubectl delete --ignore-not-found=true -f ../details-new.yaml
-  kubectl delete --ignore-not-found=true -f ../ratings-new.yaml
-  kubectl delete --ignore-not-found=true -f ../reviews-new.yaml
-  kubectl delete --ignore-not-found=true -f secrets.yaml
-  kuber=$(kubectl get pods | grep Terminating)
-  while [ ${#kuber} -ne 0 ]
-  do
-      sleep 5s
-      kubectl get pods | grep Terminating
-      kuber=$(kubectl get pods | grep Terminating)
-  done
-  echo "Deleted Book Info app"
-else
-  echo "Health check failed."
-  exit 1
-fi
+
+TRIES=0
+while [ $HEALTH -ne 200 ]
+do
+    TRIES=$((TRIES+1))
+    echo "Trial number: ${TRIES}"
+    HEALTH=$(curl -o /dev/null -s -w "%{http_code}\n" http://$GATEWAY_URL/productpage)
+    echo $HEALTH
+    sleep 5s
+    if [ $TRIES -eq 21 ]
+    then
+        echo "Failed the Health Check on the application."
+        exit 1
+    fi
+done
+
+echo "Everything looks good."
+echo "Cleaning up..."
+kubectl delete -f install/kubernetes/istio.yaml
+kubectl delete --ignore-not-found=true -f install/kubernetes/addons
+kubectl delete -f install/kubernetes/istio-rbac-alpha.yaml
+kubectl delete istioconfigs --all
+kubectl delete thirdpartyresource istio-config.istio.io
+echo "Deleted Istio in cluster"
+kubectl delete --ignore-not-found=true -f ../book-database.yaml
+kubectl delete --ignore-not-found=true -f ../bookinfo.yaml
+kubectl delete --ignore-not-found=true -f ../details-new.yaml
+kubectl delete --ignore-not-found=true -f ../ratings-new.yaml
+kubectl delete --ignore-not-found=true -f ../reviews-new.yaml
+kubectl delete --ignore-not-found=true -f ../secrets.yaml
+kuber=$(kubectl get pods | grep Terminating)
+while [ ${#kuber} -ne 0 ]
+do
+    sleep 5s
+    kubectl get pods | grep Terminating
+    kuber=$(kubectl get pods | grep Terminating)
+done
+echo "Deleted Book Info app"
 }
 
 
