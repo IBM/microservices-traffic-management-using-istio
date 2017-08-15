@@ -23,7 +23,7 @@ In the [first part](#part-a-deploy-sample-bookinfo-application-and-inject-istio-
 
 Also since Istio tightly controls traffic routing to provide above mentioned benefits, it introduces some drawbacks. Outgoing traffic to external services outside the Istio data plane can only be enabled by specialized configuration, based on the protocol used to connect to the external service.
 
-In the [second part](#part-b-modify-sample-application-to-use-an-external-datasource-deploy-the-application-and-istio-envoys-with-egress-traffic-enabled) of the journey we focus on how Istio can be configured to allow applications to connect to external services. For that we modify the sample BookInfo application to use an external database and then use it as a base to show Istio configuration for enabling egress traffic
+In the [second part](#part-b-modify-sample-application-to-use-an-external-datasource-deploy-the-application-and-istio-envoys-with-egress-traffic-enabled) of the journey we focus on how Istio can be configured to allow applications to connect to external services. For that we modify the sample BookInfo application to use an external database and then use it as a base to show Istio configuration for enabling egress traffic.
 
 ![istio-architecture](images/istio-architecture.png)
 
@@ -209,7 +209,7 @@ This would set every incoming traffic to the version v3 of the reviews microserv
   $ istioctl replace -f istio/samples/apps/bookinfo/route-rule-reviews-v3.yaml
   ```
 
-## 4. Access policy enforcement using Istio Auth - Configure access control
+## 4. Access policy enforcement using Istio Mixer - Configure access control
 
 This step shows you how to control access to your services. If you have done the step above, you'll see that your `productpage` now just shows red stars on the reviews section and if you are logged in as _jason_, you'll see black stars. The `ratings` service is accessed from the `reviews-v2` if you're logged in as _jason_ or it is accessed from `reviews-v3` if you are not logged in as `jason`.
 
