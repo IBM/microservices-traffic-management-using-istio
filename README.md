@@ -15,7 +15,7 @@ Once Istio is installed some of the key feature which it makes available include
 
 - Traffic management using **Istio Pilot**: In addition to providing content and policy based load balancing and routing, Pilot also maintains a canonical representation of services in the mesh.
 
-- Access control using **Istio Auth**: Istio Auth controls access to the microservices based on traffic origination points and users, and also provides a key management system to manage keys and certificates
+- Access control using **Istio Auth**: Istio Auth secures access to the service-to-service communication and also provides a key management system to manage keys and certificates.
 
 - Monitoring, reporting and quota management using **Istio Mixer**: Istio Mixer provides in depth monitoring and logs data collection for microservices, as well as collection of request traces. Precondition checking like whether the service consumer is on whitelist, quota management like rate limits etc. are also configured using Mixer.
 
