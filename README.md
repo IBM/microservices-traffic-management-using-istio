@@ -9,7 +9,7 @@ Microservices and containers changed application design and deployment patterns,
 
 1. Deploying a **control plane** that manages the overall network infrastructure and enforces the policy and traffic rules defined by the devops team
 
-2. Deploying a **data plane** which includes “sidecars”, secondary containers that sit along side of each instance of a microservice and act as a proxy to intercept all incoming and outgoing network traffic. Sidecars are implmented using Envoy, an open source edge proxy
+2. Deploying a **data plane** which includes “sidecars”, secondary containers that sit along side of each instance of a microservice and act as a proxy to intercept all incoming and outgoing network traffic. Sidecars are implemented using Envoy, an open source edge proxy
 
 Once Istio is installed some of the key feature which it makes available include
 
@@ -113,7 +113,7 @@ http://184.xxx.yyy.zzz:30XYZ
 
 At this point, you can point your browser to http://184.xxx.yyy.zzz:30XYZ/productpage (or run `$ firefox $URL/productpage` if you have firefox installed) and see the BookInfo Application.
 
-The next step would be deploying this sample application with Istio Envoys injected. You should now delete the sample application to proceed to the next step. This is needed at this point because currently Istio doesn't dupport injecting Envoy proxies in an already deployed application, though that's a feature which is in plan.
+The next step would be deploying this sample application with Istio Envoys injected. You should now delete the sample application to proceed to the next step. This is needed at this point because currently Istio doesn't support injecting Envoy proxies in an already deployed application, though that's a feature which is in plan.
 
 ```bash
 $ kubectl delete -f istio/samples/apps/bookinfo/bookinfo.yaml
@@ -194,7 +194,7 @@ This would set the route for the user `jason` (You can login as _jason_ with any
 
 This is indicated by the `weight: 50` in the yaml file.
 
-  > Using `replace` should allow you to edit exisiting route-rules.
+  > Using `replace` should allow you to edit existing route-rules.
 
   ```bash
   $ istioctl replace -f istio/samples/apps/bookinfo/route-rule-reviews-50-v3.yaml
