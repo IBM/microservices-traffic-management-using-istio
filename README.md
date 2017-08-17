@@ -106,7 +106,7 @@ $ kubectl apply -f demo/node-port.yaml
 * If you have a load balancer, you find the URL through the IP found on `kubectl get ingress` and skip this step.  Otherwise to show your cluster’s IP address and NotePort of your `productpage` run:
 
 ```bash
-$ export URL=http://$(kubectl get po -l app=productpage -o jsonpath='{.items[0].status.hostIP}'):$(kubectl get svc productpage -o jsonpath='{.spec.ports[0].nodePort}')
+$ export URL=http://$(bx cs workers _YOUR-CLUSTER-NAME_ | grep normal | awk '{print $2}' | head -1):$(kubectl get svc productpage -o jsonpath='{.spec.ports[0].nodePort}')
 $ echo $URL
 http://184.xxx.yyy.zzz:30XYZ
 ```
@@ -147,10 +147,10 @@ reviews-v1-2065415949-3gdz5       2/2       Running   0
 reviews-v2-2593570575-92657       2/2       Running   0       
 reviews-v3-3121725201-cn371       2/2       Running   0       
 ```
-To access your application, you can check the public IP address of your cluster through `kubectl get nodes` and get the NodePort of the istio-ingress service for port 80 through `kubectl get svc | grep istio-ingress`. Or you can also run the following command to output the IP address and NodePort:
+To access your application, you can check the public IP address of your cluster through `bx cs workers <your-cluster-name> | grep normal | awk '{print $2}' | head -1` and get the NodePort of the istio-ingress service for port 80 through `kubectl get svc | grep istio-ingress`. Or you can also run the following command to output the IP address and NodePort:
 
 ```bash
-$ export URL=http://$(kubectl get po -l istio=ingress -o jsonpath='{.items[0].status.hostIP}'):$(kubectl get svc istio-ingress -o jsonpath='{.spec.ports[0].nodePort}')
+$ export URL=http://$(bx cs workers _YOUR-CLUSTER-NAME_ | grep normal | awk '{print $2}' | head -1):$(kubectl get svc istio-ingress -o jsonpath='{.spec.ports[0].nodePort}')
 $ echo $URL
 184.xxx.yyy.zzz:30XYZ
 ```
@@ -248,10 +248,10 @@ This step shows you how to configure [Istio Mixer](https://istio.io/docs/concept
   $ kubectl apply -f istio/install/kubernetes/addons/prometheus.yaml
   $ kubectl apply -f istio/install/kubernetes/addons/grafana.yaml
   ```
-* Verify that your **Grafana** dashboard is ready. Get the IP of your cluster `kubectl get nodes` and then the NodePort of your Grafana service `kubectl get svc | grep grafana` or you can run the following command to output both:
+* Verify that your **Grafana** dashboard is ready. Get the IP of your cluster `bx cs workers <your-cluster-name> | grep normal | awk '{print $2}' | head -1` and then the NodePort of your Grafana service `kubectl get svc | grep grafana` or you can run the following command to output both:
 
   ```bash
-  $ export GRAFANA=http://$(kubectl get po -l app=grafana -o jsonpath='{.items[0].status.hostIP}'):$(kubectl get svc grafana -o jsonpath='{.spec.ports[0].nodePort}')
+  $ export GRAFANA=http://$(bx cs workers _YOUR-CLUSTER-NAME_ | grep normal | awk '{print $2}' | head -1):$(kubectl get svc grafana -o jsonpath='{.spec.ports[0].nodePort}')
   $ echo $GRAFANA
   184.xxx.yyy.zzz:30XYZ
   ```
@@ -305,9 +305,9 @@ This step shows you how to collect trace spans using [Zipkin](http://zipkin.io).
   $ kubectl apply -f istio/install/kubernetes/addons/zipkin.yaml
   ```
 
-* Access your **Zipkin Dashboard**. Get the IP of your cluster `kubectl get nodes` and then the NodePort of your Zipkin service `kubectl get svc | grep zipkin` or you can run the following command to output both:
+* Access your **Zipkin Dashboard**. Get the IP of your cluster `bx cs workers <your-cluster-name> | grep normal | awk '{print $2}' | head -1` and then the NodePort of your Zipkin service `kubectl get svc | grep zipkin` or you can run the following command to output both:
   ```bash
-  $ ZIPKIN=http://$(kubectl get po -l app=zipkin -o jsonpath='{.items[0].status.hostIP}'):$(kubectl get svc zipkin -o jsonpath='{.spec.ports[0].nodePort}')
+  $ ZIPKIN=http://$(bx cs workers _YOUR-CLUSTER-NAME_ | grep normal | awk '{print $2}' | head -1):$(kubectl get svc zipkin -o jsonpath='{.spec.ports[0].nodePort}')
   $ echo $ZIPKIN
   184.xxx.yyy.zzz:30XYZ
   ```  
@@ -430,7 +430,7 @@ The `details`, `reviews`, `ratings` will have external traffic since your MySQL 
 You can now access your application to confirm that it is getting data from your MySQL database.
 
 ```bash
-$ export URL=http://$(kubectl get po -l istio=ingress -o jsonpath='{.items[0].status.hostIP}'):$(kubectl get svc istio-ingress -o jsonpath='{.spec.ports[0].nodePort}')
+$ export URL=http://$(bx cs workers _YOUR-CLUSTER-NAME_ | grep normal | awk '{print $2}' | head -1):$(kubectl get svc istio-ingress -o jsonpath='{.spec.ports[0].nodePort}')
 $ echo $URL
 184.xxx.yyy.zzz:30XYZ
 

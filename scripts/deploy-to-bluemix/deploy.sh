@@ -118,9 +118,9 @@ done
 echo "BookInfo done."
 
 echo "Getting IP and Port"
-kubectl get nodes
+bx cs workers $CLUSTER_NAME
 kubectl get svc | grep ingress
-export GATEWAY_URL=$(kubectl get po -l istio=ingress -o 'jsonpath={.items[0].status.hostIP}'):$(kubectl get svc istio-ingress -o 'jsonpath={.spec.ports[0].nodePort}')
+export GATEWAY_URL=$(bx cs workers $CLUSTER_NAME | grep normal | awk '{print $2}' | head -1):$(kubectl get svc istio-ingress -o 'jsonpath={.spec.ports[0].nodePort}')
 echo $GATEWAY_URL
 if [ -z "$GATEWAY_URL" ]
 then
