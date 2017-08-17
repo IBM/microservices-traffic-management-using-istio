@@ -9,21 +9,21 @@ Microservices and containers changed application design and deployment patterns,
 
 1. Deploying a **control plane** that manages the overall network infrastructure and enforces the policy and traffic rules defined by the devops team
 
-2. Deploying a **data plane** which includes “sidecars”, secondary containers that sit along side of each instance of a microservice and act as a proxy to intercept all incoming and outgoing network traffic. Sidecars are implmented using Envoy, an open source edge proxy
+2. Deploying a **data plane** which includes “sidecars”, secondary containers that sit along side of each instance of a microservice and act as a proxy to intercept all incoming and outgoing network traffic. Sidecars are implemented using Envoy, an open source edge proxy
 
 Once Istio is installed some of the key feature which it makes available include
 
 - Traffic management using **Istio Pilot**: In addition to providing content and policy based load balancing and routing, Pilot also maintains a canonical representation of services in the mesh.
 
-- Access control using **Istio Auth**: Istio Auth controls access to the microservices based on traffic origination points and users, and also provides a key management system to manage keys and certificates
+- Access control using **Istio Auth**: Istio Auth secures the service-to-service communication and also provides a key management system to manage keys and certificates.
 
 - Monitoring, reporting and quota management using **Istio Mixer**: Istio Mixer provides in depth monitoring and logs data collection for microservices, as well as collection of request traces. Precondition checking like whether the service consumer is on whitelist, quota management like rate limits etc. are also configured using Mixer.
 
-In the [first part](#part-a-deploy-sample-bookinfo-application-and-inject-istio-sidecars-to-enable-traffic-flow-management-access-policy-and-monitoring-data-aggregation-for-application) of this journey we show how can we can deploy the sample [BookInfo](https://istio.io/docs/samples/bookinfo.html) application and inject sidecars to get the Istio features mentioned above, and walk through the key ones. The BookInfo is a simple application that is composed of four microservices, written in different languages for each of its microservices namely Python, Java, Ruby, and Node.js. The application does not use a database, and stores everything in local filesystem.
+In the [first part](#part-a-deploy-sample-bookinfo-application-and-inject-istio-sidecars-to-enable-traffic-flow-management-access-policy-and-monitoring-data-aggregation-for-application) of this journey we show how we can deploy the sample [BookInfo](https://istio.io/docs/samples/bookinfo.html) application and inject sidecars to get the Istio features mentioned above, and walk through the key ones. The BookInfo is a simple application that is composed of four microservices, written in different languages for each of its microservices namely Python, Java, Ruby, and Node.js. The application does not use a database, and stores everything in local filesystem.
 
 Also since Istio tightly controls traffic routing to provide above mentioned benefits, it introduces some drawbacks. Outgoing traffic to external services outside the Istio data plane can only be enabled by specialized configuration, based on the protocol used to connect to the external service.
 
-In the [second part](#part-b-modify-sample-application-to-use-an-external-datasource-deploy-the-application-and-istio-envoys-with-egress-traffic-enabled) of the journey we focus on how Istio can be configured to allow applications to connect to external services. For that we modify the sample BookInfo application to use an external database and then use it as a base to show Istio configuration for enabling egress traffic
+In the [second part](#part-b-modify-sample-application-to-use-an-external-datasource-deploy-the-application-and-istio-envoys-with-egress-traffic-enabled) of the journey we focus on how Istio can be configured to allow applications to connect to external services. For that we modify the sample BookInfo application to use an external database and then use it as a base to show Istio configuration for enabling egress traffic.
 
 ![istio-architecture](images/istio-architecture.png)
 
@@ -106,14 +106,14 @@ $ kubectl apply -f demo/node-port.yaml
 * If you have a load balancer, you find the URL through the IP found on `kubectl get ingress` and skip this step.  Otherwise to show your cluster’s IP address and NotePort of your `productpage` run:
 
 ```bash
-$ export URL=http://$(kubectl get po -l app=productpage -o jsonpath='{.items[0].status.hostIP}'):$(kubectl get svc productpage -o jsonpath='{.spec.ports[0].nodePort}')
+$ export URL=http://$(bx cs workers _YOUR-CLUSTER-NAME_ | grep normal | awk '{print $2}' | head -1):$(kubectl get svc productpage -o jsonpath='{.spec.ports[0].nodePort}')
 $ echo $URL
 http://184.xxx.yyy.zzz:30XYZ
 ```
 
 At this point, you can point your browser to http://184.xxx.yyy.zzz:30XYZ/productpage (or run `$ firefox $URL/productpage` if you have firefox installed) and see the BookInfo Application.
 
-The next step would be deploying this sample application with Istio Envoys injected. You should now delete the sample application to proceed to the next step. This is needed at this point because currently Istio doesn't dupport injecting Envoy proxies in an already deployed application, though that's a feature which is in plan.
+The next step would be deploying this sample application with Istio Envoys injected. You should now delete the sample application to proceed to the next step. This is needed at this point because currently Istio doesn't support injecting Envoy proxies in an already deployed application, though that's a feature which is in plan.
 
 ```bash
 $ kubectl delete -f istio/samples/apps/bookinfo/bookinfo.yaml
@@ -147,10 +147,10 @@ reviews-v1-2065415949-3gdz5       2/2       Running   0
 reviews-v2-2593570575-92657       2/2       Running   0       
 reviews-v3-3121725201-cn371       2/2       Running   0       
 ```
-To access your application, you can check the public IP address of your cluster through `kubectl get nodes` and get the NodePort of the istio-ingress service for port 80 through `kubectl get svc | grep istio-ingress`. Or you can also run the following command to output the IP address and NodePort:
+To access your application, you can check the public IP address of your cluster through `bx cs workers <your-cluster-name>` and get the NodePort of the istio-ingress service for port 80 through `kubectl get svc | grep istio-ingress`. Or you can also run the following command to output the IP address and NodePort:
 
 ```bash
-$ export URL=http://$(kubectl get po -l istio=ingress -o jsonpath='{.items[0].status.hostIP}'):$(kubectl get svc istio-ingress -o jsonpath='{.spec.ports[0].nodePort}')
+$ export URL=http://$(bx cs workers _YOUR-CLUSTER-NAME_ | grep normal | awk '{print $2}' | head -1):$(kubectl get svc istio-ingress -o jsonpath='{.spec.ports[0].nodePort}')
 $ echo $URL
 184.xxx.yyy.zzz:30XYZ
 ```
@@ -194,7 +194,7 @@ This would set the route for the user `jason` (You can login as _jason_ with any
 
 This is indicated by the `weight: 50` in the yaml file.
 
-  > Using `replace` should allow you to edit exisiting route-rules.
+  > Using `replace` should allow you to edit existing route-rules.
 
   ```bash
   $ istioctl replace -f istio/samples/apps/bookinfo/route-rule-reviews-50-v3.yaml
@@ -209,7 +209,7 @@ This would set every incoming traffic to the version v3 of the reviews microserv
   $ istioctl replace -f istio/samples/apps/bookinfo/route-rule-reviews-v3.yaml
   ```
 
-## 4. Access policy enforcement using Istio Auth - Configure access control
+## 4. Access policy enforcement using Istio Mixer - Configure access control
 
 This step shows you how to control access to your services. If you have done the step above, you'll see that your `productpage` now just shows red stars on the reviews section and if you are logged in as _jason_, you'll see black stars. The `ratings` service is accessed from the `reviews-v2` if you're logged in as _jason_ or it is accessed from `reviews-v3` if you are not logged in as `jason`.
 
@@ -248,10 +248,10 @@ This step shows you how to configure [Istio Mixer](https://istio.io/docs/concept
   $ kubectl apply -f istio/install/kubernetes/addons/prometheus.yaml
   $ kubectl apply -f istio/install/kubernetes/addons/grafana.yaml
   ```
-* Verify that your **Grafana** dashboard is ready. Get the IP of your cluster `kubectl get nodes` and then the NodePort of your Grafana service `kubectl get svc | grep grafana` or you can run the following command to output both:
+* Verify that your **Grafana** dashboard is ready. Get the IP of your cluster `bx cs workers <your-cluster-name>` and then the NodePort of your Grafana service `kubectl get svc | grep grafana` or you can run the following command to output both:
 
   ```bash
-  $ export GRAFANA=http://$(kubectl get po -l app=grafana -o jsonpath='{.items[0].status.hostIP}'):$(kubectl get svc grafana -o jsonpath='{.spec.ports[0].nodePort}')
+  $ export GRAFANA=http://$(bx cs workers _YOUR-CLUSTER-NAME_ | grep normal | awk '{print $2}' | head -1):$(kubectl get svc grafana -o jsonpath='{.spec.ports[0].nodePort}')
   $ echo $GRAFANA
   184.xxx.yyy.zzz:30XYZ
   ```
@@ -305,9 +305,9 @@ This step shows you how to collect trace spans using [Zipkin](http://zipkin.io).
   $ kubectl apply -f istio/install/kubernetes/addons/zipkin.yaml
   ```
 
-* Access your **Zipkin Dashboard**. Get the IP of your cluster `kubectl get nodes` and then the NodePort of your Zipkin service `kubectl get svc | grep zipkin` or you can run the following command to output both:
+* Access your **Zipkin Dashboard**. Get the IP of your cluster `bx cs workers <your-cluster-name>` and then the NodePort of your Zipkin service `kubectl get svc | grep zipkin` or you can run the following command to output both:
   ```bash
-  $ ZIPKIN=http://$(kubectl get po -l app=zipkin -o jsonpath='{.items[0].status.hostIP}'):$(kubectl get svc zipkin -o jsonpath='{.spec.ports[0].nodePort}')
+  $ ZIPKIN=http://$(bx cs workers _YOUR-CLUSTER-NAME_ | grep normal | awk '{print $2}' | head -1):$(kubectl get svc zipkin -o jsonpath='{.spec.ports[0].nodePort}')
   $ echo $ZIPKIN
   184.xxx.yyy.zzz:30XYZ
   ```  
@@ -430,7 +430,7 @@ The `details`, `reviews`, `ratings` will have external traffic since your MySQL 
 You can now access your application to confirm that it is getting data from your MySQL database.
 
 ```bash
-$ export URL=http://$(kubectl get po -l istio=ingress -o jsonpath='{.items[0].status.hostIP}'):$(kubectl get svc istio-ingress -o jsonpath='{.spec.ports[0].nodePort}')
+$ export URL=http://$(bx cs workers _YOUR-CLUSTER-NAME_ | grep normal | awk '{print $2}' | head -1):$(kubectl get svc istio-ingress -o jsonpath='{.spec.ports[0].nodePort}')
 $ echo $URL
 184.xxx.yyy.zzz:30XYZ
 
