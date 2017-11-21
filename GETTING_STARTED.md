@@ -1,5 +1,7 @@
 # Deploy Istio service mesh on Kubernetes Cluster
 
+*Read this in other languages: [한국어](GETTING_STARTED-ko.md).*
+
 [Istio](http://istio.io) is an open platform that provides a uniform way to connect, manage, and secure microservices. Istio is the result of a joint collaboration between IBM, Google and Lyft as a means to support traffic flow management, access policy enforcement and the telemetry data aggregation between microservices, all without requiring changes to the code of your microservice. Istio provides an easy way to create this service mesh by deploying a [control plane](https://istio.io/docs/concepts/what-is-istio/overview.html#architecture) and injecting sidecars, an extended version of the  [Envoy](https://lyft.github.io/envoy/) proxy, in the same Pod as your microservice.
 
 # Prerequisite
@@ -13,7 +15,7 @@ Create a Kubernetes cluster with either [Minikube](https://kubernetes.io/docs/ge
 
 ### 1.1 Download the Istio source
 
-  > Note: This example is tested with istio 1.6, we recommend you use this version for consistency.
+  > Note: This example is tested with istio 0.1.6, we recommend you use this version for consistency.
     Ensure you extract the files to the specified location so that the commands in the instructions
     work for you.
 

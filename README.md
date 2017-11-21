@@ -3,6 +3,8 @@
 
 # Istio: Traffic Management for your Microservices
 
+*Read this in other languages: [한국어](README-ko.md).*
+
 Microservices and containers changed application design and deployment patterns, but along with them brought challenges like service discovery, routing, failure handling, and visibility to microservices. "Service mesh" architecture was born to handle these features. Applications are getting decoupled internally as microservices, and the responsibility of maintaining coupling between these microservices is passed to the service mesh.
 
 [Istio](https://istio.io/), a joint collaboration between IBM, Google and Lyft provides an easy way to create a service mesh that will manage many of these complex tasks automatically, without the need to modify the microservices themselves. Istio does this by:
@@ -75,7 +77,7 @@ Please follow the [Toolchain instructions](https://github.com/IBM/container-jour
 1. [Deploy sample BookInfo application on Kubernetes](#1-deploy-sample-bookinfo-application-on-kubernetes)
 2. [Inject Istio envoys on the application](#2-inject-istio-envoys-on-the-application)
 3. [Configure Traffic flow](#3-traffic-flow-management-using-istio-pilot---modify-service-routes)
-4. [Configure access control](#4-access-policy-enforcement-using-istio-auth---configure-access-control)
+4. [Configure access control](#4-access-policy-enforcement-using-istio-mixer---configure-access-control)
 5. [Collect metrics, logs and trace spans](#5-telemetry-data-aggregation-using-istio-mixer---collect-metrics-logs-and-trace-spans)
      - 5.1 [Collect metrics and logs using Prometheus and Grafana](#51-collect-metrics-and-logs-using-prometheus-and-grafana)
      - 5.2 [Collect request traces using Zipkin](#52-collect-request-traces-using-zipkin)
@@ -232,7 +234,7 @@ This step shows you how to control access to your services. If you have done the
     selector: source.labels["app"]=="reviews" && source.labels["version"] == "v3"
   ```
 
-* To verify if your rule has been enforced, point your browser to your BookInfo Application, you wouldn't see star ratings anymore from the reviews section unless you are logged in as _jason_ which you will still see black stars (because you would be using the reviews-v2 as you have done in [Step 4](#4-modify-service-routes)).
+* To verify if your rule has been enforced, point your browser to your BookInfo Application, you wouldn't see star ratings anymore from the reviews section unless you are logged in as _jason_ which you will still see black stars (because you would be using the reviews-v2 as you have done in [Step 3](#3-traffic-flow-management-using-istio-pilot---modify-service-routes)).
 
 ![access-control](images/access.png)
 
