@@ -53,8 +53,8 @@ You will also need Istio service mesh installed on top of your Kubernetes cluste
 On **Linux** (with Kubernetes that has **alpha RBAC**) you can run the following:
 
 ```bash
-$ curl -SL https://github.com/istio/istio/releases/download/0.1.6/istio-0.1.6-linux.tar.gz | tar xzf -
-$ mv istio-0.1.6 istio
+$ curl -SL https://github.com/istio/istio/releases/download/0.5.0/istio-0.5.0-linux.tar.gz | tar xzf -
+$ mv istio-0.5.0 istio
 $ sudo cp istio/bin/istioctl /usr/local/bin/
 $ kubectl apply -f istio/install/kubernetes/istio-rbac-alpha.yaml
 $ kubectl apply -f istio/install/kubernetes/istio.yaml
@@ -88,7 +88,7 @@ In this part, we will be using the sample BookInfo Application that comes as def
 * Deploy the BookInfo Application in your Cluster
 
 ```bash
-$ kubectl apply -f istio/samples/apps/bookinfo/bookinfo.yaml
+$ kubectl apply -f istio/samples/bookinfo/kube/bookinfo.yaml
 ```
 
 * If are using minikube or you don't have access to external load balancers, you need to use NodePort on the `productpage` service. Run the following command to use a NodePort:
@@ -110,7 +110,7 @@ At this point, you can point your browser to http://184.xxx.yyy.zzz:30XYZ/produc
 The next step would be deploying this sample application with Istio Envoys injected. You should now delete the sample application to proceed to the next step. This is needed at this point because currently Istio doesn't support injecting Envoy proxies in an already deployed application, though that's a feature which is in plan.
 
 ```bash
-$ kubectl delete -f istio/samples/apps/bookinfo/bookinfo.yaml
+$ kubectl delete -f istio/samples/bookinfo/kube/bookinfo.yaml
 ```
 
 ## 2. Inject Istio envoys on the application
@@ -120,7 +120,7 @@ $ kubectl delete -f istio/samples/apps/bookinfo/bookinfo.yaml
 Envoys are deployed as sidecars on each microservice. Injecting Envoy into your microservice means that the Envoy sidecar would manage the ingoing and outgoing calls for the service. To inject an Envoy sidecar to an existing microservice configuration, do:
 
 ```bash
-$ kubectl apply -f <(istioctl kube-inject -f istio/samples/apps/bookinfo/bookinfo.yaml)
+$ kubectl apply -f <(istioctl kube-inject -f istio/samples/bookinfo/kube/bookinfo.yaml)
 ```
 
 > `istioctl kube-inject` modifies the yaml file passed in _-f_. This injects Envoy sidecar into your Kubernetes resource configuration. The only resources updated are Job, DaemonSet, ReplicaSet, and Deployment. Other resources in the YAML file configuration will be left unmodified.
@@ -131,10 +131,6 @@ $ kubectl get pods
 
 NAME                              READY     STATUS    RESTARTS
 details-v1-969129648-lwgr3        2/2       Running   0       
-istio-egress-3850639395-30d1v     1/1       Running   0       
-istio-ingress-4068702052-2st6r    1/1       Running   0       
-istio-pilot-251184572-x9dd4       2/2       Running   0       
-istio-mixer-2499357295-kn4vq      1/1       Running   0       
 productpage-v1-1629799384-00f11   2/2       Running   0       
 ratings-v1-1194835686-dzf2f       2/2       Running   0       
 reviews-v1-2065415949-3gdz5       2/2       Running   0       
@@ -144,7 +140,7 @@ reviews-v3-3121725201-cn371       2/2       Running   0
 To access your application, you can check the public IP address of your cluster through `bx cs workers <your-cluster-name>` and get the NodePort of the istio-ingress service for port 80 through `kubectl get svc | grep istio-ingress`. Or you can also run the following command to output the IP address and NodePort:
 
 ```bash
-$ export URL=http://$(bx cs workers _YOUR-CLUSTER-NAME_ | grep normal | awk '{print $2}' | head -1):$(kubectl get svc istio-ingress -o jsonpath='{.spec.ports[0].nodePort}')
+$ export URL=http://$(bx cs workers _YOUR-CLUSTER-NAME_ | grep normal | awk '{print $2}' | head -1):$(kubectl --namespace=istio-system get svc istio-ingress -o jsonpath='{.spec.ports[0].nodePort}')
 $ echo $URL
 184.xxx.yyy.zzz:30XYZ
 ```
@@ -173,7 +169,7 @@ This step shows you how to configure where you want your service requests to go 
 This would set all incoming routes on the services (indicated in the line `destination: <service>`) to the deployment with a tag `version: v1`. To set the default routes, run:
 
   ```bash
-  $ istioctl create -f istio/samples/apps/bookinfo/route-rule-all-v1.yaml
+  $ istioctl create -f istio/samples/bookinfo/kube/route-rule-all-v1.yaml
   ```
 
 * Set Route to `reviews-v2` of **reviews microservice** for a specific user  
@@ -181,7 +177,7 @@ This would set all incoming routes on the services (indicated in the line `desti
 This would set the route for the user `jason` (You can login as _jason_ with any password in your deploy web application) to see the `version: v2` of the reviews microservice. Run:
 
   ```bash
-  $ istioctl create -f istio/samples/apps/bookinfo/route-rule-reviews-test-v2.yaml
+  $ istioctl create -f istio/samples/bookinfo/kube/route-rule-reviews-test-v2.yaml
   ```
 
 * Route 50% of traffic on **reviews microservice** to `reviews-v1` and 50% to `reviews-v3`.  
@@ -191,7 +187,7 @@ This is indicated by the `weight: 50` in the yaml file.
   > Using `replace` should allow you to edit existing route-rules.
 
   ```bash
-  $ istioctl replace -f istio/samples/apps/bookinfo/route-rule-reviews-50-v3.yaml
+  $ istioctl replace -f istio/samples/bookinfo/kube/route-rule-reviews-50-v3.yaml
 
   ```
 
@@ -200,7 +196,7 @@ This is indicated by the `weight: 50` in the yaml file.
 This would set every incoming traffic to the version v3 of the reviews microservice. Run:
 
   ```bash
-  $ istioctl replace -f istio/samples/apps/bookinfo/route-rule-reviews-v3.yaml
+  $ istioctl replace -f istio/samples/bookinfo/kube/route-rule-reviews-v3.yaml
   ```
 
 ## 4. Access policy enforcement using Istio Mixer - Configure access control
@@ -212,7 +208,7 @@ This step shows you how to control access to your services. If you have done the
 * To deny access to the ratings service from the traffic coming from `reviews-v3`, you will use `istioctl mixer rule create`
 
   ```bash
-  $ istioctl mixer rule create global ratings.default.svc.cluster.local -f istio/samples/apps/bookinfo/mixer-rule-ratings-denial.yaml
+  $ istioctl mixer rule create global ratings.default.svc.cluster.local -f istio/samples/bookinfo/kube/mixer-rule-ratings-denial.yaml
   ```
 
   The `mixer-rule-ratings-denial.yaml` file creates a rule that denies `kind: denials` access from reviews service and has a label of v3 `selector: source.labels["app"]=="reviews" && source.labels["version"] == "v3"`  
@@ -454,7 +450,7 @@ $ kubectl port-forward ${pilot_podname} 8081 &
 Then execute the istioctl create/get/delete/replace commands with the additional flags.  
 Example:
 ```bash
-$ istioctl create -f istio/samples/apps/bookinfo/route-rule-all-v1.yaml --kube=false --configAPIService=localhost:8081/v1alpha1
+$ istioctl create -f istio/samples/bookinfo/kube/route-rule-all-v1.yaml --kube=false --configAPIService=localhost:8081/v1alpha1
 ```
 
 #### Port forwarding the Istio Mixer
@@ -466,7 +462,7 @@ $ kubectl port-forward ${mixer_podname} 9094 &
 Then execute the istioctl mixer commands with the additional flags.  
 Example:
 ```bash
-$ istioctl mixer rule create global ratings.default.svc.cluster.local -f istio/samples/apps/bookinfo/mixer-rule-ratings-denial.yaml --kube=false --mixerAPIService=localhost:9094
+$ istioctl mixer rule create global ratings.default.svc.cluster.local -f istio/samples/bookinfo/kube/mixer-rule-ratings-denial.yaml --kube=false --mixerAPIService=localhost:9094
 ```
 # Privacy Notice
 
