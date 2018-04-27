@@ -36,7 +36,7 @@ sed -i s#"VEhYTktMUFFTWE9BQ1JPRA=="#$PASSWORD_BASE64#g secrets.yaml
 sed -i s#"c2wtdXMtc291dGgtMS1wb3J0YWwuMy5kYmxheWVyLmNvbQ=="#$HOST_BASE64#g secrets.yaml
 sed -i s#"MTg0ODE="#$PORT_BASE64#g secrets.yaml
 
-curl -L https://git.io/getIstio | sh -
+curl -L https://git.io/getLatestIstio | sh -
 cd $(ls | grep istio)
 sudo mv bin/istioctl /usr/local/bin/
 
