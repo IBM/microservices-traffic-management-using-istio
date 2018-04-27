@@ -64,57 +64,23 @@ $ kubectl apply -f istio/install/kubernetes/istio.yaml
 
 ### Part A: Deploy sample Bookinfo application and inject Istio sidecars to enable traffic flow management, access policy and monitoring data aggregation for application
 
-1. [Deploy sample BookInfo application on Kubernetes](#1-deploy-sample-bookinfo-application-on-kubernetes)
-2. [Inject Istio envoys on the application](#2-inject-istio-envoys-on-the-application)
-3. [Configure Traffic flow](#3-traffic-flow-management-using-istio-pilot---modify-service-routes)
-4. [Configure access control](#4-access-policy-enforcement-using-istio-mixer---configure-access-control)
-5. [Collect metrics, logs and trace spans](#5-telemetry-data-aggregation-using-istio-mixer---collect-metrics-logs-and-trace-spans)
-     - 5.1 [Collect metrics and logs using Prometheus and Grafana](#51-collect-metrics-and-logs-using-prometheus-and-grafana)
-     - 5.2 [Collect request traces using Zipkin](#52-collect-request-traces-using-zipkin)
+1. [Deploy sample BookInfo application with Istio sidecar injected](#1-deploy-sample-bookinfo-application-on-kubernetes)
+2. [Configure Traffic flow](#3-traffic-flow-management-using-istio-pilot---modify-service-routes)
+3. [Configure access control](#4-access-policy-enforcement-using-istio-mixer---configure-access-control)
+4. [Collect metrics, logs and trace spans](#5-telemetry-data-aggregation-using-istio-mixer---collect-metrics-logs-and-trace-spans)
+     - 4.1 [Collect metrics and logs using Prometheus and Grafana](#51-collect-metrics-and-logs-using-prometheus-and-grafana)
+     - 4.2 [Collect request traces using Zipkin](#52-collect-request-traces-using-zipkin)
 
 ### Part B: Modify sample application to use an external datasource, deploy the application and Istio envoys with egress traffic enabled
-6. [Create an external datasource for the application](#6-create-an-external-datasource-for-the-application)
-7. [Modify sample application to use the external database](#7-modify-sample-application-to-use-the-external-database)
-8. [Deploy application microservices and Istio envoys with egress traffic enabled](#8-deploy-application-microservices-and-istio-envoys-with-egress-traffic-enabled)
+5. [Create an external datasource for the application](#6-create-an-external-datasource-for-the-application)
+6. [Modify sample application to use the external database](#7-modify-sample-application-to-use-the-external-database)
+7. [Deploy application microservices and Istio envoys with egress traffic enabled](#8-deploy-application-microservices-and-istio-envoys-with-egress-traffic-enabled)
 
 ## Part A: Deploy sample Bookinfo application and inject Istio sidecars to enable traffic flow management, access policy and monitoring data aggregation for application
 
-## 1. Deploy sample BookInfo application on Kubernetes
+## 1. Deploy sample BookInfo application with Istio sidecar injected
 
 In this part, we will be using the sample BookInfo Application that comes as default with Istio code base. As mentioned above, the application that is composed of four microservices, written in different languages for each of its microservices namely Python, Java, Ruby, and Node.js. The default application doesn't use a database and all the microservices store their data in the local file system.
-
-* Deploy the BookInfo Application in your Cluster
-
-```bash
-$ kubectl apply -f istio/samples/apps/bookinfo/bookinfo.yaml
-```
-
-* If are using minikube or you don't have access to external load balancers, you need to use NodePort on the `productpage` service. Run the following command to use a NodePort:
-
-```bash
-$ kubectl apply -f demo/node-port.yaml
-```
-
-* If you have a load balancer, you find the URL through the IP found on `kubectl get ingress` and skip this step.  Otherwise to show your cluster’s IP address and NotePort of your `productpage` run:
-
-```bash
-$ export URL=http://$(bx cs workers _YOUR-CLUSTER-NAME_ | grep normal | awk '{print $2}' | head -1):$(kubectl get svc productpage -o jsonpath='{.spec.ports[0].nodePort}')
-$ echo $URL
-http://184.xxx.yyy.zzz:30XYZ
-```
-
-At this point, you can point your browser to http://184.xxx.yyy.zzz:30XYZ/productpage (or run `$ firefox $URL/productpage` if you have firefox installed) and see the BookInfo Application.
-
-The next step would be deploying this sample application with Istio Envoys injected. You should now delete the sample application to proceed to the next step. This is needed at this point because currently Istio doesn't support injecting Envoy proxies in an already deployed application, though that's a feature which is in plan.
-
-```bash
-$ kubectl delete -f istio/samples/apps/bookinfo/bookinfo.yaml
-```
-
-## 2. Inject Istio envoys on the application
-
-> Note: If you did not delete the app from stage 1 you will see issues if you proceed with this stage._
-
 Envoys are deployed as sidecars on each microservice. Injecting Envoy into your microservice means that the Envoy sidecar would manage the ingoing and outgoing calls for the service. To inject an Envoy sidecar to an existing microservice configuration, do:
 
 ```bash
