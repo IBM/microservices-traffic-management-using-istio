@@ -65,11 +65,11 @@ $ kubectl apply -f istio/install/kubernetes/istio.yaml
 ### Part A: Deploy sample Bookinfo application and inject Istio sidecars to enable traffic flow management, access policy and monitoring data aggregation for application
 
 1. [Deploy sample BookInfo application with Istio sidecar injected](#1-deploy-sample-bookinfo-application-on-kubernetes)
-2. [Configure Traffic flow](#3-traffic-flow-management-using-istio-pilot---modify-service-routes)
-3. [Configure access control](#4-access-policy-enforcement-using-istio-mixer---configure-access-control)
-4. [Collect metrics, logs and trace spans](#5-telemetry-data-aggregation-using-istio-mixer---collect-metrics-logs-and-trace-spans)
-     - 4.1 [Collect metrics and logs using Prometheus and Grafana](#51-collect-metrics-and-logs-using-prometheus-and-grafana)
-     - 4.2 [Collect request traces using Zipkin](#52-collect-request-traces-using-zipkin)
+2. [Configure Traffic flow](#2-traffic-flow-management-using-istio-pilot---modify-service-routes)
+3. [Configure access control](#3-access-policy-enforcement-using-istio-mixer---configure-access-control)
+4. [Collect metrics, logs and trace spans](#4-telemetry-data-aggregation-using-istio-mixer---collect-metrics-logs-and-trace-spans)
+     - 4.1 [Collect metrics and logs using Prometheus and Grafana](#41-collect-metrics-and-logs-using-prometheus-and-grafana)
+     - 4.2 [Collect request traces using Zipkin](#42-collect-request-traces-using-zipkin)
 
 ### Part B: Modify sample application to use an external datasource, deploy the application and Istio envoys with egress traffic enabled
 5. [Create an external datasource for the application](#6-create-an-external-datasource-for-the-application)
@@ -93,28 +93,29 @@ After a few minutes, you should now have your Kubernetes Pods running and have a
 ```
 $ kubectl get pods
 
-NAME                              READY     STATUS    RESTARTS
-details-v1-969129648-lwgr3        2/2       Running   0       
-istio-egress-3850639395-30d1v     1/1       Running   0       
-istio-ingress-4068702052-2st6r    1/1       Running   0       
-istio-pilot-251184572-x9dd4       2/2       Running   0       
-istio-mixer-2499357295-kn4vq      1/1       Running   0       
-productpage-v1-1629799384-00f11   2/2       Running   0       
-ratings-v1-1194835686-dzf2f       2/2       Running   0       
-reviews-v1-2065415949-3gdz5       2/2       Running   0       
-reviews-v2-2593570575-92657       2/2       Running   0       
-reviews-v3-3121725201-cn371       2/2       Running   0       
+NAME                                        READY     STATUS    RESTARTS   AGE
+details-v1-1520924117-48z17                 2/2       Running   0          6m
+productpage-v1-560495357-jk1lz              2/2       Running   0          6m
+ratings-v1-734492171-rnr5l                  2/2       Running   0          6m
+reviews-v1-874083890-f0qf0                  2/2       Running   0          6m
+reviews-v2-1343845940-b34q5                 2/2       Running   0          6m
+reviews-v3-1813607990-8ch52                 2/2       Running   0          6m
 ```
-To access your application, you can check the public IP address of your cluster through `bx cs workers <your-cluster-name>` and get the NodePort of the istio-ingress service for port 80 through `kubectl get svc | grep istio-ingress`. Or you can also run the following command to output the IP address and NodePort:
+To access your application, you can check the public IP address of your application. In the `bookinfo.yaml` file we have configured an ingress resource. Run:
 
 ```bash
-$ export URL=http://$(bx cs workers _YOUR-CLUSTER-NAME_ | grep normal | awk '{print $2}' | head -1):$(kubectl get svc istio-ingress -o jsonpath='{.spec.ports[0].nodePort}')
-$ echo $URL
-184.xxx.yyy.zzz:30XYZ
+$ kubectl get ingress -o wide
 ```
-
-Point your browser to:  
-`http://184.xxx.yyy.zzz:30XYZ/productpage` Replace with your own IP and NodePort.
+The output is something like 
+```bash
+NAME      HOSTS     ADDRESS                 PORTS     AGE
+gateway   *         184.211.10.121          80        1d
+```
+Set the env variable(change to your output):
+```bash
+export GATEWAY_URL=184.xxx.xxx.xxx:80
+```
+Now you can access your application via:`http://${GATEWAY_URL}/productpage`
 
 If you refresh the page multiple times, you'll see that the _reviews_ section of the page changes. That's because there are 3 versions of **reviews**_(reviews-v1, reviews-v2, reviews-v3)_ deployment for our **reviews** service. Istio’s load-balancer is using a round-robin algorithm to iterate through the 3 instances of this service
 
@@ -122,15 +123,13 @@ If you refresh the page multiple times, you'll see that the _reviews_ section of
 ![productpage](images/black.png)
 ![productpage](images/red.png)
 
-## 3. Traffic flow management using Istio Pilot - Modify service routes
+## 2. Traffic flow management using Istio Pilot - Modify service routes
 
 In this section, Istio will be configured to dynamically modify the network traffic between some of the components of our application. In this case we have 2 versions of the “reviews” component (v1 and v2) but we don’t want to replace review-v1 with review-v2 immediately. In most cases, when components are upgraded it’s useful to deploy the new version but only have a small subset of network traffic routed to it so that it can be tested before the old version is removed. This is often referred to as “canary testing”.
 
 There are multiple ways in which we can control this routing. It can be based on which user is accessing it, or certain percentage of the traffic can be configured to flow to one version etc.
 
 This step shows you how to configure where you want your service requests to go based on weights and HTTP Headers.You would need to be in the root directory of the Istio release you have downloaded on the Prerequisites section.
-
-> If you are having trouble executing `istioctl create` and getting a connection timeout, please use port forwarding as mentioned [here](#port-forwarding-the-istio-pilot)
 
 * Set Default Routes to `reviews-v1` for all microservices  
 
@@ -167,27 +166,14 @@ This would set every incoming traffic to the version v3 of the reviews microserv
   $ istioctl replace -f istio/samples/apps/bookinfo/route-rule-reviews-v3.yaml
   ```
 
-## 4. Access policy enforcement using Istio Mixer - Configure access control
+## 3. Access policy enforcement using Istio Mixer - Configure access control
 
 This step shows you how to control access to your services. If you have done the step above, you'll see that your `productpage` now just shows red stars on the reviews section and if you are logged in as _jason_, you'll see black stars. The `ratings` service is accessed from the `reviews-v2` if you're logged in as _jason_ or it is accessed from `reviews-v3` if you are not logged in as `jason`.
-
-> If you are having trouble executing `istioctl mixer` and getting a connection timeout, please use port forwarding as mentioned [here](#port-forwarding-the-istio-mixer)
 
 * To deny access to the ratings service from the traffic coming from `reviews-v3`, you will use `istioctl mixer rule create`
 
   ```bash
-  $ istioctl mixer rule create global ratings.default.svc.cluster.local -f istio/samples/apps/bookinfo/mixer-rule-ratings-denial.yaml
-  ```
-
-  The `mixer-rule-ratings-denial.yaml` file creates a rule that denies `kind: denials` access from reviews service and has a label of v3 `selector: source.labels["app"]=="reviews" && source.labels["version"] == "v3"`  
-  You can verify using `istioctl mixer rule get global ratings.default.svc.cluster.local` if the mixer rule has been created that way:
-
-  ```bash
-  $ istioctl mixer rule get global ratings.default.svc.cluster.local
-  rules:
-  - aspects:
-    - kind: denials
-    selector: source.labels["app"]=="reviews" && source.labels["version"] == "v3"
+  $ istioctl create -f istio/samples/apps/bookinfo/mixer-rule-ratings-denial.yaml
   ```
 
 * To verify if your rule has been enforced, point your browser to your BookInfo Application, you wouldn't see star ratings anymore from the reviews section unless you are logged in as _jason_ which you will still see black stars (because you would be using the reviews-v2 as you have done in [Step 3](#3-traffic-flow-management-using-istio-pilot---modify-service-routes)).
@@ -195,9 +181,9 @@ This step shows you how to control access to your services. If you have done the
 ![access-control](images/access.png)
 
 
-## 5. Telemetry data aggregation using Istio Mixer - Collect metrics, logs and trace spans
+## 4. Telemetry data aggregation using Istio Mixer - Collect metrics, logs and trace spans
 
-### 5.1 Collect metrics and logs using Prometheus and Grafana
+### 4.1 Collect metrics and logs using Prometheus and Grafana
 
 This step shows you how to configure [Istio Mixer](https://istio.io/docs/concepts/policy-and-control/mixer.html) to gather telemetry for services in your cluster.
 
@@ -209,26 +195,20 @@ This step shows you how to configure [Istio Mixer](https://istio.io/docs/concept
 * Verify that your **Grafana** dashboard is ready. Get the IP of your cluster `bx cs workers <your-cluster-name>` and then the NodePort of your Grafana service `kubectl get svc | grep grafana` or you can run the following command to output both:
 
   ```bash
-  $ export GRAFANA=http://$(bx cs workers _YOUR-CLUSTER-NAME_ | grep normal | awk '{print $2}' | head -1):$(kubectl get svc grafana -o jsonpath='{.spec.ports[0].nodePort}')
-  $ echo $GRAFANA
-  184.xxx.yyy.zzz:30XYZ
+  $ kubectl -n istio-system port-forward $(kubectl -n istio-system get pod -l app=grafana \
+  -o jsonpath='{.items[0].metadata.name}') 3000:3000
   ```
-  Point your browser to http://184.xxx.yyy.zzz:30XYZ/dashboard/db/istio-dashboard (or run `$ firefox $GRAFANA/dashboard/db/istio-dashboard` if you have firefox installed) to go directly to your dashboard.  
+  Point your browser to http://localhost:3000  
 
   Your dashboard should look like this:  
   ![Grafana-Dashboard](images/grafana.png)
 
-* To collect new telemetry data, you will use `istio mixer rule create`. For this sample, you will generate logs for Response Size for Reviews service. The configuration YAML file is provided within the BookInfo sample folder. Validate that your Reviews service has no service-specific rules already applied.
+* To collect new telemetry data, you will apply a mixer rule. For this sample, you will generate logs for Response Size for Reviews service. The configuration YAML file is provided within the BookInfo sample folder. 
 
-  ```bash
-  $ istioctl mixer rule get reviews.default.svc.cluster.local reviews.default.svc.cluster.local
-  Error: the server could not find the requested resource
-  ```
-
-* Create the configuration on Istio Mixer using the configuration in [new-metrics-rule.yaml](new-metrics-rule.yaml)
+* Create the configuration on Istio Mixer using the configuration in [new_telemetry.yaml](new_telemetry.yaml)
 `
   ```bash
-  $ istioctl mixer rule create reviews.default.svc.cluster.local reviews.default.svc.cluster.local -f demo/new-metrics-rule.yaml
+  $ istioctl create -f demo/new_telemetry.yaml
   ```
 
 * Send traffic to that service by refreshing your browser to `http://184.xxx.yyy.zzz:30XYZ/productpage` multiple times. You can also do `curl` on your terminal to that URL in a while loop.
@@ -254,7 +234,7 @@ This step shows you how to configure [Istio Mixer](https://istio.io/docs/concept
 
 [Collecting Metrics and Logs on Istio](https://istio.io/docs/tasks/metrics-logs.html)
 
-### 5.2 Collect request traces using Zipkin
+### 4.2 Collect request traces using Zipkin
 
 This step shows you how to collect trace spans using [Zipkin](http://zipkin.io).
 * Install the required Istio Addon: [Zipkin](http://zipkin.io)
@@ -288,13 +268,13 @@ This step shows you how to collect trace spans using [Zipkin](http://zipkin.io).
 
 In this part, we will modify the sample BookInfo application to use use an external database, and enable the Istio envoys for egress traffic. Please ensure you have the Istio control plane installed on your Kubernetes cluster as mentioned in the prerequisites. We will run these commands from the outside the 'demo' folder we cloned the source code repository in at the beginning.
 
-## 6. Create an external datasource for the application
+## 5. Create an external datasource for the application
 
 Provision Compose for MySQL in Bluemix via https://console.ng.bluemix.net/catalog/services/compose-for-mysql  
 Go to Service credentials and view your credentials. Your MySQL hostname, port, user, and password are under your credential uri and it should look like this
 ![images](images/mysqlservice.png)
 
-## 7. Modify sample application to use the external database
+## 6. Modify sample application to use the external database
 
 In this step, the original sample BookInfo Application is modified to leverage a MySQL database. The modified microservices are the `details`, `ratings`, and `reviews`. This is done to show how Istio can be configured to enable egress traffic for applications leveraging external services outside the Istio data plane, in this case a database.
 
@@ -337,7 +317,7 @@ Once the secrets are set add them to your Kubernetes cluster:
 $ kubectl apply -f demo/secrets.yaml
 ```
 
-## 8. Deploy application microservices and Istio envoys with Egress traffic enabled
+## 7. Deploy application microservices and Istio envoys with Egress traffic enabled
 
 By default, Istio-enabled applications will be unable to access URLs outside of the cluster. All outbound traffic in the pod are redirected by its sidecar proxy which only handles destinations inside the cluster.
 
