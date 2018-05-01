@@ -205,7 +205,7 @@ This step shows you how to configure [Istio Mixer](https://istio.io/docs/concept
 
 * To collect new telemetry data, you will apply a mixer rule. For this sample, you will generate logs for Response Size for Reviews service. The configuration YAML file is provided within the BookInfo sample folder. 
 
-* Create the configuration on Istio Mixer using the configuration in [new_telemetry.yaml](new_telemetry.yaml)
+* Create the configuration on Istio Mixer using the configuration in [new-metrics-rule.yaml](new-metrics-rule.yaml)
 `
   ```bash
   $ istioctl create -f demo/new_telemetry.yaml
@@ -224,9 +224,9 @@ This step shows you how to configure [Istio Mixer](https://istio.io/docs/concept
 * Verify that the logs stream has been created and is being populated for requests
 
   ```bash
-  $ kubectl logs $(kubectl get pods -l istio=mixer -o jsonpath='{.items[0].metadata.name}') | grep \"combined_log\"
+  $ kubectl -n istio-system logs $(kubectl -n istio-system get pods -l istio=mixer -o jsonpath='{.items[0].metadata.name}') mixer | grep \"instance\":\"newlog.logentry.istio-system\"
 
-  {"logName":"combined_log","labels":{"referer":"","responseSize":871,"timestamp":"2017-04-29T02:11:54.989466058Z","url":"/reviews","userAgent":"python-requests/2.11.1"},"textPayload":"- - - [29/Apr/2017:02:11:54 +0000] \"- /reviews -\" - 871 - python-requests/2.11.1"}
+  {"level":"warn","ts":"2017-09-21T04:33:31.249Z","instance":"newlog.logentry.istio-system","destination":"details","latency":"6.848ms","responseCode":200,"responseSize":178,"source":"productpage","user":"unknown"}
   ...
   ...
   ...
