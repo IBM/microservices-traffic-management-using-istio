@@ -211,10 +211,10 @@ This step shows you how to configure [Istio Mixer](https://istio.io/docs/concept
   $ istioctl create -f demo/new_telemetry.yaml
   ```
 
-* Send traffic to that service by refreshing your browser to `http://184.xxx.yyy.zzz:30XYZ/productpage` multiple times. You can also do `curl` on your terminal to that URL in a while loop.
+* Send traffic to that service by refreshing your browser to `http://${GATEWAY_URL}/productpage` multiple times. You can also do `curl` on your terminal to that URL in a while loop.
 
   ```bash
-  $ for i in {1..5}; do echo -n .; curl -s $URL/productpage > /dev/null; done
+  $ for i in {1..5}; do echo -n .; curl -s http://${GATEWAY_URL}/productpage > /dev/null; done
   ```
 
 * Verify that the new metric is being collected by going to your Grafana dashboard again. The graph on the rightmost should now be populated.
@@ -227,8 +227,6 @@ This step shows you how to configure [Istio Mixer](https://istio.io/docs/concept
   $ kubectl -n istio-system logs $(kubectl -n istio-system get pods -l istio=mixer -o jsonpath='{.items[0].metadata.name}') mixer | grep \"instance\":\"newlog.logentry.istio-system\"
 
   {"level":"warn","ts":"2017-09-21T04:33:31.249Z","instance":"newlog.logentry.istio-system","destination":"details","latency":"6.848ms","responseCode":200,"responseSize":178,"source":"productpage","user":"unknown"}
-  ...
-  ...
   ...
   ```
 
@@ -245,14 +243,16 @@ This step shows you how to collect trace spans using [Zipkin](http://zipkin.io).
 
 * Access your **Zipkin Dashboard**. Get the IP of your cluster `bx cs workers <your-cluster-name>` and then the NodePort of your Zipkin service `kubectl get svc | grep zipkin` or you can run the following command to output both:
   ```bash
-  $ ZIPKIN=http://$(bx cs workers _YOUR-CLUSTER-NAME_ | grep normal | awk '{print $2}' | head -1):$(kubectl get svc zipkin -o jsonpath='{.spec.ports[0].nodePort}')
-  $ echo $ZIPKIN
-  184.xxx.yyy.zzz:30XYZ
+  $ kubectl port-forward -n istio-system \
+  $(kubectl get pod -n istio-system -l app=zipkin -o jsonpath='{.items[0].metadata.name}') \
+  9411:9411
   ```  
+  Access the zipkin dashboard `http://localhost:3000`
+  
   Your dashboard should like this:
   ![zipkin](images/zipkin.png)
 
-* Send traffic to that service by refreshing your browser to `http://184.xxx.yyy.zzz:30XYZ/productpage` multiple times. You can also do reuse the `curl` for loop from earlier.
+* Send traffic to that service by refreshing your browser to `http://${GATEWAY_URL}/productpage` multiple times. You can also do reuse the `curl` for loop from earlier.
 
 * Go to your Zipkin Dashboard again and you will see a number of traces done. _Click on Find Traces button with the appropriate Start and End Time_
 
@@ -321,9 +321,10 @@ $ kubectl apply -f demo/secrets.yaml
 
 By default, Istio-enabled applications will be unable to access URLs outside of the cluster. All outbound traffic in the pod are redirected by its sidecar proxy which only handles destinations inside the cluster.
 
-The `--includeIPRanges` option is to pass the IP range(s) used for internal cluster services, thereby excluding external IPs from being redirected to the sidecar proxy. The IP range above is for IBM Bluemix provisioned Kubernetes Clusters. For minikube, you will have to use `10.0.0.1/24`. For external services using http/https protocol, the Istio Egress proxy can let you access them by registering it in your cluster. You can read more about registering an external http/https service [here](https://istio.io/docs/tasks/egress.html#configuring-the-external-services).
 
-To simplify we'll set them in an environment variable that we can reuse:
+There are two ways to configure Istio to expose external services to Istio-enabled clients. a. by defining `ExternalService` configurations, or b. simply bypass the Istio proxy for a specific range of IPs. In this exercise, we'll use the ip range.
+
+We'll save the ip range in an environment variable so that we can reuse:
 
 ```bash
 $ export IPRANGES=172.30.0.0/16,172.20.0.0/16
@@ -366,52 +367,19 @@ $ kubectl apply -f <(istioctl kube-inject -f demo/ratings-new.yaml --includeIPRa
 The `details`, `reviews`, `ratings` will have external traffic since your MySQL database is outside of your cluster. That is why you would need to use `--includeIPRanges` option in `istioctl kube-inject`.
 
 You can now access your application to confirm that it is getting data from your MySQL database.
-
-```bash
-$ export URL=http://$(bx cs workers _YOUR-CLUSTER-NAME_ | grep normal | awk '{print $2}' | head -1):$(kubectl get svc istio-ingress -o jsonpath='{.spec.ports[0].nodePort}')
-$ echo $URL
-184.xxx.yyy.zzz:30XYZ
-
-```
 Point your browser to:  
-`http://184.xxx.yyy.zzz:30XYZ/productpage` (or run `$ firefox $URL/productpage` if you have firefox installed) Replace with your own IP and NodePort.
+`http://${GATEWAY_URL}/productpage` 
 
 # Troubleshooting
 * To delete Istio from your cluster
 
 ```bash
-$ kubectl delete -f install/kubernetes/istio-rbac-alpha.yaml # or istio-rbac-beta.yaml
 $ kubectl delete -f install/kubernetes/istio.yaml
-$ kubectl delete istioconfigs --all
-$ kubectl delete thirdpartyresource istio-config.istio.io
 ```
 
 * To delete all addons: `kubectl delete -f install/kubernetes/addons`
 * To delete the BookInfo app and its route-rules: `./samples/apps/bookinfo/cleanup.sh`
 
-#### Port forwarding the Istio Pilot
-* This forwards the port 8081 from your istio-pilot Pod in your cluster to your local machine
-```bash
-$ pilot_podname=$(kubectl get pod -l istio=pilot -o=jsonpath={'.items[0].metadata.name'})
-$ kubectl port-forward ${pilot_podname} 8081 &
-```
-Then execute the istioctl create/get/delete/replace commands with the additional flags.  
-Example:
-```bash
-$ istioctl create -f istio/samples/apps/bookinfo/route-rule-all-v1.yaml --kube=false --configAPIService=localhost:8081/v1alpha1
-```
-
-#### Port forwarding the Istio Mixer
-* This forwards the port 9094 from your istio-mixer Pod in your cluster to your local machine
-```bash
-$ mixer_podname=$(kubectl get pod -l istio=mixer -o=jsonpath={'.items[0].metadata.name'})
-$ kubectl port-forward ${mixer_podname} 9094 &
-```
-Then execute the istioctl mixer commands with the additional flags.  
-Example:
-```bash
-$ istioctl mixer rule create global ratings.default.svc.cluster.local -f istio/samples/apps/bookinfo/mixer-rule-ratings-denial.yaml --kube=false --mixerAPIService=localhost:9094
-```
 # Privacy Notice
 
 Sample Kubernetes Yaml file that includes this package may be configured to track deployments to [IBM Cloud](https://www.bluemix.net/) and other Kubernetes platforms. The following information is sent to a [Deployment Tracker](https://github.com/IBM/metrics-collector-service) service on each deployment:
