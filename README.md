@@ -49,7 +49,7 @@ $ git clone https://github.com/IBM/traffic-management-for-your-microservices-usi
 ```
 
 You will also need Istio service mesh installed on top of your Kubernetes cluster. 
-Here are the steps(Make sure to change the version to your downloaded one):
+Here are the steps (Make sure to change the version to your downloaded one):
 
 ```bash
 $ curl -L https://git.io/getLatestIstio | sh -
@@ -111,7 +111,7 @@ The output is something like
 NAME      HOSTS     ADDRESS                 PORTS     AGE
 gateway   *         184.211.10.121          80        1d
 ```
-Set the env variable(change to your output):
+Set the env variable (change to your output):
 ```bash
 export GATEWAY_URL=184.xxx.xxx.xxx:80
 ```
@@ -129,7 +129,7 @@ In this section, Istio will be configured to dynamically modify the network traf
 
 There are multiple ways in which we can control this routing. It can be based on which user is accessing it, or certain percentage of the traffic can be configured to flow to one version etc.
 
-This step shows you how to configure where you want your service requests to go based on weights and HTTP Headers.You would need to be in the root directory of the Istio release you have downloaded on the Prerequisites section.
+This step shows you how to configure where you want your service requests to go based on weights and HTTP Headers. You would need to be in the root directory of the Istio release you have downloaded on the Prerequisites section.
 
 * Set Default Routes to `reviews-v1` for all microservices  
 
@@ -266,7 +266,7 @@ This step shows you how to collect trace spans using [Zipkin](http://zipkin.io).
 
 ## Part B:  Modify sample application to use an external datasource, deploy the application and Istio envoys with egress traffic enabled
 
-In this part, we will modify the sample BookInfo application to use use an external database, and enable the Istio envoys for egress traffic. Please ensure you have the Istio control plane installed on your Kubernetes cluster as mentioned in the prerequisites. We will run these commands from the outside the 'demo' folder we cloned the source code repository in at the beginning.
+In this part, we will modify the sample BookInfo application to use use an external database, and enable the Istio envoys for egress traffic. Please ensure you have the Istio control plane installed on your Kubernetes cluster as mentioned in the prerequisites. We will run these commands from the outside the `demo folder we cloned the source code repository in at the beginning.
 
 ## 5. Create an external datasource for the application
 
@@ -394,7 +394,7 @@ This data is collected from the Kubernetes Job in the sample application's yaml 
 
 ## Disabling Deployment Tracking
 
-Please comment out/remove the Metric Kubernetes Job portion at the end of the 'bookinfo.yaml' file.
+Please comment out/remove the Metric Kubernetes Job portion at the end of the `bookinfo.yaml` file.
 
 # References
 [Istio.io](https://istio.io/docs/tasks/)
