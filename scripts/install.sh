@@ -7,7 +7,7 @@ curl -L "https://cli.run.pivotal.io/stable?release=linux64-binary&source=github"
 sudo mv cf /usr/local/bin
 sudo curl -o /usr/share/bash-completion/completions/cf https://raw.githubusercontent.com/cloudfoundry/cli/master/ci/installers/completion/cf
 cf --version
-curl -L public.dhe.ibm.com/cloud/bluemix/cli/bluemix-cli/Bluemix_CLI_0.5.1_amd64.tar.gz > Bluemix_CLI.tar.gz
+curl -L public.dhe.ibm.com/cloud/bluemix/cli/bluemix-cli/Bluemix_CLI_0.6.7_amd64.tar.gz > Bluemix_CLI.tar.gz
 tar -xvf Bluemix_CLI.tar.gz
 sudo ./Bluemix_CLI/install_bluemix_cli
 }
@@ -42,7 +42,6 @@ sudo mv bin/istioctl /usr/local/bin/
 
 kubectl delete --ignore-not-found=true -f install/kubernetes/istio.yaml
 kubectl delete --ignore-not-found=true -f install/kubernetes/addons
-kubectl delete --ignore-not-found=true -f install/kubernetes/istio-rbac-alpha.yaml
 kubectl delete istioconfigs --all
 kubectl delete thirdpartyresource istio-config.istio.io
 kubectl delete --ignore-not-found=true -f ../bookinfo.yaml
