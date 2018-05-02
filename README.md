@@ -64,7 +64,7 @@ $ kubectl apply -f istio/install/kubernetes/istio.yaml
 
 ### Part A: Deploy sample Bookinfo application and inject Istio sidecars to enable traffic flow management, access policy and monitoring data aggregation for application
 
-1. [Deploy sample BookInfo application with Istio sidecar injected](#1-deploy-sample-Bookinfo-application-with-Istio-sidecar-injected)
+1. [Deploy sample BookInfo application with Istio sidecar injected](#1-deploy-sample-bookinfo-application-with-istio-sidecar-injected)
 2. [Configure Traffic flow](#2-traffic-flow-management-using-istio-pilot---modify-service-routes)
 3. [Configure access control](#3-access-policy-enforcement-using-istio-mixer---configure-access-control)
 4. [Collect metrics, logs and trace spans](#4-telemetry-data-aggregation-using-istio-mixer---collect-metrics-logs-and-trace-spans)
@@ -176,7 +176,7 @@ This step shows you how to control access to your services. If you have done the
   $ istioctl create -f istio/samples/apps/bookinfo/mixer-rule-ratings-denial.yaml
   ```
 
-* To verify if your rule has been enforced, point your browser to your BookInfo Application, you wouldn't see star ratings anymore from the reviews section unless you are logged in as _jason_ which you will still see black stars (because you would be using the reviews-v2 as you have done in [Step 3](#3-traffic-flow-management-using-istio-pilot---modify-service-routes)).
+* To verify if your rule has been enforced, point your browser to your BookInfo Application, you wouldn't see star ratings anymore from the reviews section unless you are logged in as _jason_ which you will still see black stars (because you would be using the reviews-v2 as you have done in [Step 2](#2-traffic-flow-management-using-istio-pilot---modify-service-routes)).
 
 ![access-control](images/access.png)
 
@@ -230,7 +230,7 @@ This step shows you how to configure [Istio Mixer](https://istio.io/docs/concept
   ...
   ```
 
-[Collecting Metrics and Logs on Istio](https://istio.io/docs/tasks/metrics-logs.html)
+[Collecting Metrics and Logs on Istio](https://istio.io/docs/tasks/telemetry/metrics-logs.html)
 
 ### 4.2 Collect request traces using Zipkin
 
@@ -262,7 +262,7 @@ This step shows you how to collect trace spans using [Zipkin](http://zipkin.io).
 
 ![zipkin](images/zipkin-details.png)
 
-[Zipkin Tracing on Istio](https://istio.io/docs/tasks/zipkin-tracing.html)
+[Zipkin Tracing on Istio](https://istio.io/docs/tasks/telemetry/distributed-tracing.html)
 
 ## Part B:  Modify sample application to use an external datasource, deploy the application and Istio envoys with egress traffic enabled
 
@@ -397,6 +397,6 @@ This data is collected from the Kubernetes Job in the sample application's yaml 
 Please comment out/remove the Metric Kubernetes Job portion at the end of the 'bookinfo.yaml' file.
 
 # References
-[Istio.io](https://istio.io/docs/tasks/index.html)
+[Istio.io](https://istio.io/docs/tasks/)
 # License
 [Apache 2.0](http://www.apache.org/licenses/LICENSE-2.0)
