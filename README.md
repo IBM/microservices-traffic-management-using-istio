@@ -64,7 +64,7 @@ $ kubectl apply -f istio/install/kubernetes/istio.yaml
 
 ### Part A: Deploy sample Bookinfo application and inject Istio sidecars to enable traffic flow management, access policy and monitoring data aggregation for application
 
-1. [Deploy sample BookInfo application with Istio sidecar injected](#1-deploy-sample-bookinfo-application-on-kubernetes)
+1. [Deploy sample BookInfo application with Istio sidecar injected](#1-deploy-sample-Bookinfo-application-with-Istio-sidecar-injected)
 2. [Configure Traffic flow](#2-traffic-flow-management-using-istio-pilot---modify-service-routes)
 3. [Configure access control](#3-access-policy-enforcement-using-istio-mixer---configure-access-control)
 4. [Collect metrics, logs and trace spans](#4-telemetry-data-aggregation-using-istio-mixer---collect-metrics-logs-and-trace-spans)
@@ -72,9 +72,9 @@ $ kubectl apply -f istio/install/kubernetes/istio.yaml
      - 4.2 [Collect request traces using Zipkin](#42-collect-request-traces-using-zipkin)
 
 ### Part B: Modify sample application to use an external datasource, deploy the application and Istio envoys with egress traffic enabled
-5. [Create an external datasource for the application](#6-create-an-external-datasource-for-the-application)
-6. [Modify sample application to use the external database](#7-modify-sample-application-to-use-the-external-database)
-7. [Deploy application microservices and Istio envoys with egress traffic enabled](#8-deploy-application-microservices-and-istio-envoys-with-egress-traffic-enabled)
+5. [Create an external datasource for the application](#5-create-an-external-datasource-for-the-application)
+6. [Modify sample application to use the external database](#6-modify-sample-application-to-use-the-external-database)
+7. [Deploy application microservices and Istio envoys with egress traffic enabled](#7-deploy-application-microservices-and-istio-envoys-with-egress-traffic-enabled)
 
 ## Part A: Deploy sample Bookinfo application and inject Istio sidecars to enable traffic flow management, access policy and monitoring data aggregation for application
 
