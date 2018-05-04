@@ -84,7 +84,7 @@ In this part, we will be using the sample BookInfo Application that comes as def
 Envoys are deployed as sidecars on each microservice. Injecting Envoy into your microservice means that the Envoy sidecar would manage the ingoing and outgoing calls for the service. To inject an Envoy sidecar to an existing microservice configuration, do:
 
 ```bash
-$ kubectl apply -f <(istioctl kube-inject -f istio/samples/apps/bookinfo/bookinfo.yaml)
+$ kubectl apply -f <(istioctl kube-inject -f istio/samples/bookinfo/kube/bookinfo.yaml)
 ```
 
 > `istioctl kube-inject` modifies the yaml file passed in _-f_. This injects Envoy sidecar into your Kubernetes resource configuration. The only resources updated are Job, DaemonSet, ReplicaSet, and Deployment. Other resources in the YAML file configuration will be left unmodified.
@@ -136,7 +136,7 @@ This step shows you how to configure where you want your service requests to go 
 This would set all incoming routes on the services (indicated in the line `destination: <service>`) to the deployment with a tag `version: v1`. To set the default routes, run:
 
   ```bash
-  $ istioctl create -f istio/samples/apps/bookinfo/route-rule-all-v1.yaml
+  $ istioctl create -f istio/samples/bookinfo/kube/route-rule-all-v1.yaml
   ```
 
 * Set Route to `reviews-v2` of **reviews microservice** for a specific user  
@@ -144,7 +144,7 @@ This would set all incoming routes on the services (indicated in the line `desti
 This would set the route for the user `jason` (You can login as _jason_ with any password in your deploy web application) to see the `version: v2` of the reviews microservice. Run:
 
   ```bash
-  $ istioctl create -f istio/samples/apps/bookinfo/route-rule-reviews-test-v2.yaml
+  $ istioctl create -f istio/samples/bookinfo/kube/route-rule-reviews-test-v2.yaml
   ```
 
 * Route 50% of traffic on **reviews microservice** to `reviews-v1` and 50% to `reviews-v3`.  
@@ -154,7 +154,7 @@ This is indicated by the `weight: 50` in the yaml file.
   > Using `replace` should allow you to edit existing route-rules.
 
   ```bash
-  $ istioctl replace -f istio/samples/apps/bookinfo/route-rule-reviews-50-v3.yaml
+  $ istioctl replace -f istio/samples/bookinfo/kube/route-rule-reviews-50-v3.yaml
 
   ```
 
@@ -163,7 +163,7 @@ This is indicated by the `weight: 50` in the yaml file.
 This would set every incoming traffic to the version v3 of the reviews microservice. Run:
 
   ```bash
-  $ istioctl replace -f istio/samples/apps/bookinfo/route-rule-reviews-v3.yaml
+  $ istioctl replace -f istio/samples/bookinfo/kube/route-rule-reviews-v3.yaml
   ```
 
 ## 3. Access policy enforcement using Istio Mixer - Configure access control
@@ -173,7 +173,7 @@ This step shows you how to control access to your services. If you have done the
 * To deny access to the ratings service from the traffic coming from `reviews-v3`, you will use `istioctl mixer rule create`
 
   ```bash
-  $ istioctl create -f istio/samples/apps/bookinfo/mixer-rule-ratings-denial.yaml
+  $ istioctl create -f istio/samples/bookinfo/kube/mixer-rule-ratings-denial.yaml
   ```
 
 * To verify if your rule has been enforced, point your browser to your BookInfo Application, you wouldn't see star ratings anymore from the reviews section unless you are logged in as _jason_ which you will still see black stars (because you would be using the reviews-v2 as you have done in [Step 2](#2-traffic-flow-management-using-istio-pilot---modify-service-routes)).
