@@ -58,7 +58,6 @@ do
     kuber=$(kubectl get pods | grep Terminating)
 done
 
-kubectl apply -f install/kubernetes/istio-rbac-alpha.yaml
 kubectl apply -f install/kubernetes/istio.yaml
 
 PODS=$(kubectl get pods | grep istio | grep Pending)
@@ -129,7 +128,6 @@ echo "Everything looks good."
 echo "Cleaning up..."
 kubectl delete -f install/kubernetes/istio.yaml
 kubectl delete --ignore-not-found=true -f install/kubernetes/addons
-kubectl delete -f install/kubernetes/istio-rbac-alpha.yaml
 kubectl delete istioconfigs --all
 kubectl delete thirdpartyresource istio-config.istio.io
 echo "Deleted Istio in cluster"
