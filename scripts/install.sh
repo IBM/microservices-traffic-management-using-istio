@@ -106,7 +106,7 @@ echo "BookInfo done."
 
 function health_check() {
 
-export GATEWAY_URL=$(bx cs workers $CLUSTER_NAME | grep normal | awk '{print $2}' | head -1):$(kubectl get svc istio-ingress -o jsonpath={.spec.ports[0].nodePort})
+export GATEWAY_URL=$(bx cs workers $CLUSTER_NAME | grep normal | awk '{print $2}' | head -1):$(kubectl get svc istio-ingress -n istio-system -o jsonpath={.spec.ports[0].nodePort})
 HEALTH=$(curl -o /dev/null -s -w "%{http_code}\n" http://$GATEWAY_URL/productpage)
 
 TRIES=0
