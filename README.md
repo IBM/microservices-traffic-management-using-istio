@@ -48,7 +48,7 @@ $ cd ibm
 $ git clone https://github.com/IBM/traffic-management-for-your-microservices-using-istio.git demo
 ```
 
-You will also need Istio service mesh installed on top of your Kubernetes cluster. 
+You will also need Istio service mesh installed on top of your Kubernetes cluster.
 Here are the steps (Make sure to change the version to your downloaded one):
 
 ```bash
@@ -106,7 +106,7 @@ To access your application, you can check the public IP address of your applicat
 ```bash
 $ kubectl get ingress -o wide
 ```
-The output is something like 
+The output is something like
 ```bash
 NAME      HOSTS     ADDRESS                 PORTS     AGE
 gateway   *         184.211.10.121          80        1d
@@ -203,7 +203,7 @@ This step shows you how to configure [Istio Mixer](https://istio.io/docs/concept
   Your dashboard should look like this:  
   ![Grafana-Dashboard](images/grafana.png)
 
-* To collect new telemetry data, you will apply a mixer rule. For this sample, you will generate logs for Response Size for Reviews service. The configuration YAML file is provided within the BookInfo sample folder. 
+* To collect new telemetry data, you will apply a mixer rule. For this sample, you will generate logs for Response Size for Reviews service. The configuration YAML file is provided within the BookInfo sample folder.
 
 * Create the configuration on Istio Mixer using the configuration in [new-metrics-rule.yaml](new-metrics-rule.yaml)
 `
@@ -248,7 +248,7 @@ This step shows you how to collect trace spans using [Zipkin](http://zipkin.io).
   9411:9411
   ```  
   Access the zipkin dashboard `http://localhost:3000`
-  
+
   Your dashboard should like this:
   ![zipkin](images/zipkin.png)
 
@@ -368,7 +368,7 @@ The `details`, `reviews`, `ratings` will have external traffic since your MySQL 
 
 You can now access your application to confirm that it is getting data from your MySQL database.
 Point your browser to:  
-`http://${GATEWAY_URL}/productpage` 
+`http://${GATEWAY_URL}/productpage`
 
 # Troubleshooting
 * To delete Istio from your cluster
@@ -379,22 +379,6 @@ $ kubectl delete -f install/kubernetes/istio.yaml
 
 * To delete all addons: `kubectl delete -f install/kubernetes/addons`
 * To delete the BookInfo app and its route-rules: `./samples/apps/bookinfo/cleanup.sh`
-
-# Privacy Notice
-
-Sample Kubernetes Yaml file that includes this package may be configured to track deployments to [IBM Cloud](https://www.bluemix.net/) and other Kubernetes platforms. The following information is sent to a [Deployment Tracker](https://github.com/IBM/metrics-collector-service) service on each deployment:
-
-* Kubernetes Cluster Provider(`IBM Cloud,Minikube,etc`)
-* Kubernetes Machine ID
-* Kubernetes Cluster ID (Only from IBM Cloud's cluster)
-* Kubernetes Customer ID (Only from IBM Cloud's cluster)
-* Environment variables in this Kubernetes Job.
-
-This data is collected from the Kubernetes Job in the sample application's yaml file. This data is used by IBM to track metrics around deployments of sample applications to IBM Cloud to measure the usefulness of our examples so that we can continuously improve the content we offer to you. Only deployments of sample applications that include code to ping the Deployment Tracker service will be tracked.
-
-## Disabling Deployment Tracking
-
-Please comment out/remove the Metric Kubernetes Job portion at the end of the `bookinfo.yaml` file.
 
 # References
 [Istio.io](https://istio.io/docs/tasks/)

@@ -80,24 +80,3 @@ spec:
         backend:
           serviceName: reviews
           servicePort: 9080
----
-apiVersion: batch/v1
-kind: Job
-metadata: {name: microservices-traffic-management-using-istio-metrics}
-spec:
-  template:
-    metadata: {name: microservices-traffic-management-using-istio-metrics}
-    spec:
-      containers:
-        - env:
-            - {name: config, value: '{"event_id": "web",
-                "repository_id": "microservices-traffic-management-using-istio",
-                "target_services": [null], "target_runtimes":
-                ["Kubernetes Cluster"], "event_organizer":
-                "dev-journeys"}'}
-            - {name: language, value: 'java'}
-          image: journeycode/kubernetes:latest
-          name: java-microprofile-on-kubernetes-metrics
-          resources:
-            limits: {cpu: 100m}
-      restartPolicy: Never
