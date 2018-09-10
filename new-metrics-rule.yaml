@@ -81,7 +81,8 @@ spec:
    - handler: newhandler.stdio
      instances:
      - newlog.logentry
----# Configuration for metric instances
+---
+# Configuration for metric instances
 apiVersion: "config.istio.io/v1alpha2"
 kind: metric
 metadata:

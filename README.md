@@ -208,7 +208,7 @@ This step shows you how to configure [Istio Mixer](https://istio.io/docs/concept
 * Create the configuration on Istio Mixer using the configuration in [new-metrics-rule.yaml](new-metrics-rule.yaml)
 `
   ```bash
-  $ istioctl create -f demo/new_telemetry.yaml
+  $ istioctl create -f new-metrics-rule.yaml
   ```
 
 * Send traffic to that service by refreshing your browser to `http://${GATEWAY_URL}/productpage` multiple times. You can also do `curl` on your terminal to that URL in a while loop.
