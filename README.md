@@ -31,14 +31,14 @@ In the [second part](#part-b-modify-sample-application-to-use-an-external-dataso
 
 ## Included Components
 - [Istio](https://istio.io/)
-- [Kubernetes Clusters](https://console.ng.bluemix.net/docs/containers/cs_ov.html#cs_ov)
+- [IBM Cloud Kubernetes Service](https://console.ng.bluemix.net/docs/containers/cs_ov.html#cs_ov)
 - [Grafana](http://docs.grafana.org/guides/getting_started)
 - [Zipkin](http://zipkin.io/)
 - [Prometheus](https://prometheus.io/)
-- [Bluemix DevOps Toolchain Service](https://console.ng.bluemix.net/catalog/services/continuous-delivery)
+- [Continuous Delivery Service](https://console.ng.bluemix.net/catalog/services/continuous-delivery)
 
 # Prerequisite
-Create a Kubernetes cluster with either [Minikube](https://kubernetes.io/docs/getting-started-guides/minikube) for local testing, with [IBM Cloud Private](https://github.com/IBM/deploy-ibm-cloud-private/blob/master/README.md), or with [IBM Bluemix Container Service](https://github.com/IBM/container-journey-template/blob/master/README.md) to deploy in cloud. The code here is regularly tested against [Kubernetes Cluster from Bluemix Container Service](https://console.ng.bluemix.net/docs/containers/cs_ov.html#cs_ov) using Travis.
+Create a Kubernetes cluster with either [Minikube](https://kubernetes.io/docs/getting-started-guides/minikube) for local testing, with [IBM Cloud Private](https://github.com/IBM/deploy-ibm-cloud-private/blob/master/README.md), or with [IBM Cloud Kubernetes Service](https://console.ng.bluemix.net/docs/containers/cs_ov.html#cs_ov) to deploy in cloud. The code here is regularly tested against IBM Cloud Kubernetes Service using Travis.
 
 Create a working directory to clone this repo and to download Istio into:
 
@@ -270,7 +270,7 @@ In this part, we will modify the sample BookInfo application to use use an exter
 
 ## 5. Create an external datasource for the application
 
-Provision Compose for MySQL in Bluemix via https://console.ng.bluemix.net/catalog/services/compose-for-mysql  
+Provision Compose for MySQL in IBM Cloud via https://console.ng.bluemix.net/catalog/services/compose-for-mysql  
 Go to Service credentials and view your credentials. Your MySQL hostname, port, user, and password are under your credential uri and it should look like this
 ![images](images/mysqlservice.png)
 
@@ -287,7 +287,7 @@ Preview of added source code for `ratings.js` for connecting to MySQL database:
 ![ratings_diff](images/ratings_diff.png)
 
 
-You will need to update the `demo/secrets.yaml` file to include the credentials provided by Bluemix Compose.
+You will need to update the `demo/secrets.yaml` file to include the credentials provided by IBM Cloud Compose.
 
 > Note: The values provided in the secrets file should be run through `base64` first.
 
@@ -331,7 +331,7 @@ $ export IPRANGES=172.30.0.0/16,172.20.0.0/16
 $ echo $IPRANGES
 ```
 
-* Insert data in your MySQL database in Bluemix.
+* Insert data in your MySQL database in IBM Cloud.
 > This inserts the database design and initial data for the database.
 
 ```bash
