@@ -55,7 +55,7 @@ Here are the steps (Make sure to change the version to your downloaded one):
 $ curl -L https://git.io/getLatestIstio | sh -
 $ mv istio-0.7.1 istio
 $ export PATH=$PWD/istio/bin:$PATH
-$ kubectl apply -f istio/install/kubernetes/istio.yaml
+$ kubectl apply -f istio/install/kubernetes/istio-demo.yaml
 
 ```
 
@@ -84,7 +84,7 @@ In this part, we will be using the sample BookInfo Application that comes as def
 Envoys are deployed as sidecars on each microservice. Injecting Envoy into your microservice means that the Envoy sidecar would manage the ingoing and outgoing calls for the service. To inject an Envoy sidecar to an existing microservice configuration, do:
 
 ```bash
-$ kubectl apply -f <(istioctl kube-inject -f istio/samples/bookinfo/kube/bookinfo.yaml)
+$ kubectl apply -f <(istioctl kube-inject -f istio/samples/bookinfo/platform/kube/bookinfo.yaml)
 ```
 
 > `istioctl kube-inject` modifies the yaml file passed in _-f_. This injects Envoy sidecar into your Kubernetes resource configuration. The only resources updated are Job, DaemonSet, ReplicaSet, and Deployment. Other resources in the YAML file configuration will be left unmodified.
@@ -101,20 +101,23 @@ reviews-v1-874083890-f0qf0                  2/2       Running   0          6m
 reviews-v2-1343845940-b34q5                 2/2       Running   0          6m
 reviews-v3-1813607990-8ch52                 2/2       Running   0          6m
 ```
-To access your application, you can check the public IP address of your application. In the `bookinfo.yaml` file we have configured an ingress resource. Run:
+
+Create an Istio ingress gateway to access your services over a public IP address.
 
 ```bash
-$ kubectl get ingress -o wide
+kubectl apply -f  istio/samples/bookinfo/networking/bookinfo-gateway.yaml
 ```
-The output is something like
+
+To access your application, you can check the public IP address of your application with the following command. Replace "istio-book" below with the name of your Kubernetes cluster!
+Note the IP address will also be different for your cluster.
+
 ```bash
-NAME      HOSTS     ADDRESS                 PORTS     AGE
-gateway   *         184.211.10.121          80        1d
+$ export GATEWAY_URL=$(ibmcloud ks workers istio-book | grep normal | awk '{print $2}' | head -1):$(kubectl get svc istio-ingressgateway -n istio-system -o jsonpath={.spec.ports[0].nodePort})
+
+$ echo $GATEWAY_URL 
+169.55.105.75:31380
 ```
-Set the env variable (change to your output):
-```bash
-export GATEWAY_URL=184.xxx.xxx.xxx:80
-```
+
 Now you can access your application via:`http://${GATEWAY_URL}/productpage`
 
 If you refresh the page multiple times, you'll see that the _reviews_ section of the page changes. That's because there are 3 versions of **reviews**_(reviews-v1, reviews-v2, reviews-v3)_ deployment for our **reviews** service. Istio’s load-balancer is using a round-robin algorithm to iterate through the 3 instances of this service
