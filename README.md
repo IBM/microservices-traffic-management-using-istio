@@ -53,7 +53,7 @@ Here are the steps (Make sure to change the version to your downloaded one):
 
 ```bash
 $ curl -L https://git.io/getLatestIstio | sh -
-$ mv istio-0.7.1 istio
+$ mv istio-<version> istio # replace with version downloaded
 $ export PATH=$PWD/istio/bin:$PATH
 $ kubectl apply -f istio/install/kubernetes/istio-demo.yaml
 
@@ -130,16 +130,30 @@ If you refresh the page multiple times, you'll see that the _reviews_ section of
 
 In this section, Istio will be configured to dynamically modify the network traffic between some of the components of our application. In this case we have 2 versions of the “reviews” component (v1 and v2) but we don’t want to replace review-v1 with review-v2 immediately. In most cases, when components are upgraded it’s useful to deploy the new version but only have a small subset of network traffic routed to it so that it can be tested before the old version is removed. This is often referred to as “canary testing”.
 
-There are multiple ways in which we can control this routing. It can be based on which user is accessing it, or certain percentage of the traffic can be configured to flow to one version etc.
+There are multiple ways in which we can control this routing. It can be based on which user or type of device that is accessing it, or a certain percentage of the traffic can be configured to flow to one version.
 
 This step shows you how to configure where you want your service requests to go based on weights and HTTP Headers. You would need to be in the root directory of the Istio release you have downloaded on the Prerequisites section.
+
+* Destination Rules
+
+Before moving on, we have to define the destination rules. The destination rules tell Istio what versions (subsets in Istio terminology) are available for routing. This step is required before fine-grained traffic shaping is possible.
+
+```bash
+$  kubectl apply -f samples/bookinfo/networking/destination-rule-all.yaml
+destinationrule.networking.istio.io/productpage created
+destinationrule.networking.istio.io/reviews created
+destinationrule.networking.istio.io/ratings created
+destinationrule.networking.istio.io/details created
+```
+
+For more details, see the [Istio documentation](https://istio.io/docs/tasks/traffic-management/traffic-shifting/).
 
 * Set Default Routes to `reviews-v1` for all microservices  
 
 This would set all incoming routes on the services (indicated in the line `destination: <service>`) to the deployment with a tag `version: v1`. To set the default routes, run:
 
   ```bash
-  $ istioctl create -f istio/samples/bookinfo/kube/route-rule-all-v1.yaml
+  $ kubectl apply -f samples/bookinfo/networking/virtual-service-all-v1.yaml 
   ```
 
 * Set Route to `reviews-v2` of **reviews microservice** for a specific user  
@@ -147,7 +161,7 @@ This would set all incoming routes on the services (indicated in the line `desti
 This would set the route for the user `jason` (You can login as _jason_ with any password in your deploy web application) to see the `version: v2` of the reviews microservice. Run:
 
   ```bash
-  $ istioctl create -f istio/samples/bookinfo/kube/route-rule-reviews-test-v2.yaml
+  $ kubectl apply -f samples/bookinfo/networking/virtual-service-reviews-test-v2.yaml 
   ```
 
 * Route 50% of traffic on **reviews microservice** to `reviews-v1` and 50% to `reviews-v3`.  
@@ -157,8 +171,7 @@ This is indicated by the `weight: 50` in the yaml file.
   > Using `replace` should allow you to edit existing route-rules.
 
   ```bash
-  $ istioctl replace -f istio/samples/bookinfo/kube/route-rule-reviews-50-v3.yaml
-
+  $ kubectl apply -f samples/bookinfo/networking/virtual-service-reviews-50-v3.yaml 
   ```
 
 * Route 100% of the traffic to the `version: v3` of the **reviews microservices**  
@@ -166,7 +179,7 @@ This is indicated by the `weight: 50` in the yaml file.
 This would set every incoming traffic to the version v3 of the reviews microservice. Run:
 
   ```bash
-  $ istioctl replace -f istio/samples/bookinfo/kube/route-rule-reviews-v3.yaml
+  $ kubectl apply -f samples/bookinfo/networking/virtual-service-reviews-50-v3.yaml 
   ```
 
 ## 3. Access policy enforcement using Istio Mixer - Configure access control
