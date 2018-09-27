@@ -176,10 +176,10 @@ This is indicated by the `weight: 50` in the yaml file.
 
 * Route 100% of the traffic to the `version: v3` of the **reviews microservices**  
 
-This would set every incoming traffic to the version v3 of the reviews microservice. Run:
+This will direct all incoming traffic to version v3 of the reviews microservice. Run:
 
   ```bash
-  $ kubectl apply -f samples/bookinfo/networking/virtual-service-reviews-50-v3.yaml 
+  $ kubectl apply -f samples/bookinfo/networking/virtual-service-reviews-v3.yaml 
   ```
 
 ## 3. Access policy enforcement using Istio Mixer - Configure access control
