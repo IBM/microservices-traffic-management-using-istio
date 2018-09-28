@@ -184,18 +184,25 @@ This will direct all incoming traffic to version v3 of the reviews microservice.
 
 ## 3. Access policy enforcement using Istio Mixer - Configure access control
 
-This step shows you how to control access to your services. If you have done the step above, you'll see that your `productpage` now just shows red stars on the reviews section and if you are logged in as _jason_, you'll see black stars. The `ratings` service is accessed from the `reviews-v2` if you're logged in as _jason_ or it is accessed from `reviews-v3` if you are not logged in as `jason`.
+This step shows you how to control access to your services. It helps to reset the routing rules to ensure that we are starting with a known configuration. The following commands will first set all review requests to v1, and then apply a rule to route requests from user _jason_ to v2, while all others go to v3:
 
-* To deny access to the ratings service from the traffic coming from `reviews-v3`, you will use `istioctl mixer rule create`
+```bash
+   kubectl apply -f samples/bookinfo/networking/virtual-service-all-v1.yaml
+   kubectl apply -f samples/bookinfo/networking/virtual-service-reviews-jason-v2-v3.yaml
+```
+
+You'll now see that your `productpage` always red stars on the reviews section if not logged in, and always shows black stars when logged in as _jason_.
+
+* To deny access to the ratings service for all traffic coming from `reviews-v3`, you will use apply these rules:
 
   ```bash
-  $ istioctl create -f istio/samples/bookinfo/kube/mixer-rule-ratings-denial.yaml
+   kubectl apply -f samples/bookinfo/policy/mixer-rule-deny-label.yaml
+   kubectl apply -f samples/bookinfo/policy/mixer-rule-ratings-denial.yaml
   ```
 
-* To verify if your rule has been enforced, point your browser to your BookInfo Application, you wouldn't see star ratings anymore from the reviews section unless you are logged in as _jason_ which you will still see black stars (because you would be using the reviews-v2 as you have done in [Step 2](#2-traffic-flow-management-using-istio-pilot---modify-service-routes)).
+* To verify if your rule has been enforced, point your browser to your BookInfo Applicatio. You'll notice you see no stars from the reviews section unless you are logged in as _jason_, in which case you'll see black stars.
 
 ![access-control](images/access.png)
-
 
 ## 4. Telemetry data aggregation using Istio Mixer - Collect metrics, logs and trace spans
 
