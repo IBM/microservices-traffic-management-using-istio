@@ -42,8 +42,8 @@ spec:
     spec:
       containers:
       - name: productpage
-        image: istio/examples-bookinfo-productpage-v1
-        imagePullPolicy: IfNotPresent
+        image: journeycode/productpage-orig 
+        imagePullPolicy: Always
         ports:
         - containerPort: 9080
 ---

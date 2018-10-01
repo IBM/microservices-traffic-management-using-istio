@@ -1,0 +1,11 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: ServiceEntry
+metadata:
+  name: mysql-cloud
+spec:
+  hosts:
+  - sl-us-south-1-portal.38.dblayer.com
+  ports:
+  - number: 59454
+    protocol: tcp
+  location: MESH_EXTERNAL
