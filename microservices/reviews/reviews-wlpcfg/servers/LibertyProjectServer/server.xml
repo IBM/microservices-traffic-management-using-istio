@@ -14,8 +14,7 @@
 <server description="Sample Liberty server">
 
     <featureManager>
-        <feature>jaxrs-2.0</feature>
-        <feature>jsonp-1.0</feature>
+        <feature>microProfile-1.3</feature>
         <feature>jdbc-4.1</feature>
     </featureManager>
 

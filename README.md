@@ -33,7 +33,7 @@ In the [second part](#part-b-modify-sample-application-to-use-an-external-dataso
 - [Istio](https://istio.io/)
 - [IBM Cloud Kubernetes Service](https://console.ng.bluemix.net/docs/containers/cs_ov.html#cs_ov)
 - [Grafana](http://docs.grafana.org/guides/getting_started)
-- [Zipkin](http://zipkin.io/)
+- [Jaeger](https://www.jaegertracing.io/)
 - [Prometheus](https://prometheus.io/)
 - [Continuous Delivery Service](https://console.ng.bluemix.net/catalog/services/continuous-delivery)
 
@@ -69,7 +69,7 @@ $ kubectl apply -f istio/install/kubernetes/istio-demo.yaml
 3. [Configure access control](#3-access-policy-enforcement-using-istio-mixer---configure-access-control)
 4. [Collect metrics, logs and trace spans](#4-telemetry-data-aggregation-using-istio-mixer---collect-metrics-logs-and-trace-spans)
      - 4.1 [Collect metrics and logs using Prometheus and Grafana](#41-collect-metrics-and-logs-using-prometheus-and-grafana)
-     - 4.2 [Collect request traces using Zipkin](#42-collect-request-traces-using-zipkin)
+     - 4.2 [Collect request traces using Jaeger](#42-collect-request-traces-using-jaeger)
 
 ### Part B: Modify sample application to use an external datasource, deploy the application and Istio envoys with egress traffic enabled
 5. [Create an external datasource for the application](#5-create-an-external-datasource-for-the-application)
@@ -210,11 +210,15 @@ You'll now see that your `productpage` always red stars on the reviews section i
 
 This step shows you how to configure [Istio Mixer](https://istio.io/docs/concepts/policy-and-control/mixer.html) to gather telemetry for services in your cluster.
 
-* Install the required Istio Addons on your cluster: [Prometheus](https://prometheus.io) and [Grafana](https://grafana.com)
+* Verify that the required Istio addons (Prometheus and Grafana) are available in your cluster:
+
   ```bash
-  $ kubectl apply -f istio/install/kubernetes/addons/prometheus.yaml
-  $ kubectl apply -f istio/install/kubernetes/addons/grafana.yaml
+  $ kubectl get pods -n istio-system | grep -E 'prometheus|grafana'
+  grafana-6cbdcfb45-bwmtm                     1/1       Running     0          4d
+  istio-grafana-post-install-h2dgz            0/1       Completed   1          4d
+  prometheus-84bd4b9796-vnb58                 1/1       Running     0          4d
   ```
+
 * Verify that your **Grafana** dashboard is ready. Get the IP of your cluster `bx cs workers <your-cluster-name>` and then the NodePort of your Grafana service `kubectl get svc | grep grafana` or you can run the following command to output both:
 
   ```bash
@@ -231,13 +235,26 @@ This step shows you how to configure [Istio Mixer](https://istio.io/docs/concept
 * Create the configuration on Istio Mixer using the configuration in [new-metrics-rule.yaml](new-metrics-rule.yaml)
 `
   ```bash
-  $ istioctl create -f new-metrics-rule.yaml
-  ```
-
-* Send traffic to that service by refreshing your browser to `http://${GATEWAY_URL}/productpage` multiple times. You can also do `curl` on your terminal to that URL in a while loop.
+  $ kubectl apply -f new-metrics-rule.yaml 
+  metric.config.istio.io/doublerequestcount created
+  prometheus.config.istio.io/doublehandler created
+  rule.config.istio.io/doubleprom created
+  logentry.config.istio.io/newlog created
+  stdio.config.istio.io/newhandler created
+  rule.config.istio.io/newlogstdio created
+  metric.config.istio.io/doublerequestcount unchanged
+  prometheus.config.istio.io/doublehandler unchanged
+  rule.config.istio.io/doubleprom unchanged
+  logentry.config.istio.io/newlog unchanged
+  stdio.config.istio.io/newhandler unchanged
+  rule.config.istio.io/newlogstdio unchanged
+	```
+ 
+* Send traffic to that service by refreshing your browser to `http://${GATEWAY_URL}/productpage` multiple times. Alternately, the `watch` command allows you to easily
+call the productpage URL and watch the activity in the Grafana dashboard:
 
   ```bash
-  $ for i in {1..5}; do echo -n .; curl -s http://${GATEWAY_URL}/productpage > /dev/null; done
+  $ watch -n 1 curl -s http://${GATEWAY_URL}/productpage
   ```
 
 * Verify that the new metric is being collected by going to your Grafana dashboard again. The graph on the rightmost should now be populated.
@@ -255,37 +272,32 @@ This step shows you how to configure [Istio Mixer](https://istio.io/docs/concept
 
 [Collecting Metrics and Logs on Istio](https://istio.io/docs/tasks/telemetry/metrics-logs.html)
 
-### 4.2 Collect request traces using Zipkin
+### 4.2 Collect request traces using Jaeger
 
-This step shows you how to collect trace spans using [Zipkin](http://zipkin.io).
-* Install the required Istio Addon: [Zipkin](http://zipkin.io)
+Jaeger is a distributed tracing tool that is available with Istio.
+
+* Access your **Jaeger Dashboard** by setting up port forwarding to the Jaeger pod with this command:
 
   ```bash
-  $ kubectl apply -f istio/install/kubernetes/addons/zipkin.yaml
+  $ kubectl port-forward -n istio-system $(kubectl get pod -n istio-system -l app=jaeger -o jsonpath='{.items[0].metadata.name}') 16686:16686
   ```
-
-* Access your **Zipkin Dashboard**. Get the IP of your cluster `bx cs workers <your-cluster-name>` and then the NodePort of your Zipkin service `kubectl get svc | grep zipkin` or you can run the following command to output both:
-  ```bash
-  $ kubectl port-forward -n istio-system \
-  $(kubectl get pod -n istio-system -l app=zipkin -o jsonpath='{.items[0].metadata.name}') \
-  9411:9411
-  ```  
-  Access the zipkin dashboard `http://localhost:3000`
+  
+  Access the Jaeger dashboard `http://localhost:16686`
 
   Your dashboard should like this:
-  ![zipkin](images/zipkin.png)
+  ![jaeger](images/jaeger1.png)
 
-* Send traffic to that service by refreshing your browser to `http://${GATEWAY_URL}/productpage` multiple times. You can also do reuse the `curl` for loop from earlier.
+* Send traffic to that service by refreshing your browser to `http://${GATEWAY_URL}/productpage` multiple times. You can also do reuse the `watch` command from earlier.
 
-* Go to your Zipkin Dashboard again and you will see a number of traces done. _Click on Find Traces button with the appropriate Start and End Time_
+* Go to your Jeger Dashboard again and you will see a number of traces done. _Click on Find Traces button to see the recent traces (previous hour by default.)
 
-![zipkin](images/zipkin-traces.png)
+![jaeger](images/jaeger2.png)
 
 * Click on one of those traces and you will see the details of the traffic you sent to your BookInfo App. It shows how much time it took for the request on `productpage` to finish. It also shows how much time it took for the requests on the `details`,`reviews`, and `ratings` services.
 
-![zipkin](images/zipkin-details.png)
+![jaeger](images/jaeger3.png)
 
-[Zipkin Tracing on Istio](https://istio.io/docs/tasks/telemetry/distributed-tracing.html)
+[Jaeger Tracing on Istio](https://istio.io/docs/tasks/telemetry/distributed-tracing/)
 
 ## Part B:  Modify sample application to use an external datasource, deploy the application and Istio envoys with egress traffic enabled
 
@@ -299,18 +311,19 @@ Go to Service credentials and view your credentials. Your MySQL hostname, port, 
 
 ## 6. Modify sample application to use the external database
 
-In this step, the original sample BookInfo Application is modified to leverage a MySQL database. The modified microservices are the `details`, `ratings`, and `reviews`. This is done to show how Istio can be configured to enable egress traffic for applications leveraging external services outside the Istio data plane, in this case a database.
+In this step, the original sample BookInfo Application is modified to leverage a MySQL database. The modified microservices are the `details`, `ratings`, and `reviews`. This is done to show how Istio can be configured to enable egress traffic for applications leveraging external services outside the Istio data plane, in this case a database. 
 
 In this step, you can either choose to build your Docker images for different microservices from source in the [microservices folder](/microservices) or use the given images.
 > For building your own images, go to [microservices folder](/microservices)
 
-The following modifications were made to the original Bookinfo application. The **details microservice** is using Ruby and a `mysql` ruby gem was added to connect to a MySQL database. The **ratings microservice** is using Node.js and a `mysql` module was added to connect to a MySQL database. The **reviews v1,v2,v3 microservices** is using Java and a `mysql-connector-java` dependency was added in [build.gradle](/microservices/reviews/reviews-application/build.gradle) to connect to a MySQL database. More source code was added to [details.rb](/microservices/details/details.rb), [ratings.js](/microservices/ratings/ratings.js), [LibertyRestEndpoint.java](/microservices/reviews/reviews-application/src/main/java/application/rest/LibertyRestEndpoint.java) that enables the application to use the details, ratings, and reviews data from the MySQL Database.  
+The following modifications were made to the original Bookinfo application. The **details microservice** is using Ruby and a `mysql` ruby gem was added to connect to a MySQL database. The **ratings microservice** is using Node.js and a `mysql` module was added to connect to a MySQL database. The **reviews v1,v2,v3 microservices** is using Java and a `mysql-connector-java` dependency was added in [build.gradle](/microservices/reviews/reviews-application/build.gradle) to connect to a MySQL database. The `reviews`
+service runs inside an OpenLiberty container running on OpenJ9. More source code was added to [details.rb](/microservices/details/details.rb), [ratings.js](/microservices/ratings/ratings.js), [LibertyRestEndpoint.java](/microservices/reviews/reviews-application/src/main/java/application/rest/LibertyRestEndpoint.java) that enables the application to use the details, ratings, and reviews data from the MySQL Database.  
 
 Preview of added source code for `ratings.js` for connecting to MySQL database:
 ![ratings_diff](images/ratings_diff.png)
 
 
-You will need to update the `demo/secrets.yaml` file to include the credentials provided by IBM Cloud Compose.
+You will need to update the `secrets.yaml` file to include the credentials provided by IBM Cloud Compose.
 
 > Note: The values provided in the secrets file should be run through `base64` first.
 
@@ -337,34 +350,57 @@ data:
 Once the secrets are set add them to your Kubernetes cluster:
 
 ```bash
-$ kubectl apply -f demo/secrets.yaml
+$ kubectl apply -f secrets.yaml
+```
+
+You can verify the values of the keys in the secrets object for the mysql database with:
+
+```bash
+$ kubectl get secret demo-credentials -o json | grep -A4 '"data"'
+    "data": {
+        "host": "c2wtdXMtc291dGgtMS1wb3J0YWwuMzguZGJsYXllci5jb20=",
+        "password": "T0NVUUhDQ1NKT0JEVEtUWQ==",
+        "port": "NTk0NTQ=",
+        "username": "YWRtaW4="
 ```
 
 ## 7. Deploy application microservices and Istio envoys with Egress traffic enabled
 
 By default, Istio-enabled applications will be unable to access URLs outside of the cluster. All outbound traffic in the pod are redirected by its sidecar proxy which only handles destinations inside the cluster.
 
+Istio allows you to define a `ServiceEntry` to control egress to external services.  We've defined a simple egress configuration using a `ServiceEntry` to allow services to talk to the MySQL Compose instance.  In the `MySQL-egress.yaml` file, change the `host` and `number` fields to the hostname and port provided in the Compose connection string, and then use `kubectl` to apply the changes.
 
-There are two ways to configure Istio to expose external services to Istio-enabled clients. a. by defining `ExternalService` configurations, or b. simply bypass the Istio proxy for a specific range of IPs. In this exercise, we'll use the ip range.
 
-We'll save the ip range in an environment variable so that we can reuse:
+```
+apiVersion: networking.istio.io/v1alpha3
+kind: ServiceEntry
+metadata:
+  name: MySQL-cloud
+spec:
+  hosts:
+  - sl-us-south-1-portal.38.dblayer.com
+  ports:
+  - number: 59454
+    protocol: tcp
+  location: MESH_EXTERNAL
+```
 
 ```bash
-$ export IPRANGES=172.30.0.0/16,172.20.0.0/16
-$ echo $IPRANGES
+$ kubectl apply -f mysql-egress.yaml
+
 ```
 
 * Insert data in your MySQL database in IBM Cloud.
 > This inserts the database design and initial data for the database.
 
 ```bash
-$ kubectl apply -f demo/mysql-data.yaml
+$ kubectl apply -f mysql-data.yaml
 ```
 
 * Deploy `productpage` with Envoy injection and `gateway`.  
 
 ```bash
-$ kubectl apply -f <(istioctl kube-inject -f demo/bookinfo.yaml)
+$ kubectl apply -f <(istioctl kube-inject -f bookinfo.yaml)
 
 ```
 The `productpage` is not expecting to have egress traffic so you would not need to configure the Envoy to intercept external requests.
@@ -372,22 +408,35 @@ The `productpage` is not expecting to have egress traffic so you would not need 
 * Deploy `details` with Envoy injection and Egress traffic enabled.  
 
 ```bash
-$ kubectl apply -f <(istioctl kube-inject -f demo/details-new.yaml --includeIPRanges=${IPRANGES})
+$ kubectl apply -f <(istioctl kube-inject -f details-new.yaml)
+```
+
+Note that Kubernetes `apply` shuts down the old pod and replaces it with the new one.
+
+```bash
+$ kubectl get pods
+NAME                              READY     STATUS            RESTARTS   AGE
+details-v1-76df85799c-njdk7       2/2       Terminating       0          5d
+details-v1-86f56ff4d8-cc9fr       0/2       PodInitializing   0          7s
+productpage-v1-5c67c7d4d7-4mkjm   2/2       Running           0          2m
+ratings-v1-648467b449-4f7kp       2/2       Running           0          5d
+reviews-v1-76ff8854fc-n5b6l       2/2       Running           0          5d
+reviews-v2-65cb86568c-nqhqk       2/2       Running           0          5d
+reviews-v3-995b68dcc-j67hf        2/2       Running           0          5d
+setup                             0/1       Completed         0          3m
 ```
 
 * Deploy `reviews` with Envoy injection and Egress traffic enabled.  
 
 ```bash
-$ kubectl apply -f <(istioctl kube-inject -f demo/reviews-new.yaml --includeIPRanges=${IPRANGES})
+$ kubectl apply -f <(istioctl kube-inject -f reviews-new.yaml)
 ```
 
 * Deploy `ratings` with Envoy injection and Egress traffic enabled.  
 
 ```bash
-$ kubectl apply -f <(istioctl kube-inject -f demo/ratings-new.yaml --includeIPRanges=${IPRANGES})
+$ kubectl apply -f <(istioctl kube-inject -f ratings-new.yaml)
 ```
-
-The `details`, `reviews`, `ratings` will have external traffic since your MySQL database is outside of your cluster. That is why you would need to use `--includeIPRanges` option in `istioctl kube-inject`.
 
 You can now access your application to confirm that it is getting data from your MySQL database.
 Point your browser to:  
@@ -397,11 +446,10 @@ Point your browser to:
 * To delete Istio from your cluster
 
 ```bash
-$ kubectl delete -f install/kubernetes/istio.yaml
+$ kubectl delete -f istio/install/kubernetes/istio-demo.yaml
 ```
 
-* To delete all addons: `kubectl delete -f install/kubernetes/addons`
-* To delete the BookInfo app and its route-rules: `./samples/apps/bookinfo/cleanup.sh`
+* To delete the BookInfo app and its route-rules: ` ./samples/bookinfo/platform/kube/cleanup.sh`
 
 # References
 [Istio.io](https://istio.io/docs/tasks/)
