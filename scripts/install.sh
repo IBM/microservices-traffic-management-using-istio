@@ -36,7 +36,7 @@ sed -i s#"VEhYTktMUFFTWE9BQ1JPRA=="#$PASSWORD_BASE64#g secrets.yaml
 sed -i s#"c2wtdXMtc291dGgtMS1wb3J0YWwuMy5kYmxheWVyLmNvbQ=="#$HOST_BASE64#g secrets.yaml
 sed -i s#"MTg0ODE="#$PORT_BASE64#g secrets.yaml
 
-curl -L https://git.io/getLatestIstio | sh -
+curl -L https://git.io/getLatestIstio | ISTIO_VERSION=1.0.2 sh -
 cd $(ls | grep istio)
 sudo mv bin/istioctl /usr/local/bin/
 
@@ -89,12 +89,13 @@ echo "Creating local MySQL database..."
 kubectl apply -f <(istioctl kube-inject -f ../book-database.yaml)
 echo "Creating product page and ingress resource..."
 kubectl apply -f <(istioctl kube-inject -f ../bookinfo.yaml)
+
 echo "Creating details service..."
-kubectl apply -f <(istioctl kube-inject -f ../details-new.yaml --includeIPRanges=172.30.0.0/16,172.20.0.0/16)
+kubectl apply -f <(istioctl kube-inject -f ../details-new.yaml)
 echo "Creating reviews service..."
-kubectl apply -f <(istioctl kube-inject -f ../reviews-new.yaml --includeIPRanges=172.30.0.0/16,172.20.0.0/16)
+kubectl apply -f <(istioctl kube-inject -f ../reviews-new.yaml)
 echo "Creating ratings service..."
-kubectl apply -f <(istioctl kube-inject -f ../ratings-new.yaml --includeIPRanges=172.30.0.0/16,172.20.0.0/16)
+kubectl apply -f <(istioctl kube-inject -f ../ratings-new.yaml)
 
 # Create the gateway
 istioctl create -f ../istio-gateway.yaml
