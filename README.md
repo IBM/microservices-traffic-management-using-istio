@@ -301,7 +301,7 @@ Jaeger is a distributed tracing tool that is available with Istio.
 
 ## Part B:  Modify sample application to use an external datasource, deploy the application and Istio envoys with egress traffic enabled
 
-In this part, we will modify the sample BookInfo application to use use an external database, and enable the Istio envoys for egress traffic. Please ensure you have the Istio control plane installed on your Kubernetes cluster as mentioned in the prerequisites. We will run these commands from the outside the `demo folder we cloned the source code repository in at the beginning.
+In this part, we will modify the sample BookInfo application to use use an external database, and enable egress traffic. Please ensure you have the Istio control plane installed on your Kubernetes cluster as mentioned in the prerequisites.
 
 ## 5. Create an external datasource for the application
 
@@ -397,13 +397,19 @@ $ kubectl apply -f mysql-egress.yaml
 $ kubectl apply -f mysql-data.yaml
 ```
 
-* Deploy `productpage` with Envoy injection and `gateway`.  
+As an initial step, remove the ingress rules from the sample app, as they are
+not compatible with the MySQL demo portion:
+
+```
+kubectl delete -f istio/samples/bookinfo/networking/bookinfo-gateway.yaml
+```
+
+* Deploy `productpage` with Envoy injection and the `gateway` for products and reviews.  
 
 ```bash
 $ kubectl apply -f <(istioctl kube-inject -f bookinfo.yaml)
-
+$ kubectl apply -f bookinfo-gateway.yaml
 ```
-The `productpage` is not expecting to have egress traffic so you would not need to configure the Envoy to intercept external requests.
 
 * Deploy `details` with Envoy injection and Egress traffic enabled.  
 
